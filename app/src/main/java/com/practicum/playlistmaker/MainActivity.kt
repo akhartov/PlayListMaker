@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker
 
 import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -17,5 +19,20 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }*/
+
+
+        val buttonSearch = findViewById<Button>(R.id.button_search)
+        val buttonLibrary = findViewById<Button>(R.id.button_library)
+        val buttonSettings = findViewById<Button>(R.id.button_settings)
+
+        buttonSearch.setOnClickListener {
+            Toast.makeText(this, "Нажал ${buttonSearch.text}", Toast.LENGTH_SHORT).show()
+        }
+        buttonLibrary.setOnClickListener {
+            Toast.makeText(this, "Нажал ${buttonLibrary.text}", Toast.LENGTH_SHORT).show()
+        }
+        buttonSettings.setOnClickListener {
+            Toast.makeText(this, "Нажал ${buttonSettings.text}", Toast.LENGTH_SHORT).show()
+        }
     }
 }

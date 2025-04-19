@@ -18,8 +18,10 @@
         android:textSize="@dimen/title_text"
         android:paddingBottom="@dimen/double_space"/>
     <Button
+        android:id="@+id/button_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
         android:backgroundTint="@color/button_backgroud"
         android:textColor="@color/button_text"
         app:icon="@drawable/ic_search_inactive"
@@ -35,8 +37,10 @@
         android:textSize="@dimen/button_text"
         />
     <Button
+        android:id="@+id/button_library"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
         android:backgroundTint="@color/button_backgroud"
         android:textColor="@color/button_text"
         app:icon="@drawable/ic_library_inactive"
@@ -53,8 +57,10 @@
         />
 
     <Button
+        android:id="@+id/button_settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
         android:backgroundTint="@color/button_backgroud"
         android:textColor="@color/button_text"
         app:icon="@drawable/ic_settings_inactive"
