@@ -1,109 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsActivity"
     android:orientation="vertical"
-    android:padding="@dimen/double_space">
+    tools:context=".SettingsActivity"
+    >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/back"
+        style="@style/Title.Panel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/settings_text"
+        />
 
-        <ImageView
-            android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:src="@drawable/ic_arrow_back"
-            android:foreground="?attr/selectableItemBackground"
-            tools:ignore="ContentDescription" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="@string/settings_text"
-            android:textColor="@color/menu_text"
-            android:textSize="@dimen/title_text"
-            android:paddingBottom="@dimen/double_space"
-            android:layout_margin="@dimen/single_space"/>
-    </LinearLayout>
-
-    <FrameLayout
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        style="@style/SettingsMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/single_space">
+        android:text="@string/night_theme"
+        android:thumb="@drawable/switch_knob"
+        app:track="@drawable/switch_track"
+        app:useMaterialThemeColors="false"
+        />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/night_theme"
-            android:textColor="@color/menu_text"
-            android:textSize="@dimen/menu_text" />
-
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
-    </FrameLayout>
-
-    <FrameLayout
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/single_space">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/share_app"
-            android:textColor="@color/menu_text"
-            android:textSize="@dimen/menu_text" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_share_app"
-            tools:ignore="ContentDescription" />
-    </FrameLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/single_space">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/write_support"
-            android:textColor="@color/menu_text"
-            android:textSize="@dimen/menu_text" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_write_support"
-            tools:ignore="ContentDescription" />
-    </FrameLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/single_space">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/user_agreement"
-            android:textColor="@color/menu_text"
-            android:textSize="@dimen/menu_text" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_arrow_forward"
-            tools:ignore="ContentDescription" />
-    </FrameLayout>
+        android:drawableEnd="@drawable/ic_share_app"
+        android:text="@string/share_app"
+        />
 
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_write_support"
+        android:text="@string/write_support"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_forward"
+        android:text="@string/user_agreement"
+        />
 </LinearLayout>

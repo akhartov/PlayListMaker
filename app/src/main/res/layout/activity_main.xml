@@ -2,78 +2,51 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity"
-    android:background="@color/background"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:orientation="vertical"
-    android:padding="@dimen/double_space">
+    tools:context=".MainActivity"
+    >
 
-    <TextView
+    <com.google.android.material.appbar.MaterialToolbar
+        style="@style/Title.Panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="@color/title_text"
-        android:textSize="@dimen/title_text"
-        android:paddingBottom="@dimen/double_space"/>
-    <Button
+        android:textAlignment="textStart"
+        app:title="@string/app_name"
+        app:titleTextColor="@color/white"
+        />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_search"
+        style="@style/MainMenuButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:foreground="?attr/selectableItemBackground"
-        android:backgroundTint="@color/button_backgroud"
-        android:textColor="@color/button_text"
-        app:icon="@drawable/ic_search_inactive"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/button_icon_padding"
-        app:iconTint="@color/black"
-        app:cornerRadius="@dimen/button_corner"
+        android:layout_weight="1"
         android:text="@string/button_search_text"
-        android:textAllCaps="false"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:layout_marginVertical="@dimen/single_space"
-        android:textSize="@dimen/button_text"
-        />
-    <Button
-        android:id="@+id/button_library"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:foreground="?attr/selectableItemBackground"
-        android:backgroundTint="@color/button_backgroud"
-        android:textColor="@color/button_text"
-        app:icon="@drawable/ic_library_inactive"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/button_icon_padding"
-        app:iconTint="@color/black"
-        app:cornerRadius="@dimen/button_corner"
-        android:text="@string/button_media_library_text"
-        android:textAllCaps="false"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:layout_marginVertical="@dimen/single_space"
-        android:textSize="@dimen/button_text"
+        app:icon="@drawable/ic_search_active"
         />
 
-    <Button
-        android:id="@+id/button_settings"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_library"
+        style="@style/MainMenuButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:foreground="?attr/selectableItemBackground"
-        android:backgroundTint="@color/button_backgroud"
-        android:textColor="@color/button_text"
-        app:icon="@drawable/ic_settings_inactive"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/button_icon_padding"
-        app:iconTint="@color/black"
-        app:cornerRadius="@dimen/button_corner"
-        android:text="@string/settings_text"
-        android:textAllCaps="false"
-        android:layout_gravity="center"
         android:layout_weight="1"
-        android:layout_marginVertical="@dimen/single_space"
-        android:textSize="@dimen/button_text"
+        android:text="@string/button_media_library_text"
+        app:icon="@drawable/ic_library_active"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_settings"
+        style="@style/MainMenuButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/settings_text"
+        app:icon="@drawable/ic_settings_active"
         />
 
 </LinearLayout>
