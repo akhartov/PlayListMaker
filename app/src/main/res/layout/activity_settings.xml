@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SettingsActivity"
+    >
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/back"
+        style="@style/Title.Panel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/settings_text"
+        />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        style="@style/SettingsMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/night_theme"
+        android:thumb="@drawable/switch_knob"
+        app:track="@drawable/switch_track"
+        app:useMaterialThemeColors="false"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_share_app"
+        android:text="@string/share_app"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_write_support"
+        android:text="@string/write_support"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/SettingsMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_forward"
+        android:text="@string/user_agreement"
+        />
+</LinearLayout>

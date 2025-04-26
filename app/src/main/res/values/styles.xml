@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Title.Panel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:textSize">@dimen/title_text</item>
+    </style>
+
+    <style name="SettingsMenu" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:textSize">@dimen/menu_text</item>
+        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:layout_marginHorizontal">@dimen/settings_margin_horizontal</item>
+        <item name="android:layout_marginVertical">@dimen/settings_margin_vertical</item>
+    </style>
+
+    <style name="MainMenuButton" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/button_icon_padding</item>
+        <item name="iconTint">@color/black</item>
+        <item name="cornerRadius">@dimen/button_corner</item>
+        <item name="android:textSize">@dimen/button_text</item>
+        <item name="android:textColor">@color/main_button_text</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:layout_marginVertical">4dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="backgroundTint">@color/button_background</item>
+        <item name="android:layout_marginHorizontal">@dimen/main_button_horizontal_padding</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+</resources>
