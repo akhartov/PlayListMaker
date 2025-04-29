@@ -3,13 +3,15 @@
 
     <style name="Title.Panel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:textSize">@dimen/title_text</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
     </style>
 
     <style name="SettingsMenu" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:textSize">@dimen/menu_text</item>
-        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
         <item name="android:layout_marginHorizontal">@dimen/settings_margin_horizontal</item>
         <item name="android:layout_marginVertical">@dimen/settings_margin_vertical</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
     </style>
 
     <style name="MainMenuButton" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -25,5 +27,6 @@
         <item name="backgroundTint">@color/button_background</item>
         <item name="android:layout_marginHorizontal">@dimen/main_button_horizontal_padding</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
     </style>
 </resources>
