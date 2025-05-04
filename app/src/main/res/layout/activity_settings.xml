@@ -20,6 +20,7 @@
         />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_night_theme"
         style="@style/SettingsMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,6 +31,7 @@
         />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/share_app"
         style="@style/SettingsMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,6 +40,7 @@
         />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/write_support"
         style="@style/SettingsMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,6 +49,7 @@
         />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/user_agreement"
         style="@style/SettingsMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
