@@ -29,15 +29,15 @@ class SearchActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        val clearButton = findViewById<ImageView>(R.id.clearIcon)
-
-        clearButton.setOnClickListener {
-            editor.setText("")
-            hideKeyboard()
-        }
-
-        editor.addTextChangedListener { text ->
-            clearButton.isVisible = !text.isNullOrEmpty()
+        findViewById<ImageView>(R.id.clearIcon).apply {
+            setOnClickListener {
+                editor.setText("")
+                hideKeyboard()
+            }
+        }.also { clearIcon ->
+            editor.addTextChangedListener { text ->
+                clearIcon.isVisible = !text.isNullOrEmpty()
+            }
         }
 
         editor.doAfterTextChanged { text ->
