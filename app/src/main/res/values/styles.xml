@@ -3,27 +3,45 @@
 
     <style name="Title.Panel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:textSize">@dimen/title_text</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
     </style>
 
     <style name="SettingsMenu" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:textSize">@dimen/menu_text</item>
-        <item name="android:textColor">@color/menu_text</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
         <item name="android:layout_marginHorizontal">@dimen/settings_margin_horizontal</item>
         <item name="android:layout_marginVertical">@dimen/settings_margin_vertical</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
     </style>
 
-    <style name="MainMenuButton" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="MainMenuButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="iconGravity">textStart</item>
-        <item name="iconPadding">@dimen/button_icon_padding</item>
+        <item name="iconPadding">@dimen/icon_padding</item>
         <item name="iconTint">@color/black</item>
         <item name="cornerRadius">@dimen/button_corner</item>
         <item name="android:textSize">@dimen/button_text</item>
         <item name="android:textColor">@color/main_button_text</item>
         <item name="textAllCaps">false</item>
-        <item name="android:layout_marginVertical">4dp</item>
+        <item name="android:layout_marginVertical">@dimen/margin_vertical</item>
+        <item name="android:layout_marginHorizontal">@dimen/margin_horizontal</item>
         <item name="android:layout_gravity">center</item>
         <item name="backgroundTint">@color/button_background</item>
-        <item name="android:layout_marginHorizontal">@dimen/main_button_horizontal_padding</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+    </style>
+
+    <style name="SearchPanel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:layout_marginVertical">@dimen/margin_vertical</item>
+        <item name="android:layout_marginHorizontal">@dimen/search_panel_margin_horizontal</item>
+    </style>
+
+    <style name="SearchEditor" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="iconPadding">@dimen/icon_padding</item>
+        <item name="android:paddingHorizontal">@dimen/search_text_margin_left</item>
+        <item name="android:textSize">@dimen/menu_text</item>
+        <item name="android:textColor">@color/main_button_text</item>
+        <item name="android:textColorHint">@color/search_hint</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textCursorDrawable">@drawable/search_editor_cursor</item>
     </style>
 </resources>
