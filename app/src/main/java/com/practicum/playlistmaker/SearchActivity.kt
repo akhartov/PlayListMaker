@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
@@ -43,6 +44,9 @@ class SearchActivity : AppCompatActivity() {
         editor.doAfterTextChanged { text ->
             currentSearch = text.toString()
         }
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.adapter = TrackAdapter(createFakeTracks())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

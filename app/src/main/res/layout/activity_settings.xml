@@ -11,7 +11,7 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/back"
-        style="@style/Title.Panel"
+        style="@style/TitlePanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:foreground="?attr/selectableItemBackground"

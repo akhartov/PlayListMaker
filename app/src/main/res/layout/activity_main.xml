@@ -5,13 +5,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimary"
+    android:background="@color/main_background"
     android:orientation="vertical"
     tools:context=".MainActivity"
     >
 
     <com.google.android.material.appbar.MaterialToolbar
-        style="@style/Title.Panel"
+        style="@style/TitlePanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="textStart"
@@ -21,7 +21,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_search"
-        style="@style/MainMenuButton"
+        style="@style/MainButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -31,7 +31,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_library"
-        style="@style/MainMenuButton"
+        style="@style/MainButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -41,7 +41,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_settings"
-        style="@style/MainMenuButton"
+        style="@style/MainButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"

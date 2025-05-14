@@ -3,6 +3,6 @@
     <style name="Base.Theme.PlayListMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-        <item name="colorPrimary">@color/background</item>
+        <item name="colorPrimary">@color/main_background</item>
     </style>
 </resources>

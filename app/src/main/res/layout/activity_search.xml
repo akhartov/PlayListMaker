@@ -11,7 +11,7 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/back"
-        style="@style/Title.Panel"
+        style="@style/TitlePanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:foreground="?attr/selectableItemBackground"
@@ -19,45 +19,66 @@
         app:title="@string/search_text"
         />
 
-    <FrameLayout
-        style="@style/SearchPanel"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:background="@drawable/rounded_edittext"
-        android:orientation="horizontal"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/search_panel_horizontal_border"
         >
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:src="@drawable/ic_search_14"
-            tools:ignore="ContentDescription"
-            android:layout_marginStart="@dimen/search_panel_margin_horizontal"
-            />
+        <FrameLayout
+            style="@style/TextControl"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/search_panel_height"
+            android:background="@drawable/rounded_edittext"
+            android:orientation="horizontal"
+            >
 
-        <EditText
-            android:id="@+id/inputEditText"
-            style="@style/SearchEditor"
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:layout_marginStart="@dimen/search_panel_horizontal_border"
+                android:src="@drawable/ic_search_14"
+                tools:ignore="ContentDescription"
+                />
+
+            <EditText
+                android:id="@+id/inputEditText"
+                style="@style/SearchEditor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:background="@null"
+                android:hint="@string/search_text"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:paddingHorizontal="@dimen/search_text_left_border"
+                android:singleLine="true"
+                />
+
+            <ImageView
+                android:id="@+id/clearIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:layout_marginHorizontal="@dimen/search_panel_horizontal_border"
+                android:src="@drawable/ic_clear_search"
+                android:visibility="gone"
+                tools:ignore="ContentDescription"
+                />
+        </FrameLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            style="@style/TextControl"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="@null"
-            android:hint="@string/search_text"
-            android:singleLine="true"
-            android:importantForAutofill="no"
-            android:inputType="text"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:paddingTop="@dimen/margin_vertical"
             />
 
-        <ImageView
-            android:id="@+id/clearIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_clear_search"
-            android:visibility="gone"
-            tools:ignore="ContentDescription"
-            android:layout_marginHorizontal="@dimen/search_panel_margin_horizontal"
-            />
-    </FrameLayout>
+    </LinearLayout>
 </LinearLayout>

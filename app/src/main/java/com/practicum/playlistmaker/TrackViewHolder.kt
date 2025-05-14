@@ -1,0 +1,37 @@
+package com.practicum.playlistmaker
+
+import android.net.Uri
+import android.util.TypedValue
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+
+class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    private val artistName = itemView.findViewById<TextView>(R.id.artist_name)
+    private val trackName = itemView.findViewById<TextView>(R.id.track_name)
+    private val trackTime = itemView.findViewById<TextView>(R.id.track_time)
+    private val artworkImage = itemView.findViewById<ImageView>(R.id.artwork_image)
+
+    fun bind(track: Track) {
+        artistName.text = track.artistName
+        trackName.text = track.trackName
+        trackTime.text = track.trackTime
+        
+        Glide.with(itemView.context)
+            .load(Uri.parse(track.artworkUrl100))
+            .fitCenter()
+            .transform(RoundedCorners(dpToPx(itemView.resources.getDimension(R.dimen.track_image_radius))))
+            .into(artworkImage)
+    }
+
+    fun dpToPx(dp: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_PX,
+            dp,
+            itemView.resources.displayMetrics
+        ).toInt()
+    }
+}
