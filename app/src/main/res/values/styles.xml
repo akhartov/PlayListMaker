@@ -52,6 +52,7 @@
         <item name="android:textSize">@dimen/normal_text_size</item>
         <item name="android:textColor">@color/track_normal_color</item>
     </style>
+
     <style name="SmallTrackText" parent="TextControl">
         <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:textColor">@color/track_small_color</item>

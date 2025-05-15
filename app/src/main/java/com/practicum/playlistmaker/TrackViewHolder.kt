@@ -28,7 +28,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .into(artworkImage)
     }
 
-    fun dpToPx(dp: Float): Int {
+    private fun dpToPx(dp: Float): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_PX,
             dp,
