@@ -13,7 +13,7 @@
         android:layout_gravity="start"
         android:layout_marginEnd="@dimen/track_icon_right_border"
         android:minWidth="@dimen/track_image_size"
-        android:src="@drawable/ic_write_support"
+        android:src="@drawable/track_placeholder"
         />
 
     <LinearLayout

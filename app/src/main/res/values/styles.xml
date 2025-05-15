@@ -9,11 +9,19 @@
         <item name="android:textSize">@dimen/title_text_size</item>
     </style>
 
-    <style name="SettingsMenu" parent="TextControl">
+    <style name="SettingsControl" parent="TextControl">
         <item name="android:textSize">@dimen/normal_text_size</item>
         <item name="android:textColor">?attr/colorOnBackground</item>
         <item name="android:layout_marginHorizontal">@dimen/margin_horizontal</item>
         <item name="android:layout_marginVertical">@dimen/settings_vertical_border</item>
+    </style>
+
+    <style name="SettingsSwitch" parent="SettingsControl">
+        <item name="android:layout_marginVertical">@dimen/settings_vertical_border</item>
+    </style>
+
+    <style name="SettingsText" parent="SettingsControl">
+        <item name="android:layout_marginVertical">@dimen/settings_normal_border</item>
     </style>
 
     <style name="MainButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
