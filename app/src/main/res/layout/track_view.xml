@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/track_vertical_border"
+    >
+
+    <ImageView
+        android:id="@+id/artwork_image"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:layout_marginEnd="@dimen/track_icon_right_border"
+        android:minWidth="@dimen/track_image_size"
+        android:src="@drawable/track_placeholder"
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/track_name"
+            style="@style/NormalTrackText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="track name"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <TextView
+                android:id="@+id/artist_name"
+                style="@style/SmallTrackText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="artist name"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/track_dot_border"
+                android:src="@drawable/ic_track_ellipse"
+                />
+
+            <TextView
+                android:id="@+id/track_time"
+                style="@style/SmallTrackText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="track:time"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_arrow_forward"
+        />
+
+</LinearLayout>

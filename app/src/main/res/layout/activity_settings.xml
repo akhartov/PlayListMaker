@@ -11,7 +11,7 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/back"
-        style="@style/Title.Panel"
+        style="@style/TitlePanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:foreground="?attr/selectableItemBackground"
@@ -21,7 +21,7 @@
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switch_night_theme"
-        style="@style/SettingsMenu"
+        style="@style/SettingsSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/night_theme"
@@ -32,7 +32,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/share_app"
-        style="@style/SettingsMenu"
+        style="@style/SettingsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_share_app"
@@ -41,7 +41,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/write_support"
-        style="@style/SettingsMenu"
+        style="@style/SettingsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_write_support"
@@ -50,7 +50,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/user_agreement"
-        style="@style/SettingsMenu"
+        style="@style/SettingsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_arrow_forward"
