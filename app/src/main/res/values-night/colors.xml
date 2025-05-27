@@ -7,4 +7,7 @@
     <color name="search_hint">#1A1B22</color>
     <color name="track_normal_color">#FFFFFF</color>
     <color name="track_small_color">#FFFFFF</color>
+
+    <color name="update_search_button">#FFFFFF</color>
+    <color name="update_search_button_text">#1A1B22</color>
 </resources>

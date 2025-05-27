@@ -16,4 +16,7 @@
 
     <color name="track_normal_color">#FF000000</color>
     <color name="track_small_color">#AEAFB4</color>
+
+    <color name="update_search_button">#1A1B22</color>
+    <color name="update_search_button_text">#FFFFFF</color>
 </resources>
