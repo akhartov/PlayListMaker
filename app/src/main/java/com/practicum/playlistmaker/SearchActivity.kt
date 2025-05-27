@@ -34,7 +34,7 @@ enum class SearchState {
 
 data class SearchActivityState(
     var searchRequest: String? = null,
-    var foundTracks: ArrayList<Track> = ArrayList(),
+    var foundTracks: List<Track> = listOf(),
     var searchState: SearchState = SearchState.None
 
 )
@@ -50,6 +50,9 @@ class SearchActivity : AppCompatActivity() {
 
     private var currentState: SearchActivityState = SearchActivityState()
         set(value) {
+            if(field == value)
+                return
+
             field = value
             if (value.searchRequest != null)
                 editor.setText(value.searchRequest)
@@ -59,7 +62,6 @@ class SearchActivity : AppCompatActivity() {
 
             updateControls()
         }
-        get() = field
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(ItunesApi.HOST_URL)

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class TrackAdapter: RecyclerView.Adapter<TrackViewHolder>() {
 
-    private var tracks = ArrayList<Track>()
+    private var tracks = listOf<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         return TrackViewHolder(parent)
@@ -21,11 +21,11 @@ class TrackAdapter: RecyclerView.Adapter<TrackViewHolder>() {
     }
 
     fun clearItems() {
-        tracks.clear()
+        tracks = listOf()
         notifyDataSetChanged()
     }
 
-    fun updateItems(newItems: ArrayList<Track>) {
+    fun updateItems(newItems: List<Track>) {
         val oldItems = tracks
         val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int {
