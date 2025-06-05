@@ -3,7 +3,6 @@ package com.practicum.playlistmaker
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -19,9 +18,13 @@ class SettingsActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        findViewById<SwitchMaterial>(R.id.switch_night_theme).setOnCheckedChangeListener { button: CompoundButton, isOn: Boolean ->
-            //TODO: Toast.makeText(this, if (isOn) "Night" else "Day", Toast.LENGTH_SHORT).show()
+        findViewById<SwitchMaterial>(R.id.theme_switcher).apply {
+
+            setOnCheckedChangeListener { button, isOn ->
+                (applicationContext as App).switchTheme(isOn)
+            }
         }
+
 
         findViewById<MaterialTextView>(R.id.share_app).setOnClickListener {
             Intent(Intent.ACTION_SEND).apply {
