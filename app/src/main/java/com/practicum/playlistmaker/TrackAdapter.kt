@@ -4,12 +4,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
-class TrackAdapter: RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter(private val trackClickListener: OnTrackClickListener?) :
+    RecyclerView.Adapter<TrackViewHolder>(), OnTracksChangeListener {
 
-    private var tracks = listOf<Track>()
+    var tracks = listOf<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
-        return TrackViewHolder(parent)
+        return TrackViewHolder(parent, trackClickListener)
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
@@ -25,7 +26,10 @@ class TrackAdapter: RecyclerView.Adapter<TrackViewHolder>() {
         notifyDataSetChanged()
     }
 
-    fun updateItems(newItems: List<Track>) {
+    fun updateItems(newItems: List<Track>?) {
+        if(newItems == null)
+            return
+
         val oldItems = tracks
         val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int {
@@ -37,17 +41,24 @@ class TrackAdapter: RecyclerView.Adapter<TrackViewHolder>() {
             }
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldItems[oldItemPosition].trackName == newItems[newItemPosition].trackName
+                return oldItems[oldItemPosition].trackId == newItems[newItemPosition].trackId
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return oldItems[oldItemPosition] == newItems[newItemPosition]
             }
-
         })
 
         tracks = newItems
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    override fun onChange(tracks: List<Track>) {
+        updateItems(tracks)
+    }
+
+    override fun onClear() {
+        clearItems()
     }
 
 }

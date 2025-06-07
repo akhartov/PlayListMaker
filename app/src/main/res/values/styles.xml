@@ -40,6 +40,16 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
     </style>
 
+    <style name="SearchButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">@dimen/update_button_text_size</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:backgroundTint">@color/update_search_button</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">@color/update_search_button_text</item>
+        <item name="cornerRadius">@dimen/button_corner</item>
+    </style>
+
     <style name="SearchEditor" parent="TextControl">
         <item name="iconPadding">@dimen/icon_padding</item>
         <item name="android:textSize">@dimen/normal_text_size</item>
