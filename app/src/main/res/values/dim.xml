@@ -11,6 +11,7 @@
     <dimen name="margin_horizontal">16dp</dimen>
     <dimen name="margin_vertical">4dp</dimen>
 
+    <dimen name="you_looking_for_height">52dp</dimen>
     <dimen name="search_panel_height">36dp</dimen>
     <dimen name="search_panel_horizontal_border">12dp</dimen>
     <dimen name="search_text_left_border">36dp</dimen>

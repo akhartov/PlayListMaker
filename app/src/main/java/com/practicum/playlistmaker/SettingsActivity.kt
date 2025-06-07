@@ -2,14 +2,20 @@ package com.practicum.playlistmaker
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity : AppCompatActivity() {
+    private val storage by lazy { getSharedPreferences("SETTINGS", MODE_PRIVATE) }
+    private val NIGHT_MODE_VALUE = "NIGHT_MODE"
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -19,10 +25,16 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         findViewById<SwitchMaterial>(R.id.theme_switcher).apply {
-
-            setOnCheckedChangeListener { button, isOn ->
-                (applicationContext as App).switchTheme(isOn)
+            storage.registerOnSharedPreferenceChangeListener { prefs, key ->
+                if(key == NIGHT_MODE_VALUE) {
+                    (applicationContext as App).switchTheme(prefs.getBoolean(key, AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES))
+                }
             }
+            setOnCheckedChangeListener { button, isOn ->
+                storage.edit().putBoolean(NIGHT_MODE_VALUE, isOn).apply()
+            }
+
+            isChecked = storage.getBoolean(NIGHT_MODE_VALUE, applicationContext.resources.configuration.isNightModeActive)
         }
 
 

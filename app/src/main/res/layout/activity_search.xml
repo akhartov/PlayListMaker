@@ -30,6 +30,7 @@
             style="@style/TextControl"
             android:layout_width="match_parent"
             android:layout_height="@dimen/search_panel_height"
+            android:layout_marginVertical="@dimen/track_vertical_border"
             android:background="@drawable/rounded_edittext"
             android:orientation="horizontal"
             >
@@ -70,6 +71,16 @@
                 />
         </FrameLayout>
 
+        <TextView
+            android:id="@+id/you_looking_for_text"
+            style="@style/NoTracksText"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/you_looking_for_height"
+            android:layout_marginTop="@dimen/settings_normal_border"
+            android:gravity="center"
+            android:text="@string/you_looking_for_text"
+            android:visibility="gone"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -85,6 +96,15 @@
                 android:layout_height="wrap_content"
                 android:outlineAmbientShadowColor="@color/black"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/clear_history_button"
+                style="@style/SearchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/clear_history"
+                android:visibility="gone"
                 />
 
             <LinearLayout
@@ -114,21 +134,14 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/update_tracks_button"
+                    style="@style/SearchButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@color/update_search_button"
-                    android:fontFamily="@font/ys_display_medium"
+                    android:layout_height="@dimen/search_panel_height"
                     android:text="@string/update_tracks"
-                    android:textAllCaps="false"
-                    android:textColor="@color/update_search_button_text"
-                    android:textSize="@dimen/update_button_text_size"
                     android:visibility="gone"
-                    app:cornerRadius="@dimen/button_corner"
                     />
             </LinearLayout>
         </LinearLayout>
-
 
     </LinearLayout>
 </LinearLayout>
