@@ -40,9 +40,6 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
     private val gson = Gson()
 
     override fun onChange(state: Ui) {
-        if (!state.data.searchRequest.isNullOrEmpty() && state.data.searchRequest != editor.text.toString())
-            editor.setText(state.data.searchRequest)
-
         val newAdapter = if (state.data.state == State.History) {
             trackHistoryAdapter
         } else tracksAdapter
@@ -50,14 +47,20 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         if (newAdapter != recyclerView.adapter)
             recyclerView.adapter = newAdapter
 
-        if(newAdapter.tracks != state.data.foundTracks)
+        if (newAdapter.tracks != state.data.foundTracks)
             newAdapter.updateItems(state.data.foundTracks)
-
 
         isHistoryVisibile = (state.data.state == State.History)
 
         when (state.data.state) {
+            State.Empty -> {
+                tracksAdapter.clearItems()
+                retrySearchButton.isVisible = false
+                noTracksPlaceholder.isVisible = false
+            }
+
             State.History -> {
+                tracksAdapter.clearItems()
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = false
             }
@@ -76,12 +79,8 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
                 noTracksPlaceholder.isVisible = true
             }
 
-            State.InProgress -> {
-                retrySearchButton.isVisible = false
-                noTracksPlaceholder.isVisible = false
-            }
-
             else -> {
+                retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = false
             }
         }
@@ -96,6 +95,13 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
         get() = editor.isFocused() && editor.text.isEmpty() && !trackHistoryAdapter.tracks.isEmpty()
 
+    private fun getHistoryOrEmptyState(): Ui {
+        return if (trackHistoryAdapter.tracks.isEmpty())
+            Ui.Empty
+        else
+            Ui.History(trackHistoryAdapter.tracks)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -108,16 +114,10 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
 
         history = SearchHistory(getSharedPreferences("SEARCH", MODE_PRIVATE), trackHistoryAdapter)
 
-        savedInstanceState?.getString(USER_SEARCH_STATE)?.let {
-            val data = gson.fromJson<Ui.Data>(it, object : TypeToken<Ui.Data>() {}.type)
-            val uiState = Ui(data)
-            onChange(uiState)
-        }
-
         findViewById<ImageView>(R.id.clearIcon).apply {
             setOnClickListener {
                 editor.setText("")
-                onChange(Ui.History(history.getTracks()))
+                onChange(getHistoryOrEmptyState())
                 hideKeyboard()
             }
         }.also { clearIcon ->
@@ -127,11 +127,15 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
 
         editor.doAfterTextChanged { text ->
-            if (isHistoryVisibile) {
-                onChange(Ui.History(trackHistoryAdapter.tracks))
-            } else {
-                onChange(Ui.Found(text.toString(), tracksAdapter.tracks))
-            }
+            onChange(
+                if (isHistoryVisibile)
+                    getHistoryOrEmptyState()
+                else
+                    if (text.isNullOrEmpty())
+                        Ui.Empty
+                    else
+                        Ui.Found(tracksAdapter.tracks)
+            )
         }
 
         editor.setOnEditorActionListener { v, actionId, event ->
@@ -144,10 +148,12 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
 
         editor.setOnFocusChangeListener { view, hasFocus ->
-            if (isHistoryVisibile)
-                onChange(Ui.History(trackHistoryAdapter.tracks))
-            else
-                onChange(Ui.Found(null, tracksAdapter.tracks))
+            onChange(
+                if (isHistoryVisibile)
+                    getHistoryOrEmptyState()
+                else
+                    Ui.Found(tracksAdapter.tracks)
+            )
         }
 
         findViewById<Button>(R.id.update_tracks_button).setOnClickListener {
@@ -160,14 +166,29 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
     }
 
+    companion object {
+        const val USER_UI_STATE = "USER_UI_STATE"
+        const val USER_SEARCH_REQUEST = "USER_SEARCH_REQUEST"
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         val json = gson.toJson(uiStateData.data)
-        outState.putString(USER_SEARCH_STATE, json)
+        outState.putString(USER_UI_STATE, json)
+        outState.putString(USER_SEARCH_REQUEST, editor.text.toString())
     }
 
-    companion object {
-        const val USER_SEARCH_STATE = "USER_SEARCH_STATE"
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        savedInstanceState.getString(USER_SEARCH_REQUEST)?.let { value ->
+            editor.setText(value)
+        }
+
+        savedInstanceState.getString(USER_UI_STATE)?.let {
+            val data = gson.fromJson<Ui.Data>(it, object : TypeToken<Ui.Data>() {}.type)
+            val uiState = Ui(data)
+            onChange(uiState)
+        }
     }
 
     private fun hideKeyboard() {

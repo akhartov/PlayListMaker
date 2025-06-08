@@ -16,9 +16,9 @@ class SearchHistory(val storage: SharedPreferences, val changeListener: OnTracks
         changeListener.onChange(getTracks())
     }
 
-    fun getTracks(): MutableList<Track> {
+    private fun getTracks(): MutableList<Track> {
         val tracksString = storage.getString(TRACKS_FIELD, null) ?: return mutableListOf()
-        return gson.fromJson<MutableList<Track>?>(tracksString, listDataType).toMutableList().distinct().toMutableList()
+        return gson.fromJson(tracksString, listDataType)
     }
 
     fun addTrack(track: Track) {

@@ -13,7 +13,6 @@ open class Ui(val data: Data) {
 
     data class Data(
         var state: State = State.Empty,
-        var searchRequest: String? = null,
         var foundTracks: List<Track>? = listOf(),
     )
 
@@ -24,6 +23,6 @@ open class Ui(val data: Data) {
         val Error = Ui(Data(State.Error))
     }
 
-    class Found(request: String? = null, foundTracks: List<Track>? = null) : Ui(Data(State.Found, request, foundTracks))
-    class History(historyTracks: List<Track>? = null) : Ui(Data(State.History, null, historyTracks))
+    class Found(foundTracks: List<Track>? = null) : Ui(Data(State.Found, foundTracks))
+    class History(historyTracks: List<Track>? = null) : Ui(Data(State.History, historyTracks))
 }

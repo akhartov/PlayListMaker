@@ -23,7 +23,7 @@ class SearchEngine(val stateListener: UiStateListener) {
         stateListener.onChange(Ui.InProgress)
         val searchText = prepareRequestString(dirtySearchText)
         if (searchText.isEmpty()) {
-            stateListener.onChange(Ui.History())
+            stateListener.onChange(Ui.Empty)
             return
         }
 
@@ -37,7 +37,7 @@ class SearchEngine(val stateListener: UiStateListener) {
                     if (foundTracks.isNullOrEmpty()) {
                         stateListener.onChange(Ui.NotFound)
                     } else {
-                        stateListener.onChange(Ui.Found(dirtySearchText, foundTracks))
+                        stateListener.onChange(Ui.Found(foundTracks))
                     }
                 }
 
