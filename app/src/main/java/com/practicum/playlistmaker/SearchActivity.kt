@@ -18,79 +18,106 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-
-enum class SearchState {
-    None,
-    InProgress,
-    NotFound,
-    Found,
-    Error
-}
-
-data class SearchActivityState(
-    var searchRequest: String? = null,
-    var foundTracks: List<Track> = listOf(),
-    var searchState: SearchState = SearchState.None
-
-)
-
-class SearchActivity : AppCompatActivity() {
-    private lateinit var editor: EditText
-    private val tracksAdapter = TrackAdapter()
-    private lateinit var noTracksPlaceholder: LinearLayout
-    private lateinit var noTracksTextView: TextView
-    private lateinit var noTracksImageView: ImageView
-    private lateinit var retrySearchButton: Button
+import com.practicum.playlistmaker.Ui.State
 
 
-    private var currentState: SearchActivityState = SearchActivityState()
-        set(value) {
-            if(field == value)
-                return
+class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListener {
+    private val editor by lazy { findViewById<EditText>(R.id.inputEditText) }
+    private val tracksAdapter by lazy { TrackAdapter(this) }
+    private val trackHistoryAdapter by lazy { TrackAdapter(this) }
+    private val noTracksPlaceholder by lazy { findViewById<LinearLayout>(R.id.placeholder_layout) }
+    private val noTracksTextView by lazy { findViewById<TextView>(R.id.no_tracks_textview) }
+    private val noTracksImageView by lazy { findViewById<ImageView>(R.id.no_tracks_image) }
+    private val retrySearchButton by lazy { findViewById<Button>(R.id.update_tracks_button) }
+    private val youLookingFor by lazy { findViewById<TextView>(R.id.you_looking_for_text) }
+    private val clearHistoryButton by lazy { findViewById<Button>(R.id.clear_history_button) }
+    private val recyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerView) }
+    private val searchEngine by lazy { SearchEngine(this) }
 
-            field = value
-            if (value.searchRequest != null)
-                editor.setText(value.searchRequest)
+    private lateinit var history: SearchHistory
 
-            if (value.searchState == SearchState.Found)
-                tracksAdapter.updateItems(value.foundTracks)
+    private var uiStateData = Ui.Empty
+    private val gson = Gson()
 
-            updateControls()
+    override fun onChange(state: Ui) {
+        val newAdapter = if (state.data.state == State.History) {
+            trackHistoryAdapter
+        } else tracksAdapter
+
+        if (newAdapter != recyclerView.adapter)
+            recyclerView.adapter = newAdapter
+
+        if (newAdapter.tracks != state.data.foundTracks)
+            newAdapter.updateItems(state.data.foundTracks)
+
+        isHistoryVisibile = (state.data.state == State.History)
+
+        when (state.data.state) {
+            State.Empty -> {
+                tracksAdapter.clearItems()
+                retrySearchButton.isVisible = false
+                noTracksPlaceholder.isVisible = false
+            }
+
+            State.History -> {
+                tracksAdapter.clearItems()
+                retrySearchButton.isVisible = false
+                noTracksPlaceholder.isVisible = false
+            }
+
+            State.Error -> {
+                noTracksImageView.setImageResource(R.drawable.img_no_internet_no_tracks)
+                noTracksTextView.setText(resources.getString(R.string.no_internet_no_tracks))
+                retrySearchButton.isVisible = true
+                noTracksPlaceholder.isVisible = true
+            }
+
+            State.NotFound -> {
+                noTracksImageView.setImageResource(R.drawable.img_tracks_not_found)
+                noTracksTextView.setText(resources.getString(R.string.tracks_not_found))
+                retrySearchButton.isVisible = false
+                noTracksPlaceholder.isVisible = true
+            }
+
+            else -> {
+                retrySearchButton.isVisible = false
+                noTracksPlaceholder.isVisible = false
+            }
         }
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(ItunesApi.HOST_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+        uiStateData = state
+    }
 
-    private val service = retrofit.create(ItunesApi::class.java)
+    private var isHistoryVisibile: Boolean
+        set(value) {
+            youLookingFor.isVisible = value
+            clearHistoryButton.isVisible = value
+        }
+        get() = editor.isFocused() && editor.text.isEmpty() && !trackHistoryAdapter.tracks.isEmpty()
+
+    private fun getHistoryOrEmptyState(): Ui {
+        return if (trackHistoryAdapter.tracks.isEmpty())
+            Ui.Empty
+        else
+            Ui.History(trackHistoryAdapter.tracks)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        editor = findViewById(R.id.inputEditText)
-        noTracksPlaceholder = findViewById(R.id.placeholder_layout)
-        noTracksTextView = findViewById(R.id.no_tracks_textview)
-        noTracksImageView = findViewById(R.id.no_tracks_image)
-        retrySearchButton = findViewById(R.id.update_tracks_button)
-
         findViewById<MaterialToolbar>(R.id.back).setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.adapter = tracksAdapter
+
+        history = SearchHistory(getSharedPreferences("SEARCH", MODE_PRIVATE), trackHistoryAdapter)
 
         findViewById<ImageView>(R.id.clearIcon).apply {
             setOnClickListener {
                 editor.setText("")
-                tracksAdapter.clearItems()
+                onChange(getHistoryOrEmptyState())
                 hideKeyboard()
             }
         }.also { clearIcon ->
@@ -100,100 +127,68 @@ class SearchActivity : AppCompatActivity() {
         }
 
         editor.doAfterTextChanged { text ->
-            currentState.searchRequest = text.toString()
+            onChange(
+                if (isHistoryVisibile)
+                    getHistoryOrEmptyState()
+                else
+                    if (text.isNullOrEmpty())
+                        Ui.Empty
+                    else
+                        Ui.Found(tracksAdapter.tracks)
+            )
         }
 
         editor.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                search(tracksAdapter, v.text.toString())
+                searchEngine.search(v.text.toString())
                 true
             } else {
                 false
             }
         }
 
+        editor.setOnFocusChangeListener { view, hasFocus ->
+            onChange(
+                if (isHistoryVisibile)
+                    getHistoryOrEmptyState()
+                else
+                    Ui.Found(tracksAdapter.tracks)
+            )
+        }
+
         findViewById<Button>(R.id.update_tracks_button).setOnClickListener {
-            search(tracksAdapter, editor.text.toString())
+            searchEngine.search(editor.text.toString())
         }
 
-        savedInstanceState?.getString(USER_SEARCH_STATE)?.let {
-            val dataType = object : TypeToken<SearchActivityState>() {}.type
-            currentState = Gson().fromJson(it, dataType)
-        }
-    }
-
-    private fun updateControls() {
-        when (currentState.searchState) {
-            SearchState.Error -> {
-                noTracksImageView.setImageResource(R.drawable.img_no_internet_no_tracks)
-                noTracksTextView.setText(resources.getString(R.string.no_internet_no_tracks))
-                retrySearchButton.isVisible = true
-                noTracksPlaceholder.isVisible = true
-            }
-
-            SearchState.NotFound -> {
-                noTracksImageView.setImageResource(R.drawable.img_tracks_not_found)
-                noTracksTextView.setText(resources.getString(R.string.tracks_not_found))
-                retrySearchButton.isVisible = false
-                noTracksPlaceholder.isVisible = true
-            }
-
-            else -> {
-                noTracksPlaceholder.isVisible = false
-            }
+        clearHistoryButton.setOnClickListener {
+            history.clear()
+            onChange(Ui.Empty)
         }
     }
 
-    private fun preperaRequestString(searchText: String): String {
-        return searchText.trim()
-    }
-
-    private fun search(tracksAdapter: TrackAdapter, dirtySearchText: String) {
-        currentState.searchState = SearchState.InProgress
-        val searchText = preperaRequestString(dirtySearchText)
-        if (searchText.isBlank()) {
-            tracksAdapter.clearItems()
-            currentState.searchState = SearchState.NotFound
-            updateControls()
-            return
-        }
-
-        service.search(searchText).enqueue(
-            object : Callback<ItunesResponse> {
-                override fun onResponse(
-                    call: Call<ItunesResponse>,
-                    response: Response<ItunesResponse>
-                ) {
-                    val foundTracks = response.body()?.tracks
-                    if (foundTracks.isNullOrEmpty()) {
-                        currentState.foundTracks = ArrayList()
-                        tracksAdapter.clearItems()
-                        currentState.searchState = SearchState.NotFound
-                    } else {
-                        currentState.foundTracks = foundTracks
-                        tracksAdapter.updateItems(foundTracks)
-                        currentState.searchState = SearchState.Found
-                    }
-                    updateControls()
-                }
-
-                override fun onFailure(call: Call<ItunesResponse>, t: Throwable) {
-                    tracksAdapter.clearItems()
-                    currentState.searchState = SearchState.Error
-                    updateControls()
-                }
-            }
-        )
+    companion object {
+        const val USER_UI_STATE = "USER_UI_STATE"
+        const val USER_SEARCH_REQUEST = "USER_SEARCH_REQUEST"
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val json = Gson().toJson(currentState)
-        outState.putString(USER_SEARCH_STATE, json)
+        val json = gson.toJson(uiStateData.data)
+        outState.putString(USER_UI_STATE, json)
+        outState.putString(USER_SEARCH_REQUEST, editor.text.toString())
     }
 
-    companion object {
-        const val USER_SEARCH_STATE = "USER_SEARCH_STATE"
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        savedInstanceState.getString(USER_SEARCH_REQUEST)?.let { value ->
+            editor.setText(value)
+        }
+
+        savedInstanceState.getString(USER_UI_STATE)?.let {
+            val data = gson.fromJson<Ui.Data>(it, object : TypeToken<Ui.Data>() {}.type)
+            val uiState = Ui(data)
+            onChange(uiState)
+        }
     }
 
     private fun hideKeyboard() {
@@ -201,5 +196,9 @@ class SearchActivity : AppCompatActivity() {
             getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
 
         inputMethodManager?.hideSoftInputFromWindow(editor.windowToken, 0)
+    }
+
+    override fun onTrackClick(track: Track) {
+        history.addTrack(track)
     }
 }
