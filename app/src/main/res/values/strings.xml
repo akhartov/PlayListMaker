@@ -17,4 +17,9 @@
     <string name="update_tracks">Обновить</string>
     <string name="you_looking_for_text">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
+    <string name="country_text">Страна</string>
+    <string name="genre_text">Жанр</string>
+    <string name="year_text">Год</string>
+    <string name="album_text">Альбом</string>
+    <string name="track_length_text">Длительность</string>
 </resources>
