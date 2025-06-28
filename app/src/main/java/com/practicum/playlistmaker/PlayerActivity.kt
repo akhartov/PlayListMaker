@@ -2,11 +2,13 @@ package com.practicum.playlistmaker
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.TypedValue
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -47,7 +49,20 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun loadImage() {
-        Glide.with(applicationContext).load(Uri.parse(track?.getCoverArtwork() ?: return))
-            .placeholder(R.drawable.ic_placeholder_312).fitCenter().into(findViewById(R.id.cover))
+        val coverUrl = track?.getCoverArtwork() ?: return
+
+        Glide.with(applicationContext).load(Uri.parse(coverUrl))
+            .placeholder(R.drawable.track_placeholder)
+            .fitCenter()
+            .transform(RoundedCorners(dpToPx(resources.getDimension(R.dimen.track_big_image_radius))))
+            .into(findViewById(R.id.cover))
+    }
+
+    private fun dpToPx(dp: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_PX,
+            dp,
+            resources.displayMetrics
+        ).toInt()
     }
 }
