@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -200,5 +201,12 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
 
     override fun onTrackClick(track: Track) {
         history.addTrack(track)
+        startActivity(
+            Intent(this, PlayerActivity::class.java).putExtra(
+                PlayerActivity.TRACK,
+                gson.toJson(track)
+            )
+        )
+
     }
 }

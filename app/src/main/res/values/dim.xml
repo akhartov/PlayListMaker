@@ -24,6 +24,12 @@
     <dimen name="track_icon_left_border">16dp</dimen>
     <dimen name="track_icon_right_border">4dp</dimen>
     <dimen name="track_dot_border">4dp</dimen>
-    <dimen name="track_image_radius">4dp</dimen>
+    <dimen name="track_image_radius">2dp</dimen>
+    <dimen name="track_big_image_radius">8dp</dimen>
     <dimen name="track_image_size">48dp</dimen>
+
+    <dimen name="small_player_margin">12dp</dimen>
+    <dimen name="big_player_margin">24dp</dimen>
+    <dimen name="normal_round_button">52dp</dimen>
+    <dimen name="big_round_button">100dp</dimen>
 </resources>
