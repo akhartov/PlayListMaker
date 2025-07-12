@@ -9,9 +9,10 @@ import android.widget.Button
 import android.widget.EditText
 
 import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
@@ -26,13 +27,14 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
     private val editor by lazy { findViewById<EditText>(R.id.inputEditText) }
     private val tracksAdapter by lazy { TrackAdapter(this) }
     private val trackHistoryAdapter by lazy { TrackAdapter(this) }
-    private val noTracksPlaceholder by lazy { findViewById<LinearLayout>(R.id.placeholder_layout) }
+    private val noTracksPlaceholder by lazy { findViewById<Group>(R.id.placeholder_group) }
     private val noTracksTextView by lazy { findViewById<TextView>(R.id.no_tracks_textview) }
     private val noTracksImageView by lazy { findViewById<ImageView>(R.id.no_tracks_image) }
     private val retrySearchButton by lazy { findViewById<Button>(R.id.update_tracks_button) }
     private val youLookingFor by lazy { findViewById<TextView>(R.id.you_looking_for_text) }
     private val clearHistoryButton by lazy { findViewById<Button>(R.id.clear_history_button) }
     private val recyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerView) }
+    private val tracksSearchProgressBar by lazy { findViewById<ProgressBar>(R.id.tracks_search_progress) }
     private val searchEngine by lazy { SearchEngine(this) }
 
     private lateinit var history: SearchHistory
@@ -58,12 +60,14 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
                 tracksAdapter.clearItems()
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = false
+                tracksSearchProgressBar.isVisible = false
             }
 
             State.History -> {
                 tracksAdapter.clearItems()
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = false
+                tracksSearchProgressBar.isVisible = false
             }
 
             State.Error -> {
@@ -71,6 +75,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
                 noTracksTextView.setText(resources.getString(R.string.no_internet_no_tracks))
                 retrySearchButton.isVisible = true
                 noTracksPlaceholder.isVisible = true
+                tracksSearchProgressBar.isVisible = false
             }
 
             State.NotFound -> {
@@ -78,11 +83,19 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
                 noTracksTextView.setText(resources.getString(R.string.tracks_not_found))
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = true
+                tracksSearchProgressBar.isVisible = false
+            }
+
+            State.InProgress -> {
+                retrySearchButton.isVisible = false
+                noTracksPlaceholder.isVisible = false
+                tracksSearchProgressBar.isVisible = true
             }
 
             else -> {
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = false
+                tracksSearchProgressBar.isVisible = false
             }
         }
 
