@@ -44,15 +44,13 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
     private var uiStateData = Ui.Empty
     private val gson = Gson()
 
-    private val SEARCH_DEBOUNCE_DELAY = 2000L
     private val handler = Handler(Looper.getMainLooper())
 
     private val searchRunnable by lazy {
         Runnable {
             if (editor.text.isNotEmpty())
                 searchEngine.search(editor.text.toString())
-            else
-            {
+            else {
                 onChange(
                     if (isHistoryVisibile)
                         getHistoryOrEmptyState()
@@ -202,8 +200,11 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
     }
 
     companion object {
-        const val USER_UI_STATE = "USER_UI_STATE"
-        const val USER_SEARCH_REQUEST = "USER_SEARCH_REQUEST"
+        private const val USER_UI_STATE = "USER_UI_STATE"
+        private const val USER_SEARCH_REQUEST = "USER_SEARCH_REQUEST"
+
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -233,14 +234,27 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         inputMethodManager?.hideSoftInputFromWindow(editor.windowToken, 0)
     }
 
-    override fun onTrackClick(track: Track) {
-        history.addTrack(track)
-        startActivity(
-            Intent(this, PlayerActivity::class.java).putExtra(
-                PlayerActivity.TRACK,
-                gson.toJson(track)
-            )
-        )
+    private var isClickTrackAllowed = true
 
+    override fun onTrackClick(track: Track) {
+        if (clickTrackDebounce()) {
+            history.addTrack(track)
+
+            startActivity(
+                Intent(this, PlayerActivity::class.java).putExtra(
+                    PlayerActivity.TRACK,
+                    gson.toJson(track)
+                )
+            )
+        }
+    }
+
+    private fun clickTrackDebounce(): Boolean {
+        val current = isClickTrackAllowed
+        if (isClickTrackAllowed) {
+            isClickTrackAllowed = false
+            handler.postDelayed({ isClickTrackAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 }
