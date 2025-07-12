@@ -2,9 +2,13 @@ package com.practicum.playlistmaker
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
@@ -18,15 +22,58 @@ class PlayerActivity : AppCompatActivity() {
         val TRACK = "TRACK"
     }
 
+    val trackPlayPauseButton by lazy { findViewById<ImageButton>(R.id.button_play) }
+    val timerTrackPosition by lazy { findViewById<TextView>(R.id.track_time_position) }
+
     private val track by lazy {
         Gson().fromJson<Track>(intent.getStringExtra(TRACK), object : TypeToken<Track>() {}.type)
     }
+
+    private val player by lazy {
+        var timer: LooperTimer? = null
+        var elapsedTime = 0L
+        val timerListener by lazy {
+            object : TimerTickListener {
+                override fun tick(millis: Long) {
+                    elapsedTime = millis
+                    timerTrackPosition.text = Track.millisToMMSS(elapsedTime.toInt())
+                }
+            }
+        }
+
+        val mediaPlayerListener = object : MediaPlayerListener {
+            override fun onReadyToPlay() {
+                trackPlayPauseButton.isEnabled = true
+                trackPlayPauseButton.setImageResource(R.drawable.ic_button_play_100)
+            }
+
+            override fun onPlay() {
+                timer = LooperTimer(mainThreadHandler, timerListener, elapsedTime)
+                timer?.start()
+                trackPlayPauseButton.setImageResource(R.drawable.ic_button_pause_100)
+            }
+
+            override fun onPause() {
+                timer?.pause()
+                trackPlayPauseButton.setImageResource(R.drawable.ic_button_play_100)
+            }
+
+            override fun onStop() {
+                timer?.stop()
+                trackPlayPauseButton.setImageResource(R.drawable.ic_button_play_100)
+            }
+        }
+
+        MediaPlayerAdapter(mediaPlayerListener)
+    }
+
+    private val mainThreadHandler by lazy { Handler(Looper.getMainLooper()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        findViewById<androidx.appcompat.widget.AppCompatImageButton>(R.id.back).setOnClickListener {
+        findViewById<AppCompatImageButton>(R.id.back).setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
@@ -44,6 +91,16 @@ class PlayerActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.track_genre).text = track.primaryGenreName
 
         findViewById<TextView>(R.id.track_country).text = track.country
+        trackPlayPauseButton.isEnabled = false
+        timerTrackPosition.text = Track.millisToMMSS(0)
+        trackPlayPauseButton.setOnClickListener {
+            if (player.isPlaying())
+                player.pause()
+            else
+                player.play()
+        }
+
+        track.previewUrl?.let { player.open(it) }
 
         loadImage()
     }
@@ -64,5 +121,10 @@ class PlayerActivity : AppCompatActivity() {
             dp,
             resources.displayMetrics
         ).toInt()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        player.pause()
     }
 }
