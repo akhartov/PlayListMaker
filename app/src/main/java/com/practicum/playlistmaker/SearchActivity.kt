@@ -3,6 +3,8 @@ package com.practicum.playlistmaker
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -41,6 +43,33 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
 
     private var uiStateData = Ui.Empty
     private val gson = Gson()
+
+    private val SEARCH_DEBOUNCE_DELAY = 2000L
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val searchRunnable by lazy {
+        Runnable {
+            if (editor.text.isNotEmpty())
+                searchEngine.search(editor.text.toString())
+            else
+            {
+                onChange(
+                    if (isHistoryVisibile)
+                        getHistoryOrEmptyState()
+                    else
+                        if (editor.text.isNullOrEmpty())
+                            Ui.Empty
+                        else
+                            Ui.Found(tracksAdapter.tracks)
+                )
+            }
+        }
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
 
     override fun onChange(state: Ui) {
         val newAdapter = if (state.data.state == State.History) {
@@ -141,15 +170,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
 
         editor.doAfterTextChanged { text ->
-            onChange(
-                if (isHistoryVisibile)
-                    getHistoryOrEmptyState()
-                else
-                    if (text.isNullOrEmpty())
-                        Ui.Empty
-                    else
-                        Ui.Found(tracksAdapter.tracks)
-            )
+            searchDebounce()
         }
 
         editor.setOnEditorActionListener { v, actionId, event ->
@@ -170,7 +191,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
             )
         }
 
-        findViewById<Button>(R.id.update_tracks_button).setOnClickListener {
+        retrySearchButton.setOnClickListener {
             searchEngine.search(editor.text.toString())
         }
 
