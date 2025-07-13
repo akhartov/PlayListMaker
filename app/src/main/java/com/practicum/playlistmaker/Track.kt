@@ -14,10 +14,11 @@ data class Track(
     val collectionName: String?,   // Название альбома
     val releaseDate: String?,      // Дата релиза трека
     val primaryGenreName: String?, // Жанр трека
-    val country: String?           // Страна исполнителя
+    val country: String?,           // Страна исполнителя
+    val previewUrl: String?,        // Ссылка на отрывок трека
 ) {
     fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
-    fun trackTimeMMSS() = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMillis)
+    fun trackTimeMMSS() = millisToMMSS(trackTimeMillis)
     fun trackYear() = getYearFromUtcDateTimeString(releaseDate?: "")
 
     private fun getYearFromUtcDateTimeString(dateTimeString: String): String {
@@ -25,6 +26,12 @@ data class Track(
             OffsetDateTime.parse(dateTimeString).year.toString()
         } catch (e: DateTimeParseException) {
             ""
+        }
+    }
+
+    companion object {
+        fun millisToMMSS(timeMillis: Int): String {
+            return SimpleDateFormat("mm:ss", Locale.getDefault()).format(timeMillis)
         }
     }
 }

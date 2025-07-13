@@ -3,15 +3,18 @@ package com.practicum.playlistmaker
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 
 import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
@@ -26,19 +29,45 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
     private val editor by lazy { findViewById<EditText>(R.id.inputEditText) }
     private val tracksAdapter by lazy { TrackAdapter(this) }
     private val trackHistoryAdapter by lazy { TrackAdapter(this) }
-    private val noTracksPlaceholder by lazy { findViewById<LinearLayout>(R.id.placeholder_layout) }
+    private val noTracksPlaceholder by lazy { findViewById<Group>(R.id.placeholder_group) }
     private val noTracksTextView by lazy { findViewById<TextView>(R.id.no_tracks_textview) }
     private val noTracksImageView by lazy { findViewById<ImageView>(R.id.no_tracks_image) }
     private val retrySearchButton by lazy { findViewById<Button>(R.id.update_tracks_button) }
     private val youLookingFor by lazy { findViewById<TextView>(R.id.you_looking_for_text) }
     private val clearHistoryButton by lazy { findViewById<Button>(R.id.clear_history_button) }
     private val recyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerView) }
+    private val tracksSearchProgressBar by lazy { findViewById<ProgressBar>(R.id.tracks_search_progress) }
     private val searchEngine by lazy { SearchEngine(this) }
 
     private lateinit var history: SearchHistory
 
     private var uiStateData = Ui.Empty
     private val gson = Gson()
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val searchRunnable by lazy {
+        Runnable {
+            if (editor.text.isNotEmpty())
+                searchEngine.search(editor.text.toString())
+            else {
+                onChange(
+                    if (isHistoryVisibile)
+                        getHistoryOrEmptyState()
+                    else
+                        if (editor.text.isNullOrEmpty())
+                            Ui.Empty
+                        else
+                            Ui.Found(tracksAdapter.tracks)
+                )
+            }
+        }
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
 
     override fun onChange(state: Ui) {
         val newAdapter = if (state.data.state == State.History) {
@@ -58,12 +87,14 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
                 tracksAdapter.clearItems()
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = false
+                tracksSearchProgressBar.isVisible = false
             }
 
             State.History -> {
                 tracksAdapter.clearItems()
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = false
+                tracksSearchProgressBar.isVisible = false
             }
 
             State.Error -> {
@@ -71,6 +102,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
                 noTracksTextView.setText(resources.getString(R.string.no_internet_no_tracks))
                 retrySearchButton.isVisible = true
                 noTracksPlaceholder.isVisible = true
+                tracksSearchProgressBar.isVisible = false
             }
 
             State.NotFound -> {
@@ -78,11 +110,19 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
                 noTracksTextView.setText(resources.getString(R.string.tracks_not_found))
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = true
+                tracksSearchProgressBar.isVisible = false
+            }
+
+            State.InProgress -> {
+                retrySearchButton.isVisible = false
+                noTracksPlaceholder.isVisible = false
+                tracksSearchProgressBar.isVisible = true
             }
 
             else -> {
                 retrySearchButton.isVisible = false
                 noTracksPlaceholder.isVisible = false
+                tracksSearchProgressBar.isVisible = false
             }
         }
 
@@ -128,15 +168,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
 
         editor.doAfterTextChanged { text ->
-            onChange(
-                if (isHistoryVisibile)
-                    getHistoryOrEmptyState()
-                else
-                    if (text.isNullOrEmpty())
-                        Ui.Empty
-                    else
-                        Ui.Found(tracksAdapter.tracks)
-            )
+            searchDebounce()
         }
 
         editor.setOnEditorActionListener { v, actionId, event ->
@@ -157,7 +189,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
             )
         }
 
-        findViewById<Button>(R.id.update_tracks_button).setOnClickListener {
+        retrySearchButton.setOnClickListener {
             searchEngine.search(editor.text.toString())
         }
 
@@ -167,9 +199,17 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
+    }
+
     companion object {
-        const val USER_UI_STATE = "USER_UI_STATE"
-        const val USER_SEARCH_REQUEST = "USER_SEARCH_REQUEST"
+        private const val USER_UI_STATE = "USER_UI_STATE"
+        private const val USER_SEARCH_REQUEST = "USER_SEARCH_REQUEST"
+
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -199,14 +239,27 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         inputMethodManager?.hideSoftInputFromWindow(editor.windowToken, 0)
     }
 
-    override fun onTrackClick(track: Track) {
-        history.addTrack(track)
-        startActivity(
-            Intent(this, PlayerActivity::class.java).putExtra(
-                PlayerActivity.TRACK,
-                gson.toJson(track)
-            )
-        )
+    private var isClickTrackAllowed = true
 
+    override fun onTrackClick(track: Track) {
+        if (clickTrackDebounce()) {
+            history.addTrack(track)
+
+            startActivity(
+                Intent(this, PlayerActivity::class.java).putExtra(
+                    PlayerActivity.TRACK,
+                    gson.toJson(track)
+                )
+            )
+        }
+    }
+
+    private fun clickTrackDebounce(): Boolean {
+        val current = isClickTrackAllowed
+        if (isClickTrackAllowed) {
+            isClickTrackAllowed = false
+            handler.postDelayed({ isClickTrackAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 }

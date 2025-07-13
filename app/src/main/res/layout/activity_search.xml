@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -9,139 +9,182 @@
     tools:context=".SearchActivity"
     >
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/margin_horizontal"
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/margin_horizontal"
+        />
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/back"
         style="@style/TitlePanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:title="@string/search_text"
         />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/search_panel_horizontal_border"
+    <FrameLayout
+        android:id="@+id/search_query_frame"
+        style="@style/TextControl"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/search_panel_height"
+        android:layout_marginVertical="@dimen/track_vertical_border"
+        android:background="@drawable/rounded_edittext"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:layout_constraintStart_toStartOf="@id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/back"
         >
 
-        <FrameLayout
-            style="@style/TextControl"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/search_panel_height"
-            android:layout_marginVertical="@dimen/track_vertical_border"
-            android:background="@drawable/rounded_edittext"
-            android:orientation="horizontal"
-            >
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:layout_marginStart="@dimen/search_panel_horizontal_border"
-                android:src="@drawable/ic_search_14"
-                tools:ignore="ContentDescription"
-                />
-
-            <EditText
-                android:id="@+id/inputEditText"
-                style="@style/SearchEditor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:background="@null"
-                android:hint="@string/search_text"
-                android:imeOptions="actionDone"
-                android:importantForAutofill="no"
-                android:inputType="text"
-                android:paddingHorizontal="@dimen/search_text_left_border"
-                android:singleLine="true"
-                />
-
-            <ImageView
-                android:id="@+id/clearIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
-                android:layout_marginHorizontal="@dimen/search_panel_horizontal_border"
-                android:src="@drawable/ic_clear_search"
-                android:visibility="gone"
-                tools:ignore="ContentDescription"
-                />
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/you_looking_for_text"
-            style="@style/NoTracksText"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/you_looking_for_height"
-            android:layout_marginTop="@dimen/settings_normal_border"
-            android:gravity="center"
-            android:text="@string/you_looking_for_text"
-            android:visibility="gone"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/search_panel_horizontal_border"
+            android:src="@drawable/ic_search_14"
+            tools:ignore="ContentDescription"
             />
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/inputEditText"
+            style="@style/SearchEditor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/margin_vertical"
-            >
+            android:layout_gravity="start"
+            android:background="@null"
+            android:hint="@string/search_text"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:paddingHorizontal="@dimen/search_text_left_border"
+            android:singleLine="true"
+            />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                style="@style/TextControl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:outlineAmbientShadowColor="@color/black"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                />
+        <ImageView
+            android:id="@+id/clearIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:layout_marginHorizontal="@dimen/search_panel_horizontal_border"
+            android:src="@drawable/ic_clear_search"
+            android:visibility="gone"
+            tools:ignore="ContentDescription"
+            />
+    </FrameLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/clear_history_button"
-                style="@style/SearchButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/clear_history"
-                android:visibility="gone"
-                />
+    <TextView
+        android:id="@+id/you_looking_for_text"
+        style="@style/NoTracksText"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/you_looking_for_height"
+        android:layout_marginTop="@dimen/settings_normal_border"
+        android:gravity="center"
+        android:text="@string/you_looking_for_text"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:layout_constraintStart_toStartOf="@id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/search_query_frame"
+        />
 
-            <LinearLayout
-                android:id="@+id/placeholder_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                >
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        style="@style/TextControl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/track_vertical_border"
+        android:outlineAmbientShadowColor="@color/black"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="@id/right_guideline"
+        app:layout_constraintStart_toStartOf="@id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/you_looking_for_text"
+        />
 
-                <ImageView
-                    android:id="@+id/no_tracks_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:scaleType="center"
-                    />
+    <ProgressBar
+        android:id="@+id/tracks_search_progress"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/search_cursor"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recyclerView"
+        />
 
-                <TextView
-                    android:id="@+id/no_tracks_textview"
-                    style="@style/NoTracksText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textAlignment="center"
-                    />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/clear_history_button"
+        style="@style/SearchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/clear_history"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recyclerView"
+        />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/update_tracks_button"
-                    style="@style/SearchButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/search_panel_height"
-                    android:text="@string/update_tracks"
-                    android:visibility="gone"
-                    />
-            </LinearLayout>
-        </LinearLayout>
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/placeholder_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:constraint_referenced_ids="no_tracks_image,no_tracks_textview"
+        />
 
-    </LinearLayout>
-</LinearLayout>
+    <ImageView
+        android:id="@+id/no_tracks_image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginVertical="@dimen/track_vertical_border"
+        android:scaleType="center"
+        android:src="@drawable/img_tracks_not_found"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:layout_constraintStart_toStartOf="@id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/search_query_frame"
+        app:layout_constraintVertical_bias="0.2"
+        />
+
+    <TextView
+        android:id="@+id/no_tracks_textview"
+        style="@style/NoTracksText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginVertical="@dimen/track_vertical_border"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:layout_constraintStart_toStartOf="@id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/no_tracks_image"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/update_tracks_button"
+        style="@style/SearchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/track_vertical_border"
+        android:text="@string/update_tracks"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:layout_constraintStart_toStartOf="@id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/no_tracks_textview"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
