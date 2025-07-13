@@ -3,43 +3,48 @@ package com.practicum.playlistmaker
 import android.os.Handler
 
 interface TimerTickListener {
-    fun tick(millis: Long)
+    fun onTickTimer()
+    fun onResetTimer()
 }
 
 class LooperTimer(
     private val handler: Handler,
-    private val listener: TimerTickListener,
-    private val extraTime: Long = 0
+    private val listener: TimerTickListener
 ) {
-    private val startTime = System.currentTimeMillis()
-    private val DELAY = 1000L
-    private var stop = false
+    private var stop = true
+
+    companion object {
+        private const val DELAY = 1000L
+    }
 
     fun start() {
-        handler.post(
-            createUpdateTimerTask()
-        )
+        if(stop) {
+            stop = false
+            handler.post(
+                createUpdateTimerTask()
+            )
+        }
     }
 
     fun pause() {
-        stop = true
-        val elapsedTime = System.currentTimeMillis() - startTime
-        listener.tick(elapsedTime + extraTime)
+        if (!stop) {
+            stop = true
+            listener.onTickTimer()
+        }
     }
 
     fun stop() {
         stop = true
-        listener.tick(0)
+        listener.onResetTimer()
     }
 
     private fun createUpdateTimerTask(): Runnable {
         return object : Runnable {
             override fun run() {
-                val elapsedTime = System.currentTimeMillis() - startTime
                 if (stop)
                     handler.removeCallbacks(this)
                 else {
-                    listener.tick(elapsedTime + extraTime)
+                    listener.onTickTimer()
                     handler.postDelayed(this, DELAY)
                 }
             }

@@ -17,7 +17,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerActivity : AppCompatActivity(), TimerTickListener {
     companion object {
         val TRACK = "TRACK"
     }
@@ -30,16 +30,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private val player by lazy {
-        var timer: LooperTimer? = null
-        var elapsedTime = 0L
-        val timerListener by lazy {
-            object : TimerTickListener {
-                override fun tick(millis: Long) {
-                    elapsedTime = millis
-                    timerTrackPosition.text = Track.millisToMMSS(elapsedTime.toInt())
-                }
-            }
-        }
+        val timer = LooperTimer(mainThreadHandler, this@PlayerActivity)
 
         val mediaPlayerListener = object : MediaPlayerListener {
             override fun onReadyToPlay() {
@@ -48,18 +39,17 @@ class PlayerActivity : AppCompatActivity() {
             }
 
             override fun onPlay() {
-                timer = LooperTimer(mainThreadHandler, timerListener, elapsedTime)
-                timer?.start()
+                timer.start()
                 trackPlayPauseButton.setImageResource(R.drawable.ic_button_pause_100)
             }
 
             override fun onPause() {
-                timer?.pause()
+                timer.pause()
                 trackPlayPauseButton.setImageResource(R.drawable.ic_button_play_100)
             }
 
             override fun onStop() {
-                timer?.stop()
+                timer.stop()
                 trackPlayPauseButton.setImageResource(R.drawable.ic_button_play_100)
             }
         }
@@ -126,5 +116,13 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         player.pause()
+    }
+
+    override fun onTickTimer() {
+        timerTrackPosition.text = Track.millisToMMSS(player.getCurrentPosition())
+    }
+
+    override fun onResetTimer() {
+        timerTrackPosition.text = Track.millisToMMSS(0)
     }
 }

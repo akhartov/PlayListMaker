@@ -35,4 +35,8 @@ class MediaPlayerAdapter(private val listener: MediaPlayerListener) {
         mediaPlayer.stop()
         listener.onStop()
     }
+
+    fun getCurrentPosition(): Int {
+        return mediaPlayer.getCurrentPosition()
+    }
 }
