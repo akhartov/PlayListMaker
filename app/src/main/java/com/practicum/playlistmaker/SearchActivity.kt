@@ -199,6 +199,11 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
+    }
+
     companion object {
         private const val USER_UI_STATE = "USER_UI_STATE"
         private const val USER_SEARCH_REQUEST = "USER_SEARCH_REQUEST"
