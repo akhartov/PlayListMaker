@@ -1,18 +1,11 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.data.network
 
-import com.google.gson.annotations.SerializedName
+import com.practicum.playlistmaker.data.dto.ItunesResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-
-
-class ItunesResponse(
-    @SerializedName("resultCount") val count: Int,
-    @SerializedName("results") val tracks: ArrayList<Track>
-)
-
-interface ItunesApi {
+interface ItunesApiService {
     @GET("/search?entity=song")
     fun search(@Query("term") text: String): Call<ItunesResponse>
 

@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker
 
+import com.practicum.playlistmaker.domain.models.Track
+
 open class Ui(val data: Data) {
 
     enum class State {

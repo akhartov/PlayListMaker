@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.search
 
 import android.content.Context
 import android.content.Intent
@@ -22,10 +22,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.practicum.playlistmaker.presentation.tracks.OnTrackClickListener
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.Ui
 import com.practicum.playlistmaker.Ui.State
+import com.practicum.playlistmaker.domain.api.TrackHistoryInteractor
+import com.practicum.playlistmaker.domain.api.TracksInteractor
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.Creator
+import com.practicum.playlistmaker.presentation.player.PlayerActivity
+import com.practicum.playlistmaker.presentation.tracks.TrackAdapter
 
 
-class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListener {
+class SearchActivity : AppCompatActivity(), OnTrackClickListener {
     private val editor by lazy { findViewById<EditText>(R.id.inputEditText) }
     private val tracksAdapter by lazy { TrackAdapter(this) }
     private val trackHistoryAdapter by lazy { TrackAdapter(this) }
@@ -37,30 +46,42 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
     private val clearHistoryButton by lazy { findViewById<Button>(R.id.clear_history_button) }
     private val recyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerView) }
     private val tracksSearchProgressBar by lazy { findViewById<ProgressBar>(R.id.tracks_search_progress) }
-    private val searchEngine by lazy { SearchEngine(this) }
 
-    private lateinit var history: SearchHistory
+    private lateinit var history: TrackHistoryInteractor
 
     private var uiStateData = Ui.Empty
     private val gson = Gson()
 
     private val handler = Handler(Looper.getMainLooper())
+    private val tracksInterractor = Creator.provideTracksInteractor()
 
     private val searchRunnable by lazy {
         Runnable {
-            if (editor.text.isNotEmpty())
-                searchEngine.search(editor.text.toString())
-            else {
-                onChange(
-                    if (isHistoryVisibile)
-                        getHistoryOrEmptyState()
-                    else
-                        if (editor.text.isNullOrEmpty())
-                            Ui.Empty
-                        else
-                            Ui.Found(tracksAdapter.tracks)
-                )
+            val searchText = editor.text.toString()
+            if (searchText.isEmpty()) {
+                onChange(Ui.Empty)
+                return@Runnable
             }
+
+            onChange(Ui.InProgress)
+            tracksInterractor.searchTracks(editor.text.toString(), object :
+                TracksInteractor.TrackConsumer {
+                override fun consume(foundTracks: List<Track>) {
+                    handler.post {
+                        if (foundTracks.isEmpty()) {
+                            onChange(Ui.NotFound)
+                        } else {
+                            onChange(Ui.Found(foundTracks))
+                        }
+                    }
+                }
+
+                override fun fail(e: java.lang.Exception) {
+                    handler.post {
+                        onChange(Ui.Error)
+                    }
+                }
+            })
         }
     }
 
@@ -69,7 +90,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
-    override fun onChange(state: Ui) {
+    fun onChange(state: Ui) {
         val newAdapter = if (state.data.state == State.History) {
             trackHistoryAdapter
         } else tracksAdapter
@@ -153,7 +174,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
 
         recyclerView.adapter = tracksAdapter
 
-        history = SearchHistory(getSharedPreferences("SEARCH", MODE_PRIVATE), trackHistoryAdapter)
+        history = Creator.getHistoryInteractor(this, trackHistoryAdapter)
 
         findViewById<ImageView>(R.id.clearIcon).apply {
             setOnClickListener {
@@ -173,7 +194,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
 
         editor.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                searchEngine.search(v.text.toString())
+                handler.post(searchRunnable)
                 true
             } else {
                 false
@@ -190,7 +211,7 @@ class SearchActivity : AppCompatActivity(), OnTrackClickListener, UiStateListene
         }
 
         retrySearchButton.setOnClickListener {
-            searchEngine.search(editor.text.toString())
+            handler.post(searchRunnable)
         }
 
         clearHistoryButton.setOnClickListener {

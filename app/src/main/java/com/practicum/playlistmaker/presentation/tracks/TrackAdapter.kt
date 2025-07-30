@@ -1,11 +1,13 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.tracks
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.domain.api.TrackHistoryInteractor
+import com.practicum.playlistmaker.domain.models.Track
 
 class TrackAdapter(private val trackClickListener: OnTrackClickListener?) :
-    RecyclerView.Adapter<TrackViewHolder>(), OnTracksChangeListener {
+    RecyclerView.Adapter<TrackViewHolder>(), TrackHistoryInteractor.ChangeListener {
 
     var tracks = listOf<Track>()
 
