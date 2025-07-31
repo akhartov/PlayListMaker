@@ -5,17 +5,16 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
+import com.practicum.playlistmaker.domain.Creator
+import com.practicum.playlistmaker.domain.api.AudioPlayer
 import com.practicum.playlistmaker.domain.models.Track
 
 
@@ -24,72 +23,71 @@ class PlayerActivity : AppCompatActivity(), TimerTickListener {
         val TRACK = "TRACK"
     }
 
-    val trackPlayPauseButton by lazy { findViewById<ImageButton>(R.id.button_play) }
-    val timerTrackPosition by lazy { findViewById<TextView>(R.id.track_time_position) }
+    private lateinit var binding: ActivityPlayerBinding
+    private val player by lazy {
+        Creator.getAudioPlayerProvider().provideAudioPlayer(object : AudioPlayer.Listener {
+            override fun onReadyToPlay() {
+                binding.buttonPlay.isEnabled = true
+                binding.buttonPlay.setImageResource(R.drawable.ic_button_play_100)
+            }
+
+            override fun onPlay() {
+                timer.start()
+                binding.buttonPlay.setImageResource(R.drawable.ic_button_pause_100)
+            }
+
+            override fun onPause() {
+                timer.pause()
+                binding.buttonPlay.setImageResource(R.drawable.ic_button_play_100)
+            }
+
+            override fun onStop() {
+                timer.stop()
+                binding.buttonPlay.setImageResource(R.drawable.ic_button_play_100)
+            }
+        })
+    }
 
     private val track by lazy {
         Gson().fromJson<Track>(intent.getStringExtra(TRACK), object : TypeToken<Track>() {}.type)
     }
 
-    private val player by lazy {
-        val timer = LooperTimer(mainThreadHandler, this@PlayerActivity)
-
-        val mediaPlayerListener = object : MediaPlayerListener {
-            override fun onReadyToPlay() {
-                trackPlayPauseButton.isEnabled = true
-                trackPlayPauseButton.setImageResource(R.drawable.ic_button_play_100)
-            }
-
-            override fun onPlay() {
-                timer.start()
-                trackPlayPauseButton.setImageResource(R.drawable.ic_button_pause_100)
-            }
-
-            override fun onPause() {
-                timer.pause()
-                trackPlayPauseButton.setImageResource(R.drawable.ic_button_play_100)
-            }
-
-            override fun onStop() {
-                timer.stop()
-                trackPlayPauseButton.setImageResource(R.drawable.ic_button_play_100)
-            }
-        }
-
-        MediaPlayerAdapter(mediaPlayerListener)
-    }
-
-    private val mainThreadHandler by lazy { Handler(Looper.getMainLooper()) }
+    private val mainThreadHandler = Handler(Looper.getMainLooper())
+    val timer = LooperTimer(mainThreadHandler, this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        findViewById<AppCompatImageButton>(R.id.back).setOnClickListener {
+        binding.backButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        findViewById<TextView>(R.id.track_title).text = track.trackName
-        findViewById<TextView>(R.id.track_artist).text = track.artistName
-        findViewById<TextView>(R.id.track_length).text = track.trackTimeMMSS()
+        binding.trackTitle.text = track.trackName
+        binding.trackArtist.text = track.artistName
+        binding.trackLength.text = track.trackTimeMMSS()
 
-        findViewById<Group>(R.id.album_group).isVisible = !track.collectionName.isNullOrEmpty()
-        findViewById<TextView>(R.id.track_album).text = track.collectionName
+        binding.albumGroup.isVisible = !track.collectionName.isNullOrEmpty()
+        binding.trackAlbum.text = track.collectionName
 
-        findViewById<Group>(R.id.year_group).isVisible = track.trackYear().isNotEmpty()
-        findViewById<TextView>(R.id.track_year).text = track.trackYear()
+        binding.yearGroup.isVisible = track.trackYear().isNotEmpty()
+        binding.trackYear.text = track.trackYear()
 
-        findViewById<Group>(R.id.genre_group).isVisible = !track.primaryGenreName.isNullOrEmpty()
-        findViewById<TextView>(R.id.track_genre).text = track.primaryGenreName
+        binding.genreGroup.isVisible = !track.primaryGenreName.isNullOrEmpty()
+        binding.trackGenre.text = track.primaryGenreName
 
-        findViewById<TextView>(R.id.track_country).text = track.country
-        trackPlayPauseButton.isEnabled = false
-        timerTrackPosition.text = Track.millisToMMSS(0)
-        trackPlayPauseButton.setOnClickListener {
-            if (player.isPlaying())
-                player.pause()
-            else
-                player.play()
+        binding.trackCountry.text = track.country
+        binding.trackTimePosition.text = Track.millisToMMSS(0)
+
+        binding.buttonPlay.apply {
+            isEnabled = false
+            setOnClickListener {
+                if (player.isPlaying())
+                    player.pause()
+                else
+                    player.play()
+            }
         }
 
         track.previewUrl?.let { player.open(it) }
@@ -104,7 +102,7 @@ class PlayerActivity : AppCompatActivity(), TimerTickListener {
             .placeholder(R.drawable.track_placeholder)
             .fitCenter()
             .transform(RoundedCorners(dpToPx(resources.getDimension(R.dimen.track_big_image_radius))))
-            .into(findViewById(R.id.cover))
+            .into(binding.cover)
     }
 
     private fun dpToPx(dp: Float): Int {
@@ -121,10 +119,10 @@ class PlayerActivity : AppCompatActivity(), TimerTickListener {
     }
 
     override fun onTickTimer() {
-        timerTrackPosition.text = Track.millisToMMSS(player.getCurrentPosition())
+        binding.trackTimePosition.text = Track.millisToMMSS(player.getCurrentPosition())
     }
 
     override fun onResetTimer() {
-        timerTrackPosition.text = Track.millisToMMSS(0)
+        binding.trackTimePosition.text = Track.millisToMMSS(0)
     }
 }

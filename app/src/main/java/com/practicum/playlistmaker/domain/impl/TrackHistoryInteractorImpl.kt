@@ -9,7 +9,7 @@ class TrackHistoryInteractorImpl(
     private val changeListener: TrackHistoryInteractor.ChangeListener
 ) : TrackHistoryInteractor {
     init {
-        changeListener.onChange(repo.getTracks())
+    //    changeListener.onChange(repo.getTracks())
     }
 
     override fun addTrack(track: Track) {
@@ -26,5 +26,13 @@ class TrackHistoryInteractorImpl(
     override fun clear() {
         repo.clearTracks()
         changeListener.onClear()
+    }
+
+    override fun isEmpty(): Boolean {
+        return repo.getTracks().isEmpty()
+    }
+
+    override fun getTracks(): List<Track> {
+        return repo.getTracks()
     }
 }

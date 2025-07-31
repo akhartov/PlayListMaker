@@ -6,6 +6,8 @@ interface TrackHistoryInteractor {
 
     fun addTrack(track: Track)
     fun clear()
+    fun isEmpty(): Boolean
+    fun getTracks(): List<Track>
 
     interface ChangeListener {
         fun onChange(tracks: List<Track>)

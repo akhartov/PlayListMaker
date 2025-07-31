@@ -3,11 +3,10 @@ package com.practicum.playlistmaker.presentation.tracks
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.domain.api.TrackHistoryInteractor
 import com.practicum.playlistmaker.domain.models.Track
 
 class TrackAdapter(private val trackClickListener: OnTrackClickListener?) :
-    RecyclerView.Adapter<TrackViewHolder>(), TrackHistoryInteractor.ChangeListener {
+    RecyclerView.Adapter<TrackViewHolder>() {
 
     var tracks = listOf<Track>()
 
@@ -21,11 +20,6 @@ class TrackAdapter(private val trackClickListener: OnTrackClickListener?) :
 
     override fun getItemCount(): Int {
         return tracks.size
-    }
-
-    fun clearItems() {
-        tracks = listOf()
-        notifyDataSetChanged()
     }
 
     fun updateItems(newItems: List<Track>?) {
@@ -54,13 +48,4 @@ class TrackAdapter(private val trackClickListener: OnTrackClickListener?) :
         tracks = newItems
         diffResult.dispatchUpdatesTo(this)
     }
-
-    override fun onChange(tracks: List<Track>) {
-        updateItems(tracks)
-    }
-
-    override fun onClear() {
-        clearItems()
-    }
-
 }

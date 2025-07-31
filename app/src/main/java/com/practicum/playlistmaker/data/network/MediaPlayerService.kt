@@ -1,11 +1,12 @@
-package com.practicum.playlistmaker.presentation.player
+package com.practicum.playlistmaker.data.network
 
 import android.media.MediaPlayer
+import com.practicum.playlistmaker.domain.api.AudioPlayer
 
-class MediaPlayerAdapter(private val listener: MediaPlayerListener) {
+class MediaPlayerService(private val listener: AudioPlayer.Listener): AudioPlayer {
     private var mediaPlayer = MediaPlayer()
 
-    fun open(linkUrl: String) {
+    override fun open(linkUrl: String) {
         mediaPlayer.setDataSource(linkUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
@@ -16,27 +17,27 @@ class MediaPlayerAdapter(private val listener: MediaPlayerListener) {
         }
     }
 
-    fun isPlaying(): Boolean {
+    override fun isPlaying(): Boolean {
         return mediaPlayer.isPlaying
     }
 
-    fun play() {
+    override fun play() {
         mediaPlayer.start()
         listener.onPlay()
     }
 
-    fun pause() {
+    override fun pause() {
         if (mediaPlayer.isPlaying)
             mediaPlayer.pause()
         listener.onPause()
     }
 
-    fun stop() {
+    override fun stop() {
         mediaPlayer.stop()
         listener.onStop()
     }
 
-    fun getCurrentPosition(): Int {
+    override fun getCurrentPosition(): Int {
         return mediaPlayer.getCurrentPosition()
     }
 }

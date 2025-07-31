@@ -22,7 +22,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        findViewById<MaterialToolbar>(R.id.back).setNavigationOnClickListener {
+        findViewById<MaterialToolbar>(R.id.back_button).setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
