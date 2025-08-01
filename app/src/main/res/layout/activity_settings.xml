@@ -6,11 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SettingsActivity"
+    tools:context=".presentation.settings.SettingsActivity"
     >
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/back"
+        android:id="@+id/back_button"
         style="@style/TitlePanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
