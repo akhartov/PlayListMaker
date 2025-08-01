@@ -15,8 +15,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.Ui
-import com.practicum.playlistmaker.Ui.State
+import com.practicum.playlistmaker.presentation.search.State.Value
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.domain.api.TrackHistoryInteractor
 import com.practicum.playlistmaker.domain.api.SearchTracksUseCase
@@ -49,18 +48,18 @@ class SearchActivity : AppCompatActivity() {
         Creator.getHistoryInteractor(object : TrackHistoryInteractor.ChangeListener {
             override fun onChange(tracks: List<Track>) {
                 if (isHistoryVisibile) {
-                    onChange(Ui.History(tracks))
+                    onChange(State.History(tracks))
                 }
             }
 
             override fun onClear() {
-                onChange(Ui.Empty)
+                onChange(State.Empty)
             }
         })
     }
     private val searchTracksUseCase by lazy { Creator.provideSearchTracksUseCase() }
 
-    private var uiStateData = Ui.Empty
+    private var stateStateData = State.Empty
     private val gson = Gson()
 
     private val handler = Handler(Looper.getMainLooper())
@@ -73,22 +72,22 @@ class SearchActivity : AppCompatActivity() {
                 return@Runnable
             }
 
-            onChange(Ui.InProgress)
+            onChange(State.InProgress)
             searchTracksUseCase.search(binding.searchText.text.toString(), object :
                 SearchTracksUseCase.TracksConsumer {
                 override fun consume(foundTracks: List<Track>) {
                     handler.post {
                         if (foundTracks.isEmpty()) {
-                            onChange(Ui.NotFound)
+                            onChange(State.NotFound)
                         } else {
-                            onChange(Ui.Found(foundTracks))
+                            onChange(State.Found(foundTracks))
                         }
                     }
                 }
 
                 override fun fail(e: java.lang.Exception) {
                     handler.post {
-                        onChange(Ui.Error)
+                        onChange(State.Error)
                     }
                 }
             })
@@ -100,24 +99,24 @@ class SearchActivity : AppCompatActivity() {
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
-    fun onChange(state: Ui) {
-        isHistoryVisibile = (state.data.state == State.History)
+    fun onChange(state: State) {
+        isHistoryVisibile = (state.data.value == Value.History)
         tracksAdapter.updateItems(state.data.foundTracks)
-        when (state.data.state) {
-            State.Empty -> {
+        when (state.data.value) {
+            Value.Empty -> {
                 binding.updateTracksButton.isVisible = false
                 binding.placeholderGroup.isVisible = false
                 binding.tracksSearchProgress.isVisible = false
             }
 
-            State.History -> {
+            Value.History -> {
                 tracksAdapter.updateItems(state.data.foundTracks)
                 binding.updateTracksButton.isVisible = false
                 binding.placeholderGroup.isVisible = false
                 binding.tracksSearchProgress.isVisible = false
             }
 
-            State.Error -> {
+            Value.Error -> {
                 binding.noTracksImage.setImageResource(R.drawable.img_no_internet_no_tracks)
                 binding.noTracksTextview.setText(resources.getString(R.string.no_internet_no_tracks))
                 binding.updateTracksButton.isVisible = true
@@ -125,7 +124,7 @@ class SearchActivity : AppCompatActivity() {
                 binding.tracksSearchProgress.isVisible = false
             }
 
-            State.NotFound -> {
+            Value.NotFound -> {
                 binding.noTracksImage.setImageResource(R.drawable.img_tracks_not_found)
                 binding.noTracksTextview.setText(resources.getString(R.string.tracks_not_found))
                 binding.updateTracksButton.isVisible = false
@@ -133,7 +132,7 @@ class SearchActivity : AppCompatActivity() {
                 binding.tracksSearchProgress.isVisible = false
             }
 
-            State.InProgress -> {
+            Value.InProgress -> {
                 binding.updateTracksButton.isVisible = false
                 binding.placeholderGroup.isVisible = false
                 binding.tracksSearchProgress.isVisible = true
@@ -146,7 +145,7 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        uiStateData = state
+        stateStateData = state
     }
 
     private var isHistoryVisibile: Boolean
@@ -156,12 +155,12 @@ class SearchActivity : AppCompatActivity() {
         }
         get() = binding.searchText.text.isEmpty() && !historyInteractor.isEmpty()
 
-    private fun getHistoryOrEmptyState(): Ui {
+    private fun getHistoryOrEmptyState(): State {
         val tracks = historyInteractor.getTracks()
         return if (tracks.isEmpty())
-            Ui.Empty
+            State.Empty
         else
-            Ui.History(tracks)
+            State.History(tracks)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -181,9 +180,9 @@ class SearchActivity : AppCompatActivity() {
         binding.recyclerView.adapter = tracksAdapter
 
         savedInstanceState?.getString(USER_UI_STATE)?.let {
-            val data = gson.fromJson<Ui.Data>(it, object : TypeToken<Ui.Data>() {}.type)
-            val uiState = Ui(data)
-            onChange(uiState)
+            val data = gson.fromJson<State.Data>(it, object : TypeToken<State.Data>() {}.type)
+            val stateState = State(data)
+            onChange(stateState)
         } ?: run {
             onChange(getHistoryOrEmptyState())
         }
@@ -223,7 +222,7 @@ class SearchActivity : AppCompatActivity() {
 
         binding.clearHistoryButton.setOnClickListener {
             historyInteractor.clear()
-            onChange(Ui.Empty)
+            onChange(State.Empty)
         }
     }
 
@@ -242,7 +241,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val json = gson.toJson(uiStateData.data)
+        val json = gson.toJson(stateStateData.data)
         outState.putString(USER_UI_STATE, json)
         outState.putString(USER_SEARCH_REQUEST, binding.searchText.text.toString())
     }

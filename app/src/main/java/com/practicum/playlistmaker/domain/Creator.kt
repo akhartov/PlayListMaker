@@ -1,16 +1,20 @@
 package com.practicum.playlistmaker.domain
 
 import android.app.Application
+import com.practicum.playlistmaker.data.managers.SettingsManagerImpl
 import com.practicum.playlistmaker.data.repository.HistoryRepositoryImpl
 import com.practicum.playlistmaker.data.repository.TracksRepositoryImpl
 import com.practicum.playlistmaker.data.network.ItunesNetworkClient
-import com.practicum.playlistmaker.data.repository.MediaPlayerProvider
+import com.practicum.playlistmaker.data.providers.MediaPlayerProvider
 import com.practicum.playlistmaker.domain.repository.HistoryRepository
 import com.practicum.playlistmaker.domain.api.TrackHistoryInteractor
 import com.practicum.playlistmaker.domain.api.SearchTracksUseCase
+import com.practicum.playlistmaker.domain.api.SettingsInteractor
 import com.practicum.playlistmaker.domain.repository.TracksRepository
 import com.practicum.playlistmaker.domain.impl.SearchTracksUseCaseImpl
+import com.practicum.playlistmaker.domain.impl.SettingsInteractorImpl
 import com.practicum.playlistmaker.domain.impl.TrackHistoryInteractorImpl
+import com.practicum.playlistmaker.domain.managers.SettingsManager
 import com.practicum.playlistmaker.domain.providers.AudioPlayerProvider
 
 object Creator {
@@ -38,5 +42,13 @@ object Creator {
 
     fun getAudioPlayerProvider(): AudioPlayerProvider {
         return MediaPlayerProvider()
+    }
+
+    private fun getSettingsManager(): SettingsManager {
+        return SettingsManagerImpl(application.applicationContext)
+    }
+
+    fun getSettingsInteractor(): SettingsInteractor {
+        return SettingsInteractorImpl(getSettingsManager())
     }
 }

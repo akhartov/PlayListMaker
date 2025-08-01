@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.repository
+package com.practicum.playlistmaker.data.providers
 
 import com.practicum.playlistmaker.data.network.MediaPlayerService
 import com.practicum.playlistmaker.domain.api.AudioPlayer

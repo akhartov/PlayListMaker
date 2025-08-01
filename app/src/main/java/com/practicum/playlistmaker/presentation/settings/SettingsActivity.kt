@@ -6,48 +6,50 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.switchmaterial.SwitchMaterial
-import com.google.android.material.textview.MaterialTextView
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import com.practicum.playlistmaker.domain.Creator
+import com.practicum.playlistmaker.domain.api.SettingsInteractor
 
 class SettingsActivity : AppCompatActivity() {
-    private val storage by lazy { getSharedPreferences("SETTINGS", MODE_PRIVATE) }
-    private val NIGHT_MODE_VALUE = "NIGHT_MODE"
+    private lateinit var binding: ActivitySettingsBinding
+    private val settings = Creator.getSettingsInteractor()
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        findViewById<MaterialToolbar>(R.id.back_button).setNavigationOnClickListener {
+        binding.backButton.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        findViewById<SwitchMaterial>(R.id.theme_switcher).apply {
-            storage.registerOnSharedPreferenceChangeListener { prefs, key ->
-                if(key == NIGHT_MODE_VALUE) {
-                    (applicationContext as App).switchTheme(prefs.getBoolean(key, AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES))
+        binding.themeSwitcher.apply {
+            settings.subscribe { key ->
+                if (key == SettingsInteractor.NIGHT_MODE_VALUE) {
+                    (applicationContext as App).switchTheme(
+                        settings.getNightTheme(applicationContext.resources.configuration.isNightModeActive)
+                    )
                 }
             }
-            setOnCheckedChangeListener { button, isOn ->
-                storage.edit().putBoolean(NIGHT_MODE_VALUE, isOn).apply()
+            setOnCheckedChangeListener { _, isOn ->
+                settings.setNightTheme(isOn)
             }
 
-            isChecked = storage.getBoolean(NIGHT_MODE_VALUE, applicationContext.resources.configuration.isNightModeActive)
+            isChecked =
+                settings.getNightTheme(applicationContext.resources.configuration.isNightModeActive)
         }
 
-
-        findViewById<MaterialTextView>(R.id.share_app).setOnClickListener {
+        binding.shareApp.setOnClickListener {
             Intent(Intent.ACTION_SEND).apply {
                 setType("text/plain")
                 putExtra(Intent.EXTRA_TEXT, resources.getText(R.string.sharing_text))
             }.also { startActivity(it) }
         }
 
-        findViewById<MaterialTextView>(R.id.write_support).setOnClickListener {
+        binding.writeSupport.setOnClickListener {
             Intent(Intent.ACTION_SENDTO).apply {
                 setData(Uri.parse("mailto:"))
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(resources.getString(R.string.email_support)))
@@ -56,7 +58,7 @@ class SettingsActivity : AppCompatActivity() {
             }.also { startActivity(it) }
         }
 
-        findViewById<MaterialTextView>(R.id.user_agreement).setOnClickListener {
+        binding.userAgreement.setOnClickListener {
             Intent(Intent.ACTION_VIEW).apply {
                 setData(Uri.parse(resources.getString(R.string.uri_link_practicum_offer)))
             }.also { startActivity(it) }
