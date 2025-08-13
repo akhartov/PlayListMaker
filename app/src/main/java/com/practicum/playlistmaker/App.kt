@@ -3,6 +3,7 @@ package com.practicum.playlistmaker
 import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.practicum.playlistmaker.main.creator.MainCreator
 import com.practicum.playlistmaker.player.creator.PlayerCreator
 import com.practicum.playlistmaker.search.creator.SearchCreator
 import com.practicum.playlistmaker.settings.creator.SettingsCreator
@@ -14,8 +15,9 @@ class App : Application() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate() {
         super.onCreate()
-        PlayerCreator.initApplication(this)
+        MainCreator.initApplication(this)
         SearchCreator.initApplication(this)
+        PlayerCreator.initApplication(this)
         SettingsCreator.initApplication(this)
         SharingCreator.initApplication(this)
 
