@@ -2,18 +2,24 @@ package com.practicum.playlistmaker.player.data.network
 
 import android.media.MediaPlayer
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
+import com.practicum.playlistmaker.player.domain.api.AudioPlayer.Listener
 
-class MediaPlayerService(private val listener: AudioPlayer.Listener): AudioPlayer {
+class MediaPlayerService: AudioPlayer {
     private var mediaPlayer = MediaPlayer()
+    private var listener: Listener? = null
+
+    override fun setListener(listener: Listener) {
+        this.listener = listener
+    }
 
     override fun open(linkUrl: String) {
         mediaPlayer.setDataSource(linkUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            listener.onReadyToPlay()
+            listener?.onReadyToPlay()
         }
         mediaPlayer.setOnCompletionListener {
-            listener.onStop()
+            listener?.onStop()
         }
     }
 
@@ -23,18 +29,18 @@ class MediaPlayerService(private val listener: AudioPlayer.Listener): AudioPlaye
 
     override fun play() {
         mediaPlayer.start()
-        listener.onPlay()
+        listener?.onPlay()
     }
 
     override fun pause() {
         if (mediaPlayer.isPlaying)
             mediaPlayer.pause()
-        listener.onPause()
+        listener?.onPause()
     }
 
     override fun stop() {
         mediaPlayer.stop()
-        listener.onStop()
+        listener?.onStop()
     }
 
     override fun getCurrentPosition(): Int {

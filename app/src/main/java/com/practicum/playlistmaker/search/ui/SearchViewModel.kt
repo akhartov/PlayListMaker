@@ -13,8 +13,8 @@ import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.player.creator.PlayerCreator
 import com.practicum.playlistmaker.player.domain.model.TrackDisplayInteractor
 import com.practicum.playlistmaker.search.creator.SearchCreator
-import com.practicum.playlistmaker.search.domain.api.SearchTracksUseCase
-import com.practicum.playlistmaker.search.domain.api.TrackHistoryInteractor
+import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
+import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
 
 class SearchViewModel(private val trackDisplayInteractor: TrackDisplayInteractor) : ViewModel() {
     private val searchStateLiveData = MutableLiveData(SearchState.Empty as SearchState)

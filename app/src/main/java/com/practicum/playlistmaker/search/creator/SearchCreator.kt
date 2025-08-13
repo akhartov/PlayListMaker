@@ -3,8 +3,8 @@ package com.practicum.playlistmaker.search.creator
 import android.app.Application
 import com.practicum.playlistmaker.search.data.network.ItunesNetworkClient
 import com.practicum.playlistmaker.search.data.repository.HistoryRepositoryImpl
-import com.practicum.playlistmaker.search.domain.api.SearchTracksUseCase
-import com.practicum.playlistmaker.search.domain.api.TrackHistoryInteractor
+import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
+import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
 import com.practicum.playlistmaker.search.domain.impl.SearchTracksUseCaseImpl
 import com.practicum.playlistmaker.search.domain.impl.TrackHistoryInteractorImpl
 import com.practicum.playlistmaker.search.domain.repository.HistoryRepository

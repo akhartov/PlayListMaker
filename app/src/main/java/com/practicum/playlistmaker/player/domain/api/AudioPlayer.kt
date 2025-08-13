@@ -11,6 +11,8 @@ interface AudioPlayer {
     fun isPlaying(): Boolean
     fun getCurrentPosition(): Int
 
+    fun setListener(listener: Listener)
+
     interface Listener {
         fun onReadyToPlay()
         fun onPlay()

@@ -130,8 +130,9 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        binding.searchText.setOnFocusChangeListener { view, hasFocus ->
-            viewModel.showHistory()
+        binding.searchText.setOnFocusChangeListener { _, hasFocus ->
+            if(hasFocus)
+                viewModel.showHistory()
         }
 
         textWatcher = object : TextWatcher {
