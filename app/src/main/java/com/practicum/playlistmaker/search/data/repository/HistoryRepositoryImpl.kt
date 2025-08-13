@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.search.domain.repository.HistoryRepository
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.search.domain.model.Track
 
 class HistoryRepositoryImpl(context: Context) : HistoryRepository {
     private val storage = context.getSharedPreferences("SEARCH", Context.MODE_PRIVATE)

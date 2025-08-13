@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.search.domain.model
 
-import com.practicum.playlistmaker.domain.models.Track
 import java.lang.Exception
 
 interface SearchTracksUseCase {

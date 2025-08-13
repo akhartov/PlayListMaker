@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.search.domain.model
 
-import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime

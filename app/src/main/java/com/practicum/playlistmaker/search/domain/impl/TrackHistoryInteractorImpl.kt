@@ -2,7 +2,7 @@ package com.practicum.playlistmaker.search.domain.impl
 
 import com.practicum.playlistmaker.search.domain.repository.HistoryRepository
 import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.search.domain.model.Track
 
 class TrackHistoryInteractorImpl(
     private val repo: HistoryRepository

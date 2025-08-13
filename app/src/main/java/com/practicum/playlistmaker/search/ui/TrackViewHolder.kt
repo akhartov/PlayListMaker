@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.TrackViewBinding
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.search.domain.model.Track
 
 class TrackViewHolder(private val binding: TrackViewBinding, private val trackClickListener: OnTrackClickListener?)
     : RecyclerView.ViewHolder(binding.root) {
@@ -44,5 +44,9 @@ class TrackViewHolder(private val binding: TrackViewBinding, private val trackCl
             dp,
             itemView.resources.displayMetrics
         ).toInt()
+    }
+
+    fun interface OnTrackClickListener {
+        fun onTrackClick(track: Track)
     }
 }

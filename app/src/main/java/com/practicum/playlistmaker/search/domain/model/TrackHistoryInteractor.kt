@@ -1,7 +1,5 @@
 package com.practicum.playlistmaker.search.domain.model
 
-import com.practicum.playlistmaker.domain.models.Track
-
 interface TrackHistoryInteractor {
     fun addTrack(track: Track)
     fun clear()

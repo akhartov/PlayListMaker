@@ -12,7 +12,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.search.domain.model.Track
 
 class PlayerActivity : AppCompatActivity() {
     companion object {

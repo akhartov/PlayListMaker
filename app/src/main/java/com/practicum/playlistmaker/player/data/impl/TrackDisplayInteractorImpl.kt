@@ -3,7 +3,7 @@ package com.practicum.playlistmaker.player.data.impl
 import android.content.Context
 import android.content.Intent
 import com.google.gson.Gson
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.domain.model.TrackDisplayInteractor
 import com.practicum.playlistmaker.player.ui.PlayerActivity
 

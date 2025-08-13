@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.search.domain.repository
 
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.search.domain.model.Track
 
 interface HistoryRepository {
     fun saveTracks(tracks: List<Track>)

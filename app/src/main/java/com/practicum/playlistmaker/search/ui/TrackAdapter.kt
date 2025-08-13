@@ -3,9 +3,9 @@ package com.practicum.playlistmaker.search.ui
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.search.domain.model.Track
 
-class TrackAdapter(private val trackClickListener: OnTrackClickListener?) :
+class TrackAdapter(private val trackClickListener: TrackViewHolder.OnTrackClickListener?) :
     RecyclerView.Adapter<TrackViewHolder>() {
 
     var tracks = listOf<Track>()
