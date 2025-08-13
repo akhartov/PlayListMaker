@@ -7,7 +7,7 @@ interface SearchTracksUseCase {
     fun search(expression: String, consumer: TracksConsumer)
 
     interface TracksConsumer {
-        fun consume(foundTracks: List<Track>)
+        fun consume(tracks: List<Track>)
         fun fail(e: Exception)
     }
 }

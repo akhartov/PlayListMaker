@@ -3,14 +3,12 @@ package com.practicum.playlistmaker.search.domain.api
 import com.practicum.playlistmaker.domain.models.Track
 
 interface TrackHistoryInteractor {
-
     fun addTrack(track: Track)
     fun clear()
     fun isEmpty(): Boolean
-    fun getTracks(): List<Track>
+    fun getTracks(consumer: Consumer)
 
-    interface ChangeListener {
-        fun onChange(tracks: List<Track>)
-        fun onClear()
+    interface Consumer {
+        fun consume(tracks: List<Track>)
     }
 }

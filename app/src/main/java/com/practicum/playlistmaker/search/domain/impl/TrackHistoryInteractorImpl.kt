@@ -5,8 +5,7 @@ import com.practicum.playlistmaker.search.domain.api.TrackHistoryInteractor
 import com.practicum.playlistmaker.domain.models.Track
 
 class TrackHistoryInteractorImpl(
-    private val repo: HistoryRepository,
-    private val changeListener: TrackHistoryInteractor.ChangeListener
+    private val repo: HistoryRepository
 ) : TrackHistoryInteractor {
 
     override fun addTrack(track: Track) {
@@ -17,19 +16,17 @@ class TrackHistoryInteractorImpl(
             tracks.remove(tracks[tracks.size - 1])
 
         repo.saveTracks(tracks)
-        changeListener.onChange(tracks)
     }
 
     override fun clear() {
         repo.clearTracks()
-        changeListener.onClear()
     }
 
     override fun isEmpty(): Boolean {
         return repo.getTracks().isEmpty()
     }
 
-    override fun getTracks(): List<Track> {
-        return repo.getTracks()
+    override fun getTracks(consumer: TrackHistoryInteractor.Consumer) {
+        consumer.consume(repo.getTracks())
     }
 }
