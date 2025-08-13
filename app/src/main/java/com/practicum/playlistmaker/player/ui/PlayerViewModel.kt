@@ -13,7 +13,7 @@ import com.practicum.playlistmaker.player.creator.PlayerCreator
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
 import com.practicum.playlistmaker.search.domain.model.TrackMapper
 
-class PlayerViewModel(track: Track, private val player: AudioPlayer) : ViewModel() {
+class PlayerViewModel(track: Track?, private val player: AudioPlayer) : ViewModel() {
     private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Stop)
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
 
@@ -21,28 +21,9 @@ class PlayerViewModel(track: Track, private val player: AudioPlayer) : ViewModel
     fun getTrackPositionLiveData(): LiveData<String> = trackPositionLiveData
 
     private val trackLiveData = MutableLiveData(track)
-    fun getTrackLiveData(): LiveData<Track> = trackLiveData
+    fun getTrackLiveData(): LiveData<Track?> = trackLiveData
 
     private val mainThreadHandler = Handler(Looper.getMainLooper())
-
-    fun clickPlay() {
-        if (player.isPlaying())
-            player.pause()
-        else
-            player.play()
-    }
-
-    fun addCurrentTrackToFavourites() {
-        //TODO: implement in a feature sprint
-    }
-
-    fun likeCurrentTrack() {
-        //TODO: implement in a feature sprint
-    }
-
-    fun pause() {
-        player.pause()
-    }
 
     val timer = LooperTimer(mainThreadHandler, object : TimerTickListener {
         override fun onTickTimer() {
@@ -77,11 +58,31 @@ class PlayerViewModel(track: Track, private val player: AudioPlayer) : ViewModel
 
     init {
         player.setListener(listener)
-        track.previewUrl?.let { player.open(it) }
+        track?.previewUrl?.let { player.open(it) }
     }
 
+    fun clickPlay() {
+        if (player.isPlaying())
+            player.pause()
+        else
+            player.play()
+    }
+
+    fun addCurrentTrackToFavourites() {
+        //TODO: implement in a feature sprint
+    }
+
+    fun likeCurrentTrack() {
+        //TODO: implement in a feature sprint
+    }
+
+    fun pause() {
+        player.pause()
+    }
+
+
     companion object {
-        fun getFactory(track: Track): ViewModelProvider.Factory = viewModelFactory {
+        fun getFactory(track: Track?): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 PlayerViewModel(track, PlayerCreator.getAudioPlayerProvider().provideAudioPlayer())
             }

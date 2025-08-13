@@ -12,8 +12,8 @@ class TrackHistoryInteractorImpl(
         var tracks = repo.getTracks().toMutableList()
         tracks.add(0, track)
         tracks = tracks.toSet().toMutableList()
-        if (tracks.size > 10)
-            tracks.remove(tracks[tracks.size - 1])
+        if (tracks.size > MAX_TRACKS)
+            tracks.remove(tracks[tracks.lastIndex])
 
         repo.saveTracks(tracks)
     }
@@ -28,5 +28,9 @@ class TrackHistoryInteractorImpl(
 
     override fun getTracks(consumer: TrackHistoryInteractor.Consumer) {
         consumer.consume(repo.getTracks())
+    }
+
+    companion object {
+        const val MAX_TRACKS = 10
     }
 }

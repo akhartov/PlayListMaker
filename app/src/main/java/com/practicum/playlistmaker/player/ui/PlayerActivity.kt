@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatActivity
@@ -8,22 +9,22 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.search.domain.model.Track
 
 class PlayerActivity : AppCompatActivity() {
-    companion object {
-        val TRACK = "TRACK"
-    }
-
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var viewModel: PlayerViewModel
 
-    private fun getTrackFromIntent(): Track {
-        return Gson().fromJson(intent.getStringExtra(TRACK), object : TypeToken<Track>() {}.type)
+
+    private fun getTrackFromIntent(): Track? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK, Track::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(TRACK)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,23 +61,25 @@ class PlayerActivity : AppCompatActivity() {
             binding.trackTimePosition.text = trackTimePosition
         }
 
-        viewModel.getTrackLiveData().observe(this) { track ->
-            binding.trackTitle.text = track.trackName
-            binding.trackArtist.text = track.artistName
-            binding.trackLength.text = track.length
+        viewModel.getTrackLiveData().observe(this) {
+            it?.let { track ->
+                binding.trackTitle.text = track.trackName
+                binding.trackArtist.text = track.artistName
+                binding.trackLength.text = track.length
 
-            binding.albumGroup.isVisible = !track.collectionName.isNullOrEmpty()
-            binding.trackAlbum.text = track.collectionName
+                binding.albumGroup.isVisible = !track.collectionName.isNullOrEmpty()
+                binding.trackAlbum.text = track.collectionName
 
-            binding.yearGroup.isVisible = !track.trackYear.isNullOrEmpty()
-            binding.trackYear.text = track.trackYear
+                binding.yearGroup.isVisible = !track.trackYear.isNullOrEmpty()
+                binding.trackYear.text = track.trackYear
 
-            binding.genreGroup.isVisible = !track.primaryGenreName.isNullOrEmpty()
-            binding.trackGenre.text = track.primaryGenreName
+                binding.genreGroup.isVisible = !track.primaryGenreName.isNullOrEmpty()
+                binding.trackGenre.text = track.primaryGenreName
 
-            binding.trackCountry.text = track.country
+                binding.trackCountry.text = track.country
 
-            loadImage(track.coverArtwork)
+                loadImage(track.coverArtwork)
+            }
         }
 
         binding.backButton.setOnClickListener {
@@ -115,5 +118,9 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         viewModel.pause()
+    }
+
+    companion object {
+        val TRACK = "TRACK"
     }
 }

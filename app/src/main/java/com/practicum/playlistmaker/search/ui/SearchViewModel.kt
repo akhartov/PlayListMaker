@@ -87,7 +87,7 @@ class SearchViewModel(private val trackDisplayInteractor: TrackDisplayInteractor
                 }
             }
 
-            override fun fail(e: java.lang.Exception) {
+            override fun fail(e: Exception) {
                 foundTracks = emptyList()
                 renderState(SearchState.Error(e.message ?: ""))
             }
