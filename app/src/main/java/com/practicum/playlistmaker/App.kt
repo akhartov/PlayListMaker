@@ -3,30 +3,24 @@ package com.practicum.playlistmaker
 import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.domain.Creator
+import com.practicum.playlistmaker.main.creator.MainCreator
+import com.practicum.playlistmaker.player.creator.PlayerCreator
+import com.practicum.playlistmaker.search.creator.SearchCreator
+import com.practicum.playlistmaker.settings.creator.SettingsCreator
+import com.practicum.playlistmaker.sharing.creator.SharingCreator
 
 class App : Application() {
-    var darkTheme = false
-    private val settings by lazy { Creator.getSettingsInteractor() }
+    private val nightModeInteractor by lazy { SettingsCreator.getNightModeInteractor() }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate() {
         super.onCreate()
-        Creator.initApplication(this)
-        switchTheme(
-            settings.getNightTheme(applicationContext.resources.configuration.isNightModeActive)
-        )
-    }
+        MainCreator.initApplication(this)
+        SearchCreator.initApplication(this)
+        PlayerCreator.initApplication(this)
+        SettingsCreator.initApplication(this)
+        SharingCreator.initApplication(this)
 
-    fun switchTheme(darkThemeEnabled: Boolean) {
-        darkTheme = darkThemeEnabled
-
-        AppCompatDelegate.setDefaultNightMode(
-            if (darkTheme)
-                AppCompatDelegate.MODE_NIGHT_YES
-            else
-                AppCompatDelegate.MODE_NIGHT_NO
-        )
+        nightModeInteractor.restoreNightMode()
     }
 }
