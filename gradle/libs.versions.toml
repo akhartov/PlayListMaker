@@ -13,6 +13,7 @@ glide = "4.14.2"
 gson = "2.10.1"
 retrofit = "2.9.0"
 ktx = "2.9.2"
+koin = "3.3.0"
 
 [libraries]
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
@@ -30,6 +31,7 @@ gson-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

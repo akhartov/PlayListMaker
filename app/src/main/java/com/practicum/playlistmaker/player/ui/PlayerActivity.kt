@@ -6,17 +6,19 @@ import android.os.Bundle
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.search.domain.model.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
-
+    private val viewModel: PlayerViewModel by viewModel {
+        parametersOf(getTrackFromIntent())
+    }
 
     private fun getTrackFromIntent(): Track? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -31,11 +33,6 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel =
-            ViewModelProvider(
-                this,
-                PlayerViewModel.getFactory(getTrackFromIntent())
-            ).get(PlayerViewModel::class.java)
 
         viewModel.getStateLiveData().observe(this) { state ->
             when (state) {
@@ -67,13 +64,13 @@ class PlayerActivity : AppCompatActivity() {
                 binding.trackArtist.text = track.artistName
                 binding.trackLength.text = track.length
 
-                binding.albumGroup.isVisible = !track.collectionName.isNullOrEmpty()
+                binding.albumGroup.isVisible = track.collectionName.isNotEmpty()
                 binding.trackAlbum.text = track.collectionName
 
-                binding.yearGroup.isVisible = !track.trackYear.isNullOrEmpty()
+                binding.yearGroup.isVisible = track.trackYear.isNotEmpty()
                 binding.trackYear.text = track.trackYear
 
-                binding.genreGroup.isVisible = !track.primaryGenreName.isNullOrEmpty()
+                binding.genreGroup.isVisible = track.primaryGenreName.isNotEmpty()
                 binding.trackGenre.text = track.primaryGenreName
 
                 binding.trackCountry.text = track.country

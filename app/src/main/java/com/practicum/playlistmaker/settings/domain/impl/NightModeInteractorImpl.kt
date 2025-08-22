@@ -9,7 +9,7 @@ import com.practicum.playlistmaker.settings.domain.model.NightModeInteractor
 class NightModeInteractorImpl(
     private val nightModeRepository: NightModeRepository,
     private val changeApplicationNightModeUseCase: ChangeApplicationNightModeUseCase
-): NightModeInteractor {
+) : NightModeInteractor {
     override fun setNightMode(isNight: Boolean) {
         nightModeRepository.setNightMode(isNight)
         changeApplicationNightModeUseCase.setNightMode(isNight)

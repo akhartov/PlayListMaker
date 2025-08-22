@@ -11,9 +11,9 @@ data class Track(
     val length: String,            // Продолжительность трека
     val artworkUrl100: String,     // Ссылка на изображение обложки
     val coverArtwork: String,      // Ссылка на изображение обложки
-    val collectionName: String?,   // Название альбома
-    val trackYear: String?,        // Год релиза трека
-    val primaryGenreName: String?, // Жанр трека
-    val country: String?,          // Страна исполнителя
-    val previewUrl: String?,       // Ссылка на отрывок трека
+    val collectionName: String,   // Название альбома
+    val trackYear: String,        // Год релиза трека
+    val primaryGenreName: String, // Жанр трека
+    val country: String,          // Страна исполнителя
+    val previewUrl: String,       // Ссылка на отрывок трека
 ) : Parcelable

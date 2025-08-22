@@ -1,19 +1,14 @@
 package com.practicum.playlistmaker.search.data.repository
 
-import android.content.Context
+import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.search.domain.repository.HistoryRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 
-class HistoryRepositoryImpl(context: Context) : HistoryRepository {
-    private val storage = context.getSharedPreferences("SEARCH", Context.MODE_PRIVATE)
+class HistoryRepositoryImpl(private val storage: SharedPreferences, private val gson: Gson) :
+    HistoryRepository {
     private val listDataType = object : TypeToken<List<Track>>() {}.type
-    private val gson = Gson()
-
-    companion object {
-        private const val TRACKS_FIELD = "TRACKS"
-    }
 
     override fun saveTracks(tracks: List<Track>) {
         val serializedTracks = gson.toJson(tracks)
@@ -27,5 +22,9 @@ class HistoryRepositoryImpl(context: Context) : HistoryRepository {
 
     override fun clearTracks() {
         storage.edit().clear().apply()
+    }
+
+    companion object {
+        private const val TRACKS_FIELD = "TRACKS"
     }
 }

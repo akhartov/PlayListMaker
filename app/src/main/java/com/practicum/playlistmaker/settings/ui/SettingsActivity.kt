@@ -4,21 +4,18 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(this, SettingsViewModel.getFactory())
-            .get(SettingsViewModel::class.java)
 
         binding.backButton.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -31,9 +28,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.themeSwitcher.setOnCheckedChangeListener { _, isOn ->
             viewModel.setNightMode(isOn)
         }
-
-        //settings.getNightTheme(applicationContext.resources.configuration.isNightModeActive)
-
 
         binding.shareApp.setOnClickListener {
             viewModel.shareApp()

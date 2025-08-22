@@ -1,15 +1,15 @@
 package com.practicum.playlistmaker.settings.data.impl
 
-import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.practicum.playlistmaker.settings.data.model.NightModeRepository
 import com.practicum.playlistmaker.settings.data.model.SettingsRepository
 
 class NightModeRepositoryImpl(
-    private val context: Context,
+    val resources: Resources,
     private val settingsRepository: SettingsRepository
-): NightModeRepository {
+) : NightModeRepository {
     companion object {
         const val NIGHT_MODE_VALUE = "NIGHT_MODE"
     }
@@ -20,6 +20,9 @@ class NightModeRepositoryImpl(
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun getNightMode(): Boolean {
-        return settingsRepository.getString(NIGHT_MODE_VALUE, context.resources.configuration.isNightModeActive.toString()).toBoolean()
+        return settingsRepository.getString(
+            NIGHT_MODE_VALUE,
+            resources.configuration.isNightModeActive.toString()
+        ).toBoolean()
     }
 }

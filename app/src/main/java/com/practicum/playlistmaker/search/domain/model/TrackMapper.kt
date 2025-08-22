@@ -15,11 +15,11 @@ object TrackMapper {
             length = millisToMMSS(dto.trackTimeMillis),
             artworkUrl100 = dto.artworkUrl100,
             coverArtwork = dto.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
-            collectionName = dto.collectionName,
+            collectionName = dto.collectionName ?: "",
             trackYear = getYearFromUtcDateTimeString(dto.releaseDate ?: ""),
-            primaryGenreName = dto.primaryGenreName,
-            country = dto.country,
-            previewUrl = dto.previewUrl
+            primaryGenreName = dto.primaryGenreName ?: "",
+            country = dto.country ?: "",
+            previewUrl = dto.previewUrl ?: ""
         )
     }
 
