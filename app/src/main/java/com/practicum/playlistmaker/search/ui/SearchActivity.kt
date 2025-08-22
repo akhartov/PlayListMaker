@@ -7,18 +7,17 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModel()
     private var textWatcher: TextWatcher? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +26,7 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = createViewModel()
+        initViewModel()
 
         binding.backButton.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -60,61 +59,59 @@ class SearchActivity : AppCompatActivity() {
         binding.clearHistoryButton.isVisible = visible
     }
 
-    private fun createViewModel(): SearchViewModel {
-        return ViewModelProvider(this, SearchViewModel.getFactory())
-            .get(SearchViewModel::class.java)
-            .apply {
-                getSearchStateLiveData().observe(this@SearchActivity) { searchState ->
-                    updateHistoryControlsVisibility(searchState is SearchState.History)
-                    when (searchState) {
-                        is SearchState.Empty -> {
-                            tracksAdapter.updateItems(emptyList())
-                            binding.updateTracksButton.isVisible = false
-                            binding.placeholderGroup.isVisible = false
-                            binding.tracksSearchProgress.isVisible = false
-                        }
+    private fun initViewModel() {
+        viewModel.apply {
+            getSearchStateLiveData().observe(this@SearchActivity) { searchState ->
+                updateHistoryControlsVisibility(searchState is SearchState.History)
+                when (searchState) {
+                    is SearchState.Empty -> {
+                        tracksAdapter.updateItems(emptyList())
+                        binding.updateTracksButton.isVisible = false
+                        binding.placeholderGroup.isVisible = false
+                        binding.tracksSearchProgress.isVisible = false
+                    }
 
-                        is SearchState.History -> {
-                            tracksAdapter.updateItems(searchState.historyTracks)
-                            binding.updateTracksButton.isVisible = false
-                            binding.placeholderGroup.isVisible = false
-                            binding.tracksSearchProgress.isVisible = false
-                        }
+                    is SearchState.History -> {
+                        tracksAdapter.updateItems(searchState.historyTracks)
+                        binding.updateTracksButton.isVisible = false
+                        binding.placeholderGroup.isVisible = false
+                        binding.tracksSearchProgress.isVisible = false
+                    }
 
-                        is SearchState.Error -> {
-                            tracksAdapter.updateItems(emptyList())
-                            binding.noTracksImage.setImageResource(R.drawable.img_no_internet_no_tracks)
-                            binding.noTracksTextview.setText(resources.getString(R.string.no_internet_no_tracks))
-                            binding.updateTracksButton.isVisible = true
-                            binding.placeholderGroup.isVisible = true
-                            binding.tracksSearchProgress.isVisible = false
-                        }
+                    is SearchState.Error -> {
+                        tracksAdapter.updateItems(emptyList())
+                        binding.noTracksImage.setImageResource(R.drawable.img_no_internet_no_tracks)
+                        binding.noTracksTextview.setText(resources.getString(R.string.no_internet_no_tracks))
+                        binding.updateTracksButton.isVisible = true
+                        binding.placeholderGroup.isVisible = true
+                        binding.tracksSearchProgress.isVisible = false
+                    }
 
-                        is SearchState.NotFound -> {
-                            tracksAdapter.updateItems(emptyList())
-                            binding.noTracksImage.setImageResource(R.drawable.img_tracks_not_found)
-                            binding.noTracksTextview.setText(resources.getString(R.string.tracks_not_found))
-                            binding.updateTracksButton.isVisible = false
-                            binding.placeholderGroup.isVisible = true
-                            binding.tracksSearchProgress.isVisible = false
-                        }
+                    is SearchState.NotFound -> {
+                        tracksAdapter.updateItems(emptyList())
+                        binding.noTracksImage.setImageResource(R.drawable.img_tracks_not_found)
+                        binding.noTracksTextview.setText(resources.getString(R.string.tracks_not_found))
+                        binding.updateTracksButton.isVisible = false
+                        binding.placeholderGroup.isVisible = true
+                        binding.tracksSearchProgress.isVisible = false
+                    }
 
-                        is SearchState.InProgress -> {
-                            tracksAdapter.updateItems(emptyList())
-                            binding.updateTracksButton.isVisible = false
-                            binding.placeholderGroup.isVisible = false
-                            binding.tracksSearchProgress.isVisible = true
-                        }
+                    is SearchState.InProgress -> {
+                        tracksAdapter.updateItems(emptyList())
+                        binding.updateTracksButton.isVisible = false
+                        binding.placeholderGroup.isVisible = false
+                        binding.tracksSearchProgress.isVisible = true
+                    }
 
-                        is SearchState.Found -> {
-                            tracksAdapter.updateItems(searchState.foundTracks)
-                            binding.updateTracksButton.isVisible = false
-                            binding.placeholderGroup.isVisible = false
-                            binding.tracksSearchProgress.isVisible = false
-                        }
+                    is SearchState.Found -> {
+                        tracksAdapter.updateItems(searchState.foundTracks)
+                        binding.updateTracksButton.isVisible = false
+                        binding.placeholderGroup.isVisible = false
+                        binding.tracksSearchProgress.isVisible = false
                     }
                 }
             }
+        }
     }
 
     private fun prepareTextEditor() {
@@ -131,7 +128,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.searchText.setOnFocusChangeListener { _, hasFocus ->
-            if(hasFocus)
+            if (hasFocus)
                 viewModel.showHistory()
         }
 

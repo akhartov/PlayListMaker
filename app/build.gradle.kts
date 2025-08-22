@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.glide)
     implementation(libs.gson.gson)
+    implementation(libs.koin)
     implementation(libs.material)
     implementation(libs.retrofit)
     testImplementation(libs.junit)

@@ -4,7 +4,7 @@ import android.media.MediaPlayer
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer.Listener
 
-class MediaPlayerService: AudioPlayer {
+class MediaPlayerService : AudioPlayer {
     private var mediaPlayer = MediaPlayer()
     private var listener: Listener? = null
 
@@ -13,6 +13,7 @@ class MediaPlayerService: AudioPlayer {
     }
 
     override fun open(linkUrl: String) {
+        completePreviousSession()
         mediaPlayer.setDataSource(linkUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
@@ -45,5 +46,10 @@ class MediaPlayerService: AudioPlayer {
 
     override fun getCurrentPosition(): Int {
         return mediaPlayer.getCurrentPosition()
+    }
+
+    private fun completePreviousSession() {
+        mediaPlayer.stop()
+        mediaPlayer.reset()
     }
 }
