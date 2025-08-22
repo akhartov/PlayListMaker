@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.player.di
 
+import android.media.MediaPlayer
 import com.practicum.playlistmaker.player.data.impl.TrackDisplayInteractorImpl
 import com.practicum.playlistmaker.player.data.network.MediaPlayerService
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
@@ -12,7 +13,8 @@ import org.koin.dsl.module
 
 val playerModule = module {
     single<TrackDisplayInteractor> { TrackDisplayInteractorImpl(androidContext()) }
-    single<AudioPlayer> { MediaPlayerService() }
+    single<AudioPlayer> { MediaPlayerService(get()) }
+    single { MediaPlayer() }
 }
 
 val playerViewModelModule = module {
