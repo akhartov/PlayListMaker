@@ -3,24 +3,34 @@ package com.practicum.playlistmaker
 import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.practicum.playlistmaker.main.creator.MainCreator
-import com.practicum.playlistmaker.player.creator.PlayerCreator
-import com.practicum.playlistmaker.search.creator.SearchCreator
-import com.practicum.playlistmaker.settings.creator.SettingsCreator
-import com.practicum.playlistmaker.sharing.creator.SharingCreator
+import com.practicum.playlistmaker.main.di.mainModule
+import com.practicum.playlistmaker.main.di.mainViewModelModule
+import com.practicum.playlistmaker.player.di.playerModule
+import com.practicum.playlistmaker.player.di.playerViewModelModule
+import com.practicum.playlistmaker.search.di.searchModule
+import com.practicum.playlistmaker.search.di.searchViewModelModule
+import com.practicum.playlistmaker.settings.di.settingsModule
+import com.practicum.playlistmaker.settings.di.settingsViewModelModule
+import com.practicum.playlistmaker.settings.domain.model.NightModeInteractor
+import org.koin.android.ext.android.getKoin
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class App : Application() {
-    private val nightModeInteractor by lazy { SettingsCreator.getNightModeInteractor() }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate() {
         super.onCreate()
-        MainCreator.initApplication(this)
-        SearchCreator.initApplication(this)
-        PlayerCreator.initApplication(this)
-        SettingsCreator.initApplication(this)
-        SharingCreator.initApplication(this)
+        startKoin {
+            androidContext(this@App)
+            modules(
+                mainModule, mainViewModelModule,
+                searchModule, searchViewModelModule,
+                playerModule, playerViewModelModule,
+                settingsModule, settingsViewModelModule,
+            )
+        }
 
-        nightModeInteractor.restoreNightMode()
+        (getKoin().get() as NightModeInteractor).restoreNightMode()
     }
 }

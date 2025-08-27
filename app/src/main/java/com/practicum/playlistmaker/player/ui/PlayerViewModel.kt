@@ -5,11 +5,7 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.player.creator.PlayerCreator
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
 import com.practicum.playlistmaker.search.domain.model.TrackMapper
 
@@ -78,14 +74,5 @@ class PlayerViewModel(track: Track?, private val player: AudioPlayer) : ViewMode
 
     fun pause() {
         player.pause()
-    }
-
-
-    companion object {
-        fun getFactory(track: Track?): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(track, PlayerCreator.getAudioPlayerProvider().provideAudioPlayer())
-            }
-        }
     }
 }

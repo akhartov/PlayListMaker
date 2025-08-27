@@ -1,16 +1,10 @@
 package com.practicum.playlistmaker.settings.data.impl
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.practicum.playlistmaker.settings.data.model.SettingsRepository
 
-class SettingsRepositoryImpl(context: Context) : SettingsRepository {
-    companion object {
-        private const val SECTION_NAME = "SETTINGS"
-    }
-
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(SECTION_NAME, Context.MODE_PRIVATE)
+class SettingsRepositoryImpl(private val sharedPreferences: SharedPreferences) :
+    SettingsRepository {
 
     private val listeners = mutableSetOf<(String) -> Unit>()
 
