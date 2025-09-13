@@ -42,11 +42,11 @@
 
     <style name="SearchButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:textSize">@dimen/update_button_text_size</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:backgroundTint">@color/update_search_button</item>
+        <item name="android:backgroundTint">@color/simple_button</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:textColor">@color/update_search_button_text</item>
+        <item name="android:textColor">@color/simple_button_text</item>
         <item name="cornerRadius">@dimen/button_corner</item>
     </style>
 
@@ -63,8 +63,8 @@
         <item name="android:textColor">@color/track_normal_color</item>
     </style>
 
-    <style name="SmallTrackText" parent="TextControl">
-        <item name="android:textSize">@dimen/small_text_size</item>
+    <style name="SmallestTrackText" parent="TextControl">
+        <item name="android:textSize">@dimen/smallest_text_size</item>
         <item name="android:textColor">@color/track_small_color</item>
     </style>
 
@@ -83,13 +83,13 @@
     </style>
 
     <style name="PlayerArtist" parent="PlayerText">
-        <item name="android:textSize">@dimen/update_button_text_size</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textColor">@color/icon_active</item>
     </style>
 
     <style name="PlayerOtherTitle" parent="PlayerText">
-        <item name="android:textSize">@dimen/update_button_text_size</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">@color/track_other_title_color</item>
         <item name="android:layout_marginBottom">16dp</item>
@@ -97,10 +97,18 @@
     </style>
 
     <style name="PlayerOtherValue" parent="PlayerText">
-        <item name="android:textSize">@dimen/update_button_text_size</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">@color/icon_active</item>
         <item name="android:layout_marginBottom">16dp</item>
         <item name="layout_goneMarginBottom">49dp</item>
     </style>
+
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">@dimen/tabs_text_size</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="textAllCaps">false</item>
+        <item name="textFillColor">@color/simple_button_text</item>
+    </style>
+
 </resources>

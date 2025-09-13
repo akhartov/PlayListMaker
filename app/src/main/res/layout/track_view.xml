@@ -43,7 +43,7 @@
 
             <TextView
                 android:id="@+id/artist_name"
-                style="@style/SmallTrackText"
+                style="@style/SmallestTrackText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
@@ -62,7 +62,7 @@
 
             <TextView
                 android:id="@+id/track_time"
-                style="@style/SmallTrackText"
+                style="@style/SmallestTrackText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"

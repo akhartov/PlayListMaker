@@ -118,6 +118,6 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     companion object {
-        val TRACK = "TRACK"
+        const val TRACK = "TRACK"
     }
 }

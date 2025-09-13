@@ -45,16 +45,16 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private val tracksAdapter by lazy {
-        TrackAdapter({ track ->
+        TrackAdapter { track ->
             if (clickTrackDebounce()) {
                 viewModel.openTrack(track)
             }
-        })
+        }
     }
 
     private val handler = Handler(Looper.getMainLooper())
 
-    fun updateHistoryControlsVisibility(visible: Boolean) {
+    private fun updateHistoryControlsVisibility(visible: Boolean) {
         binding.youLookingForText.isVisible = visible
         binding.clearHistoryButton.isVisible = visible
     }
