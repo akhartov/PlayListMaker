@@ -18,8 +18,8 @@
     <color name="track_small_color">#AEAFB4</color>
     <color name="track_other_title_color">#AEAFB4</color>
 
-    <color name="update_search_button">#1A1B22</color>
-    <color name="update_search_button_text">#FFFFFF</color>
+    <color name="simple_button">#1A1B22</color>
+    <color name="simple_button_text">#FFFFFF</color>
 
     <color name="button_play_background">@color/white</color>
     <color name="button_play">#1A1B22</color>

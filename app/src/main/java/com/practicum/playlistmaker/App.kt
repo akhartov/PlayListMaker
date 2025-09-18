@@ -3,6 +3,7 @@ package com.practicum.playlistmaker
 import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.practicum.playlistmaker.library.di.libraryViewModelModule
 import com.practicum.playlistmaker.main.di.mainModule
 import com.practicum.playlistmaker.main.di.mainViewModelModule
 import com.practicum.playlistmaker.player.di.playerModule
@@ -28,6 +29,7 @@ class App : Application() {
                 searchModule, searchViewModelModule,
                 playerModule, playerViewModelModule,
                 settingsModule, settingsViewModelModule,
+                libraryViewModelModule
             )
         }
 

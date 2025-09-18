@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/button_media_library_text"
+        android:text="@string/library_text"
         app:icon="@drawable/ic_library_active"
         />
 

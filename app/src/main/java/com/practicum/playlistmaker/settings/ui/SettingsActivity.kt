@@ -21,7 +21,7 @@ class SettingsActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        viewModel.GetNightModeLiveData().observe(this) { isNightMode ->
+        viewModel.getNightModeLiveData().observe(this) { isNightMode ->
             binding.themeSwitcher.isChecked = isNightMode
         }
 

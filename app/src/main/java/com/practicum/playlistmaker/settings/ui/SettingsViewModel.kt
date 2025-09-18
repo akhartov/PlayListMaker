@@ -12,7 +12,7 @@ class SettingsViewModel(
 ) : ViewModel() {
 
     private val nightModeLiveData = MutableLiveData(nightModeInteractor.getNightMode())
-    fun GetNightModeLiveData(): LiveData<Boolean> = nightModeLiveData
+    fun getNightModeLiveData(): LiveData<Boolean> = nightModeLiveData
 
     fun setNightMode(isNight: Boolean) {
         nightModeInteractor.setNightMode(isNight)
