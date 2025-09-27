@@ -38,8 +38,6 @@ class SearchViewModel(
         historyInteractor.addTrack(track)
         if (foundTracks.isEmpty())
             showHistory()
-
-        trackDisplayInteractor.show(track)
     }
 
     fun clearHistory() {

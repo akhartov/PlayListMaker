@@ -1,36 +1,50 @@
 package com.practicum.playlistmaker.search.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
+import com.practicum.playlistmaker.player.ui.PlayerFragment
+import com.practicum.playlistmaker.ui.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
-class SearchActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySearchBinding
+class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private val viewModel: SearchViewModel by viewModel()
     private var textWatcher: TextWatcher? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private val tracksAdapter by lazy {
+        TrackAdapter { track ->
+            if (clickTrackDebounce()) {
+                viewModel.openTrack(track)
+                findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                    PlayerFragment.createArgs(track)
+                )
+            }
+        }
+    }
 
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    private val handler = Handler(Looper.getMainLooper())
+
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSearchBinding {
+        return FragmentSearchBinding.inflate(inflater, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         initViewModel()
-
-        binding.backButton.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
 
         binding.updateTracksButton.setOnClickListener {
             viewModel.searchDebounce(binding.searchText.text.toString())
@@ -44,24 +58,15 @@ class SearchActivity : AppCompatActivity() {
         prepareTextEditor()
     }
 
-    private val tracksAdapter by lazy {
-        TrackAdapter { track ->
-            if (clickTrackDebounce()) {
-                viewModel.openTrack(track)
-            }
-        }
-    }
-
-    private val handler = Handler(Looper.getMainLooper())
-
     private fun updateHistoryControlsVisibility(visible: Boolean) {
         binding.youLookingForText.isVisible = visible
         binding.clearHistoryButton.isVisible = visible
     }
 
+
     private fun initViewModel() {
         viewModel.apply {
-            getSearchStateLiveData().observe(this@SearchActivity) { searchState ->
+            getSearchStateLiveData().observe(viewLifecycleOwner) { searchState ->
                 updateHistoryControlsVisibility(searchState is SearchState.History)
                 when (searchState) {
                     is SearchState.Empty -> {
@@ -149,10 +154,10 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        //val inputMethodManager =
+        //    getSystemService(requireContext().INPUT_METHOD_SERVICE) as? InputMethodManager
 
-        inputMethodManager?.hideSoftInputFromWindow(binding.searchText.windowToken, 0)
+        //inputMethodManager?.hideSoftInputFromWindow(binding.searchText.windowToken, 0)
     }
 
     private var isClickTrackAllowed = true

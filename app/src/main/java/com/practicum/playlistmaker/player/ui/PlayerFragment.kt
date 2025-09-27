@@ -1,40 +1,39 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
+import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.ui.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PlayerActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityPlayerBinding
+class PlayerFragment: BindingFragment<FragmentPlayerBinding>() {
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentPlayerBinding {
+        return FragmentPlayerBinding.inflate(inflater, container, false)
+    }
+
     private val viewModel: PlayerViewModel by viewModel {
-        parametersOf(getTrackFromIntent())
+        parametersOf(requireArguments().getParcelable(TRACK, Track::class.java))
     }
 
-    private fun getTrackFromIntent(): Track? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK, Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra(TRACK)
-        }
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        viewModel.getStateLiveData().observe(this) { state ->
+        viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
             when (state) {
                 PlayerState.Pause -> {
                     binding.buttonPlay.setImageResource(R.drawable.ic_button_play_100)
@@ -54,11 +53,11 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.getTrackPositionLiveData().observe(this) { trackTimePosition ->
+        viewModel.getTrackPositionLiveData().observe(viewLifecycleOwner) { trackTimePosition ->
             binding.trackTimePosition.text = trackTimePosition
         }
 
-        viewModel.getTrackLiveData().observe(this) {
+        viewModel.getTrackLiveData().observe(viewLifecycleOwner) {
             it?.let { track ->
                 binding.trackTitle.text = track.trackName
                 binding.trackArtist.text = track.artistName
@@ -80,7 +79,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         binding.backButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            findNavController().navigateUp()
         }
 
         binding.buttonPlay.setOnClickListener {
@@ -97,7 +96,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun loadImage(trackUrl: String) {
-        Glide.with(applicationContext).load(Uri.parse(trackUrl))
+        Glide.with(requireContext()).load(Uri.parse(trackUrl))
             .placeholder(R.drawable.track_placeholder)
             .fitCenter()
             .transform(RoundedCorners(dpToPx(resources.getDimension(R.dimen.track_big_image_radius))))
@@ -119,5 +118,14 @@ class PlayerActivity : AppCompatActivity() {
 
     companion object {
         const val TRACK = "TRACK"
+
+        fun newInstance(track: Track) = PlayerFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(TRACK, track)
+            }
+        }
+
+        fun createArgs(track: Track): Bundle =
+            bundleOf(TRACK to track)
     }
 }

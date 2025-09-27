@@ -19,4 +19,7 @@
     <color name="button_round_background">@color/white</color>
     <color name="button_round">#808080</color>
     <color name="button_round_line">#FFFFFF</color>
+
+    <color name="bottom_navi_selected_color">#3772E7</color>
+    <color name="bottom_navi_default_color">#FFFFFF</color>
 </resources>
