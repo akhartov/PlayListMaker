@@ -4,8 +4,6 @@ import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.practicum.playlistmaker.library.di.libraryViewModelModule
-import com.practicum.playlistmaker.main.di.mainModule
-import com.practicum.playlistmaker.main.di.mainViewModelModule
 import com.practicum.playlistmaker.player.di.playerModule
 import com.practicum.playlistmaker.player.di.playerViewModelModule
 import com.practicum.playlistmaker.search.di.searchModule
@@ -25,7 +23,6 @@ class App : Application() {
         startKoin {
             androidContext(this@App)
             modules(
-                mainModule, mainViewModelModule,
                 searchModule, searchViewModelModule,
                 playerModule, playerViewModelModule,
                 settingsModule, settingsViewModelModule,
