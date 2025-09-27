@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.search.ui
 
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,6 +9,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
@@ -25,7 +27,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         TrackAdapter { track ->
             if (clickTrackDebounce()) {
                 viewModel.openTrack(track)
-                findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                findNavController().navigate(
+                    R.id.action_searchFragment_to_playerFragment,
                     PlayerFragment.createArgs(track)
                 )
             }
@@ -154,10 +157,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun hideKeyboard() {
-        //val inputMethodManager =
-        //    getSystemService(requireContext().INPUT_METHOD_SERVICE) as? InputMethodManager
+        val inputMethodManager =
+            requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
 
-        //inputMethodManager?.hideSoftInputFromWindow(binding.searchText.windowToken, 0)
+        inputMethodManager?.hideSoftInputFromWindow(binding.searchText.windowToken, 0)
     }
 
     private var isClickTrackAllowed = true

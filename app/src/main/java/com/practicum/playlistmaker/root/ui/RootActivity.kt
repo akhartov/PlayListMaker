@@ -1,8 +1,8 @@
 package com.practicum.playlistmaker.root.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.practicum.playlistmaker.R
@@ -18,20 +18,15 @@ class RootActivity : AppCompatActivity() {
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.rootFragmentContainerView) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.rootFragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
 
         binding.bottomNavigationView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.playerFragment -> {
-                    binding.rootControlsGroup.visibility = View.GONE
-                }
-                else -> {
-                    binding.rootControlsGroup.visibility = View.VISIBLE
-                }
-            }
+            binding.rootControlsGroup.isVisible =
+                if (destination.id == R.id.playerFragment) false else true
 
             binding.backButton.title = when (destination.id) {
                 R.id.searchFragment -> resources.getString(R.string.search_text)
