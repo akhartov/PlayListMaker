@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.gson.gson)
     implementation(libs.koin)
+    implementation(libs.kotlinx.coroutines)
     implementation(libs.material)
     implementation(libs.retrofit)
     testImplementation(libs.junit)

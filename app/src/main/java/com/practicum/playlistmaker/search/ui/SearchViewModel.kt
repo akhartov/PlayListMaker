@@ -1,15 +1,14 @@
 package com.practicum.playlistmaker.search.ui
 
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.domain.model.TrackDisplayInteractor
 import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
 import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
+import com.practicum.playlistmaker.ui.debounce
 
 class SearchViewModel(
     private val historyInteractor: TrackHistoryInteractor,
@@ -21,7 +20,6 @@ class SearchViewModel(
 
     private var latestSearchText = ""
     private var foundTracks = emptyList<Track>()
-    private val handler = Handler(Looper.getMainLooper())
 
     fun showHistory() {
         historyInteractor.getTracks(object : TrackHistoryInteractor.Consumer {
@@ -45,18 +43,15 @@ class SearchViewModel(
         renderState(SearchState.Empty)
     }
 
+    private val tracksSearchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, false) { changedText ->
+        searchRequest(changedText)
+    }
+
     fun searchDebounce(changedText: String) {
-        latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+        if(latestSearchText != changedText) {
+            latestSearchText = changedText
+            tracksSearchDebounce(changedText)
+        }
     }
 
     private fun renderState(state: SearchState) {
@@ -88,13 +83,7 @@ class SearchViewModel(
         })
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
-
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
 }
