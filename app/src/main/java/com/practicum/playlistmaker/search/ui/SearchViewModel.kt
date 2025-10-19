@@ -5,15 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.player.domain.model.TrackDisplayInteractor
 import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
 import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
 import com.practicum.playlistmaker.ui.debounce
 
 class SearchViewModel(
     private val historyInteractor: TrackHistoryInteractor,
-    private val searchTracksUseCase: SearchTracksUseCase,
-    private val trackDisplayInteractor: TrackDisplayInteractor
+    private val searchTracksUseCase: SearchTracksUseCase
 ) : ViewModel() {
     private val searchStateLiveData = MutableLiveData(SearchState.Empty as SearchState)
     fun getSearchStateLiveData(): LiveData<SearchState> = searchStateLiveData

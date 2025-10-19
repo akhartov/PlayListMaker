@@ -44,6 +44,6 @@ val searchModule = module {
 
 val searchViewModelModule = module {
     viewModel {
-        SearchViewModel(get(), get(), get())
+        SearchViewModel(get(), get())
     }
 }
