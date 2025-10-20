@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
+import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
 import com.practicum.playlistmaker.ui.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val historyInteractor: TrackHistoryInteractor,
@@ -18,6 +19,7 @@ class SearchViewModel(
 
     private var latestSearchText = ""
     private var foundTracks = emptyList<Track>()
+    private var isLastSearchFailed = false
 
     fun showHistory() {
         historyInteractor.getTracks(object : TrackHistoryInteractor.Consumer {
@@ -41,12 +43,13 @@ class SearchViewModel(
         renderState(SearchState.Empty)
     }
 
-    private val tracksSearchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, false) { changedText ->
-        searchRequest(changedText)
-    }
+    private val tracksSearchDebounce =
+        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, false) { changedText ->
+            searchRequest(changedText)
+        }
 
     fun searchDebounce(changedText: String) {
-        if(latestSearchText != changedText) {
+        if (latestSearchText != changedText || isLastSearchFailed) {
             latestSearchText = changedText
             tracksSearchDebounce(changedText)
         }
@@ -57,28 +60,34 @@ class SearchViewModel(
     }
 
     private fun searchRequest(newSearchText: String) {
+        isLastSearchFailed = false
         if (newSearchText.isEmpty()) {
             showHistory()
             return
         }
 
         renderState(SearchState.InProgress)
-        searchTracksUseCase.search(newSearchText, object :
-            SearchTracksUseCase.TracksConsumer {
-            override fun consume(tracks: List<Track>) {
-                foundTracks = tracks
-                if (tracks.isEmpty()) {
-                    renderState(SearchState.NotFound)
-                } else {
-                    renderState(SearchState.Found(tracks))
-                }
-            }
+        viewModelScope.launch {
+            searchTracksUseCase
+                .search(newSearchText)
+                .collect { result ->
+                    when (result) {
+                        is Resource.Error -> {
+                            isLastSearchFailed = true
+                            foundTracks = emptyList()
+                            renderState(SearchState.Error(result.message ?: ""))
+                        }
 
-            override fun fail(e: Exception) {
-                foundTracks = emptyList()
-                renderState(SearchState.Error(e.message ?: ""))
-            }
-        })
+                        is Resource.Success -> {
+                            foundTracks = result.data ?: emptyList()
+                            if (foundTracks.isEmpty())
+                                renderState(SearchState.NotFound)
+                            else
+                                renderState(SearchState.Found(foundTracks))
+                        }
+                    }
+                }
+        }
     }
 
     companion object {
