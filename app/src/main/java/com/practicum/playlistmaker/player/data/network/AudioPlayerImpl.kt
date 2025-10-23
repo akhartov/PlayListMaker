@@ -1,25 +1,24 @@
 package com.practicum.playlistmaker.player.data.network
 
 import android.media.MediaPlayer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
-import com.practicum.playlistmaker.player.domain.api.AudioPlayer.Listener
+import com.practicum.playlistmaker.player.domain.api.TrackPlayingState
 
-class MediaPlayerService(private var mediaPlayer: MediaPlayer) : AudioPlayer {
-    private var listener: Listener? = null
-
-    override fun setListener(listener: Listener) {
-        this.listener = listener
-    }
+class AudioPlayerImpl(private var mediaPlayer: MediaPlayer) : AudioPlayer {
+    private val trackPlayingState = MutableLiveData<TrackPlayingState>(TrackPlayingState.NoTrack)
+    override fun observeTrackPlayingState(): LiveData<TrackPlayingState> = trackPlayingState
 
     override fun open(linkUrl: String) {
         completePreviousSession()
         mediaPlayer.setDataSource(linkUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            listener?.onReadyToPlay()
+            trackPlayingState.postValue(TrackPlayingState.ReadyToPlay)
         }
         mediaPlayer.setOnCompletionListener {
-            listener?.onStop()
+            trackPlayingState.postValue(TrackPlayingState.Completed)
         }
     }
 
@@ -29,18 +28,15 @@ class MediaPlayerService(private var mediaPlayer: MediaPlayer) : AudioPlayer {
 
     override fun play() {
         mediaPlayer.start()
-        listener?.onPlay()
     }
 
     override fun pause() {
         if (mediaPlayer.isPlaying)
             mediaPlayer.pause()
-        listener?.onPause()
     }
 
     override fun stop() {
         mediaPlayer.stop()
-        listener?.onStop()
     }
 
     override fun getCurrentPosition(): Int {

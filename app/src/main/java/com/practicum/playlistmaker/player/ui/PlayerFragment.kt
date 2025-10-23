@@ -18,7 +18,7 @@ import com.practicum.playlistmaker.ui.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PlayerFragment: BindingFragment<FragmentPlayerBinding>() {
+class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     override fun createBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
@@ -34,27 +34,8 @@ class PlayerFragment: BindingFragment<FragmentPlayerBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
-            when (state) {
-                PlayerState.Pause -> {
-                    binding.buttonPlay.setImageResource(R.drawable.ic_button_play_100)
-                }
-
-                PlayerState.Play -> {
-                    binding.buttonPlay.setImageResource(R.drawable.ic_button_pause_100)
-                }
-
-                PlayerState.ReadyToPlay -> {
-                    binding.buttonPlay.setImageResource(R.drawable.ic_button_play_100)
-                }
-
-                PlayerState.Stop -> {
-                    binding.buttonPlay.setImageResource(R.drawable.ic_button_play_100)
-                }
-            }
-        }
-
-        viewModel.getTrackPositionLiveData().observe(viewLifecycleOwner) { trackTimePosition ->
-            binding.trackTimePosition.text = trackTimePosition
+            binding.buttonPlay.setImageResource(if (state.isPlaying == true) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100)
+            binding.trackTimePosition.text = state.trackTimePosition
         }
 
         viewModel.getTrackLiveData().observe(viewLifecycleOwner) {

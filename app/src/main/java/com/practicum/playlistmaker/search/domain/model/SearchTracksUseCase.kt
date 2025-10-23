@@ -1,12 +1,9 @@
 package com.practicum.playlistmaker.search.domain.model
 
-import java.lang.Exception
+
+import com.practicum.playlistmaker.search.ui.Resource
+import kotlinx.coroutines.flow.Flow
 
 interface SearchTracksUseCase {
-    fun search(expression: String, consumer: TracksConsumer)
-
-    interface TracksConsumer {
-        fun consume(tracks: List<Track>)
-        fun fail(e: Exception)
-    }
+    fun search(expression: String): Flow<Resource<List<Track>>>
 }

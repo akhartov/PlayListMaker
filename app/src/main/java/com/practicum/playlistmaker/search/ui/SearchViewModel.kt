@@ -1,27 +1,25 @@
 package com.practicum.playlistmaker.search.ui
 
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.player.domain.model.TrackDisplayInteractor
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
+import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
+import com.practicum.playlistmaker.ui.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val historyInteractor: TrackHistoryInteractor,
-    private val searchTracksUseCase: SearchTracksUseCase,
-    private val trackDisplayInteractor: TrackDisplayInteractor
+    private val searchTracksUseCase: SearchTracksUseCase
 ) : ViewModel() {
     private val searchStateLiveData = MutableLiveData(SearchState.Empty as SearchState)
     fun getSearchStateLiveData(): LiveData<SearchState> = searchStateLiveData
 
     private var latestSearchText = ""
     private var foundTracks = emptyList<Track>()
-    private val handler = Handler(Looper.getMainLooper())
+    private var isLastSearchFailed = false
 
     fun showHistory() {
         historyInteractor.getTracks(object : TrackHistoryInteractor.Consumer {
@@ -45,18 +43,16 @@ class SearchViewModel(
         renderState(SearchState.Empty)
     }
 
+    private val tracksSearchDebounce =
+        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, false) { changedText ->
+            searchRequest(changedText)
+        }
+
     fun searchDebounce(changedText: String) {
-        latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+        if (latestSearchText != changedText || isLastSearchFailed) {
+            latestSearchText = changedText
+            tracksSearchDebounce(changedText)
+        }
     }
 
     private fun renderState(state: SearchState) {
@@ -64,37 +60,37 @@ class SearchViewModel(
     }
 
     private fun searchRequest(newSearchText: String) {
+        isLastSearchFailed = false
         if (newSearchText.isEmpty()) {
             showHistory()
             return
         }
 
         renderState(SearchState.InProgress)
-        searchTracksUseCase.search(newSearchText, object :
-            SearchTracksUseCase.TracksConsumer {
-            override fun consume(tracks: List<Track>) {
-                foundTracks = tracks
-                if (tracks.isEmpty()) {
-                    renderState(SearchState.NotFound)
-                } else {
-                    renderState(SearchState.Found(tracks))
+        viewModelScope.launch {
+            searchTracksUseCase
+                .search(newSearchText)
+                .collect { result ->
+                    when (result) {
+                        is Resource.Error -> {
+                            isLastSearchFailed = true
+                            foundTracks = emptyList()
+                            renderState(SearchState.Error(result.message ?: ""))
+                        }
+
+                        is Resource.Success -> {
+                            foundTracks = result.data ?: emptyList()
+                            if (foundTracks.isEmpty())
+                                renderState(SearchState.NotFound)
+                            else
+                                renderState(SearchState.Found(foundTracks))
+                        }
+                    }
                 }
-            }
-
-            override fun fail(e: Exception) {
-                foundTracks = emptyList()
-                renderState(SearchState.Error(e.message ?: ""))
-            }
-        })
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        }
     }
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
 }

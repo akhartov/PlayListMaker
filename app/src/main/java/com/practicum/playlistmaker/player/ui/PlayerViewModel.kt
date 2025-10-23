@@ -1,67 +1,45 @@
 package com.practicum.playlistmaker.player.ui
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.search.domain.model.Track
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
-import com.practicum.playlistmaker.search.domain.model.TrackMapper
+import com.practicum.playlistmaker.player.domain.api.TrackPlayingState
+import com.practicum.playlistmaker.search.domain.model.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(track: Track?, private val player: AudioPlayer) : ViewModel() {
-    private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Stop)
+    private var timerJob: Job? = null
+    private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Stopped())
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
-
-    private val trackPositionLiveData = MutableLiveData<String>()
-    fun getTrackPositionLiveData(): LiveData<String> = trackPositionLiveData
 
     private val trackLiveData = MutableLiveData(track)
     fun getTrackLiveData(): LiveData<Track?> = trackLiveData
 
-    private val mainThreadHandler = Handler(Looper.getMainLooper())
-
-    val timer = LooperTimer(mainThreadHandler, object : TimerTickListener {
-        override fun onTickTimer() {
-            trackPositionLiveData.postValue(TrackMapper.millisToMMSS(player.getCurrentPosition()))
-        }
-
-        override fun onResetTimer() {
-            trackPositionLiveData.postValue("00:00")
-        }
-    })
-
-    private val listener = object : AudioPlayer.Listener {
-        override fun onReadyToPlay() {
-            stateLiveData.postValue(PlayerState.ReadyToPlay)
-        }
-
-        override fun onPlay() {
-            stateLiveData.postValue(PlayerState.Play)
-            timer.start()
-        }
-
-        override fun onPause() {
-            stateLiveData.postValue(PlayerState.Pause)
-            timer.pause()
-        }
-
-        override fun onStop() {
-            stateLiveData.postValue(PlayerState.Stop)
-            timer.stop()
-        }
+    private val playingObserver = Observer<TrackPlayingState> { state ->
+        stateLiveData.postValue(PlayerState.Stopped())
+        timerJob?.cancel()
     }
 
     init {
-        player.setListener(listener)
         track?.previewUrl?.let { player.open(it) }
+        player.observeTrackPlayingState().observeForever(playingObserver)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        player.observeTrackPlayingState().removeObserver(playingObserver)
     }
 
     fun clickPlay() {
-        if (player.isPlaying())
-            player.pause()
-        else
-            player.play()
+        if (player.isPlaying()) {
+            pause()
+        } else
+            play()
     }
 
     fun addCurrentTrackToFavourites() {
@@ -74,5 +52,21 @@ class PlayerViewModel(track: Track?, private val player: AudioPlayer) : ViewMode
 
     fun pause() {
         player.pause()
+        timerJob?.cancel()
+        stateLiveData.postValue(PlayerState.Paused(player.getCurrentPosition()))
+    }
+
+    private fun play() {
+        player.play()
+        startTimer()
+    }
+
+    private fun startTimer() {
+        timerJob = viewModelScope.launch {
+            while (player.isPlaying()) {
+                stateLiveData.postValue(PlayerState.Playing(player.getCurrentPosition()))
+                delay(300L)
+            }
+        }
     }
 }

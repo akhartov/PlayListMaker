@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.player.domain.api
 
+import androidx.lifecycle.LiveData
+
 interface AudioPlayer {
 
     fun open(linkUrl: String)
@@ -11,12 +13,5 @@ interface AudioPlayer {
     fun isPlaying(): Boolean
     fun getCurrentPosition(): Int
 
-    fun setListener(listener: Listener)
-
-    interface Listener {
-        fun onReadyToPlay()
-        fun onPlay()
-        fun onPause()
-        fun onStop()
-    }
+    fun observeTrackPlayingState(): LiveData<TrackPlayingState>
 }
