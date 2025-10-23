@@ -12,16 +12,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PlayerViewModel(track: Track?, private val player: AudioPlayer) : ViewModel() {
+class PlayerViewModel(val track: Track?, private val player: AudioPlayer) : ViewModel() {
     private var timerJob: Job? = null
-    private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Stopped())
+    private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Loaded(track))
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
 
-    private val trackLiveData = MutableLiveData(track)
-    fun getTrackLiveData(): LiveData<Track?> = trackLiveData
-
     private val playingObserver = Observer<TrackPlayingState> { state ->
-        stateLiveData.postValue(PlayerState.Stopped())
+        stateLiveData.postValue(PlayerState.Stopped(track))
         timerJob?.cancel()
     }
 
@@ -53,7 +50,7 @@ class PlayerViewModel(track: Track?, private val player: AudioPlayer) : ViewMode
     fun pause() {
         player.pause()
         timerJob?.cancel()
-        stateLiveData.postValue(PlayerState.Paused(player.getCurrentPosition()))
+        stateLiveData.postValue(PlayerState.Paused(track, player.getCurrentPosition()))
     }
 
     private fun play() {
@@ -64,7 +61,7 @@ class PlayerViewModel(track: Track?, private val player: AudioPlayer) : ViewMode
     private fun startTimer() {
         timerJob = viewModelScope.launch {
             while (player.isPlaying()) {
-                stateLiveData.postValue(PlayerState.Playing(player.getCurrentPosition()))
+                stateLiveData.postValue(PlayerState.Playing(track, player.getCurrentPosition()))
                 delay(300L)
             }
         }

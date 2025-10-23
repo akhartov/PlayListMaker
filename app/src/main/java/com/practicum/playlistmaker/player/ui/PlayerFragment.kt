@@ -34,29 +34,9 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
+            state.track?.let { showTrackData(it) }
             binding.buttonPlay.setImageResource(if (state.isPlaying == true) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100)
             binding.trackTimePosition.text = state.trackTimePosition
-        }
-
-        viewModel.getTrackLiveData().observe(viewLifecycleOwner) {
-            it?.let { track ->
-                binding.trackTitle.text = track.trackName
-                binding.trackArtist.text = track.artistName
-                binding.trackLength.text = track.length
-
-                binding.albumGroup.isVisible = track.collectionName.isNotEmpty()
-                binding.trackAlbum.text = track.collectionName
-
-                binding.yearGroup.isVisible = track.trackYear.isNotEmpty()
-                binding.trackYear.text = track.trackYear
-
-                binding.genreGroup.isVisible = track.primaryGenreName.isNotEmpty()
-                binding.trackGenre.text = track.primaryGenreName
-
-                binding.trackCountry.text = track.country
-
-                loadImage(track.coverArtwork)
-            }
         }
 
         binding.backButton.setOnClickListener {
@@ -74,6 +54,25 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         binding.buttonFavourite.setOnClickListener {
             viewModel.addCurrentTrackToFavourites()
         }
+    }
+
+    private fun showTrackData(track: Track) {
+        binding.trackTitle.text = track.trackName
+        binding.trackArtist.text = track.artistName
+        binding.trackLength.text = track.length
+
+        binding.albumGroup.isVisible = track.collectionName.isNotEmpty()
+        binding.trackAlbum.text = track.collectionName
+
+        binding.yearGroup.isVisible = track.trackYear.isNotEmpty()
+        binding.trackYear.text = track.trackYear
+
+        binding.genreGroup.isVisible = track.primaryGenreName.isNotEmpty()
+        binding.trackGenre.text = track.primaryGenreName
+
+        binding.trackCountry.text = track.country
+
+        loadImage(track.coverArtwork)
     }
 
     private fun loadImage(trackUrl: String) {
