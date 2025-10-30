@@ -86,11 +86,11 @@
         />
 
     <ImageButton
-        android:id="@+id/button_favourite"
+        android:id="@+id/button_add_to_list"
         android:layout_width="@dimen/normal_round_button"
         android:layout_height="@dimen/normal_round_button"
         android:background="@drawable/round_button"
-        android:src="@drawable/ic_button_add_favourite_51"
+        android:src="@drawable/ic_button_51_add_to_list_unchecked"
         app:layout_constraintBottom_toTopOf="@id/textsBarrier"
         app:layout_constraintStart_toStartOf="@id/left_guideline"
         app:layout_constraintTop_toBottomOf="@+id/track_artist"
@@ -103,17 +103,17 @@
         android:background="@drawable/round_button_big"
         android:src="@drawable/ic_button_play_100"
         app:layout_constraintBottom_toTopOf="@id/textsBarrier"
-        app:layout_constraintEnd_toStartOf="@+id/button_like"
-        app:layout_constraintStart_toEndOf="@+id/button_favourite"
+        app:layout_constraintEnd_toStartOf="@+id/button_change_favourites"
+        app:layout_constraintStart_toEndOf="@+id/button_add_to_list"
         app:layout_constraintTop_toBottomOf="@+id/track_artist"
         />
 
     <ImageButton
-        android:id="@+id/button_like"
+        android:id="@+id/button_change_favourites"
         android:layout_width="@dimen/normal_round_button"
         android:layout_height="@dimen/normal_round_button"
         android:background="@drawable/round_button"
-        android:src="@drawable/ic_button_like_51"
+        android:src="@drawable/ic_button_51_favourite_unchecked"
         app:layout_constraintBottom_toTopOf="@id/textsBarrier"
         app:layout_constraintEnd_toEndOf="@id/right_guideline"
         app:layout_constraintTop_toBottomOf="@+id/track_artist"

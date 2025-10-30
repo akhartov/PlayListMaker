@@ -35,7 +35,7 @@ val searchModule = module {
 
     factory<ItunesClient> { ItunesClientImpl(get()) }
 
-    factory<SearchTracksUseCase> { SearchTracksUseCaseImpl(get()) }
+    factory<SearchTracksUseCase> { SearchTracksUseCaseImpl(get(), get()) }
 
     single<HistoryRepository> { HistoryRepositoryImpl(get(), get()) }
 

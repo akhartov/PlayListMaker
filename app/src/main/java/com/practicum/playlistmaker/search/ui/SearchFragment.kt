@@ -2,8 +2,6 @@ package com.practicum.playlistmaker.search.ui
 
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,11 +10,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerFragment
+import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.ui.BindingFragment
+import com.practicum.playlistmaker.ui.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
@@ -25,17 +26,18 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private val tracksAdapter by lazy {
         TrackAdapter { track ->
-            if (clickTrackDebounce()) {
-                viewModel.openTrack(track)
-                findNavController().navigate(
-                    R.id.action_searchFragment_to_playerFragment,
-                    PlayerFragment.createArgs(track)
-                )
-            }
+            tracksClickDebounce(track)
         }
     }
 
-    private val handler = Handler(Looper.getMainLooper())
+    private val tracksClickDebounce =
+        debounce<Track>(CLICK_TRACK_DEBOUNCE_DELAY, lifecycleScope, true) { track ->
+            viewModel.openTrack(track)
+            findNavController().navigate(
+                R.id.action_searchFragment_to_playerFragment,
+                PlayerFragment.createArgs(track)
+            )
+        }
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -152,10 +154,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         textWatcher?.let { binding.searchText.addTextChangedListener(it) }
     }
 
-    companion object {
-        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
-    }
-
     private fun hideKeyboard() {
         val inputMethodManager =
             requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -163,14 +161,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         inputMethodManager?.hideSoftInputFromWindow(binding.searchText.windowToken, 0)
     }
 
-    private var isClickTrackAllowed = true
-
-    private fun clickTrackDebounce(): Boolean {
-        val current = isClickTrackAllowed
-        if (isClickTrackAllowed) {
-            isClickTrackAllowed = false
-            handler.postDelayed({ isClickTrackAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
-        }
-        return current
+    companion object {
+        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
     }
 }

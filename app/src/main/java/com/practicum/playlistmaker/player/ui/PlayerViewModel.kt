@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.library.domain.FavouritesInteractor
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
 import com.practicum.playlistmaker.player.domain.api.TrackPlayingState
 import com.practicum.playlistmaker.search.domain.model.Track
@@ -12,11 +13,17 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PlayerViewModel(val track: Track?, private val player: AudioPlayer) : ViewModel() {
+class PlayerViewModel(
+    val track: Track?,
+    private val player: AudioPlayer,
+    private val trackFavouritesInteractor: FavouritesInteractor
+) : ViewModel() {
     private var timerJob: Job? = null
     private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Loaded(track))
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
 
+    private val userTrackState = MutableLiveData<UserTrackState?>(null)
+    fun getUserTrackLiveData(): LiveData<UserTrackState?> = userTrackState
     private val playingObserver = Observer<TrackPlayingState> { state ->
         stateLiveData.postValue(PlayerState.Stopped(track))
         timerJob?.cancel()
@@ -25,6 +32,15 @@ class PlayerViewModel(val track: Track?, private val player: AudioPlayer) : View
     init {
         track?.previewUrl?.let { player.open(it) }
         player.observeTrackPlayingState().observeForever(playingObserver)
+
+        track?.let {
+            viewModelScope.launch {
+                trackFavouritesInteractor.beginMonitoring(track.trackId)
+                trackFavouritesInteractor.flowTrackChanges().collect { state ->
+                    userTrackState.postValue(state)
+                }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -39,12 +55,16 @@ class PlayerViewModel(val track: Track?, private val player: AudioPlayer) : View
             play()
     }
 
-    fun addCurrentTrackToFavourites() {
-        //TODO: implement in a feature sprint
+    fun tapFavouriteTrack() {
+        track?.let {
+            viewModelScope.launch {
+                trackFavouritesInteractor.changeFavourite(track)
+            }
+        }
     }
 
     fun likeCurrentTrack() {
-        //TODO: implement in a feature sprint
+        //TODO: implement in a future sprint
     }
 
     fun pause() {

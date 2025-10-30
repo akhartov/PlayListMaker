@@ -35,8 +35,18 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
         viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
             state.track?.let { showTrackData(it) }
-            binding.buttonPlay.setImageResource(if (state.isPlaying == true) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100)
-            binding.trackTimePosition.text = state.trackTimePosition
+            state.isPlaying?.let { isPlaying -> binding.buttonPlay.setImageResource(if (isPlaying == true) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100) }
+            state.trackTimePosition?.let { positionText ->
+                binding.trackTimePosition.text = positionText
+            }
+        }
+
+        viewModel.getUserTrackLiveData().observe(viewLifecycleOwner) { state ->
+            state?.let {
+                binding.buttonChangeFavourites.setImageResource(
+                    if (state.isFavourite) R.drawable.ic_button_51_favourite_checked else R.drawable.ic_button_51_favourite_unchecked
+                )
+            }
         }
 
         binding.backButton.setOnClickListener {
@@ -47,12 +57,12 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             viewModel.clickPlay()
         }
 
-        binding.buttonLike.setOnClickListener {
+        binding.buttonAddToList.setOnClickListener {
             viewModel.likeCurrentTrack()
         }
 
-        binding.buttonFavourite.setOnClickListener {
-            viewModel.addCurrentTrackToFavourites()
+        binding.buttonChangeFavourites.setOnClickListener {
+            viewModel.tapFavouriteTrack()
         }
     }
 
@@ -98,12 +108,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     companion object {
         const val TRACK = "TRACK"
-
-        fun newInstance(track: Track) = PlayerFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(TRACK, track)
-            }
-        }
 
         fun createArgs(track: Track): Bundle =
             bundleOf(TRACK to track)
