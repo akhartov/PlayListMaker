@@ -2,9 +2,9 @@ package com.practicum.playlistmaker.search.di
 
 import android.content.Context
 import com.google.gson.Gson
-import com.practicum.playlistmaker.search.data.NetworkClient
+import com.practicum.playlistmaker.search.data.ItunesClient
 import com.practicum.playlistmaker.search.data.network.ItunesApiService
-import com.practicum.playlistmaker.search.data.network.ItunesNetworkClient
+import com.practicum.playlistmaker.search.data.network.ItunesClientImpl
 import com.practicum.playlistmaker.search.data.repository.HistoryRepositoryImpl
 import com.practicum.playlistmaker.search.domain.impl.SearchTracksUseCaseImpl
 import com.practicum.playlistmaker.search.domain.impl.TrackHistoryInteractorImpl
@@ -33,9 +33,9 @@ val searchModule = module {
             .create(ItunesApiService::class.java)
     }
 
-    factory<NetworkClient> { ItunesNetworkClient(get()) }
+    factory<ItunesClient> { ItunesClientImpl(get()) }
 
-    factory<SearchTracksUseCase> { SearchTracksUseCaseImpl(get()) }
+    factory<SearchTracksUseCase> { SearchTracksUseCaseImpl(get(), get()) }
 
     single<HistoryRepository> { HistoryRepositoryImpl(get(), get()) }
 

@@ -8,6 +8,7 @@ import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
 import com.practicum.playlistmaker.ui.debounce
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -44,7 +45,7 @@ class SearchViewModel(
     }
 
     private val tracksSearchDebounce =
-        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, false) { changedText ->
+        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
             searchRequest(changedText)
         }
 
@@ -70,22 +71,17 @@ class SearchViewModel(
         viewModelScope.launch {
             searchTracksUseCase
                 .search(newSearchText)
+                .catch { error ->
+                    isLastSearchFailed = true
+                    foundTracks = emptyList()
+                    renderState(SearchState.Error(error.message ?: ""))
+                }
                 .collect { result ->
-                    when (result) {
-                        is Resource.Error -> {
-                            isLastSearchFailed = true
-                            foundTracks = emptyList()
-                            renderState(SearchState.Error(result.message ?: ""))
-                        }
-
-                        is Resource.Success -> {
-                            foundTracks = result.data ?: emptyList()
-                            if (foundTracks.isEmpty())
-                                renderState(SearchState.NotFound)
-                            else
-                                renderState(SearchState.Found(foundTracks))
-                        }
-                    }
+                    foundTracks = result.tracks
+                    if (foundTracks.isEmpty())
+                        renderState(SearchState.NotFound)
+                    else
+                        renderState(SearchState.Found(foundTracks))
                 }
         }
     }

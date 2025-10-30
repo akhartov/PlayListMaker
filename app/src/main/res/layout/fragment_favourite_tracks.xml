@@ -5,6 +5,13 @@
     android:layout_height="match_parent"
     >
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/no_tracks_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:constraint_referenced_ids="no_tracks_image,no_tracks_textview"
+        />
+
     <ImageView
         android:id="@+id/no_tracks_image"
         android:layout_width="0dp"
@@ -32,6 +39,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/no_tracks_image"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        style="@style/TextControl"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginVertical="@dimen/track_vertical_border"
+        android:outlineAmbientShadowColor="@color/black"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

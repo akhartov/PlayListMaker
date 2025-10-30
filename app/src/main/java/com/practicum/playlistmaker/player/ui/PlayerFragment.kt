@@ -34,28 +34,18 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
-            binding.buttonPlay.setImageResource(if (state.isPlaying == true) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100)
-            binding.trackTimePosition.text = state.trackTimePosition
+            state.track?.let { showTrackData(it) }
+            state.isPlaying?.let { isPlaying -> binding.buttonPlay.setImageResource(if (isPlaying == true) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100) }
+            state.trackTimePosition?.let { positionText ->
+                binding.trackTimePosition.text = positionText
+            }
         }
 
-        viewModel.getTrackLiveData().observe(viewLifecycleOwner) {
-            it?.let { track ->
-                binding.trackTitle.text = track.trackName
-                binding.trackArtist.text = track.artistName
-                binding.trackLength.text = track.length
-
-                binding.albumGroup.isVisible = track.collectionName.isNotEmpty()
-                binding.trackAlbum.text = track.collectionName
-
-                binding.yearGroup.isVisible = track.trackYear.isNotEmpty()
-                binding.trackYear.text = track.trackYear
-
-                binding.genreGroup.isVisible = track.primaryGenreName.isNotEmpty()
-                binding.trackGenre.text = track.primaryGenreName
-
-                binding.trackCountry.text = track.country
-
-                loadImage(track.coverArtwork)
+        viewModel.getUserTrackLiveData().observe(viewLifecycleOwner) { state ->
+            state?.let {
+                binding.buttonChangeFavourites.setImageResource(
+                    if (state.isFavourite) R.drawable.ic_button_51_favourite_checked else R.drawable.ic_button_51_favourite_unchecked
+                )
             }
         }
 
@@ -67,13 +57,32 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             viewModel.clickPlay()
         }
 
-        binding.buttonLike.setOnClickListener {
+        binding.buttonAddToList.setOnClickListener {
             viewModel.likeCurrentTrack()
         }
 
-        binding.buttonFavourite.setOnClickListener {
-            viewModel.addCurrentTrackToFavourites()
+        binding.buttonChangeFavourites.setOnClickListener {
+            viewModel.tapFavouriteTrack()
         }
+    }
+
+    private fun showTrackData(track: Track) {
+        binding.trackTitle.text = track.trackName
+        binding.trackArtist.text = track.artistName
+        binding.trackLength.text = track.length
+
+        binding.albumGroup.isVisible = track.collectionName.isNotEmpty()
+        binding.trackAlbum.text = track.collectionName
+
+        binding.yearGroup.isVisible = track.trackYear.isNotEmpty()
+        binding.trackYear.text = track.trackYear
+
+        binding.genreGroup.isVisible = track.primaryGenreName.isNotEmpty()
+        binding.trackGenre.text = track.primaryGenreName
+
+        binding.trackCountry.text = track.country
+
+        loadImage(track.coverArtwork)
     }
 
     private fun loadImage(trackUrl: String) {
@@ -99,12 +108,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     companion object {
         const val TRACK = "TRACK"
-
-        fun newInstance(track: Track) = PlayerFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(TRACK, track)
-            }
-        }
 
         fun createArgs(track: Track): Bundle =
             bundleOf(TRACK to track)
