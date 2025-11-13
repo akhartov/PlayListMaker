@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.library.domain.FavouritesInteractor
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
 import com.practicum.playlistmaker.player.domain.api.TrackPlayingState
+import com.practicum.playlistmaker.playlist.domain.PlaylistCover
+import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,11 +18,15 @@ import kotlinx.coroutines.launch
 class PlayerViewModel(
     val track: Track?,
     private val player: AudioPlayer,
-    private val trackFavouritesInteractor: FavouritesInteractor
+    private val trackFavouritesInteractor: FavouritesInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
     private var timerJob: Job? = null
     private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Loaded(track))
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
+
+    private val playlistsLiveData = MutableLiveData<List<PlaylistCover>>()
+    fun getPlaylistLiveData(): LiveData<List<PlaylistCover>> = playlistsLiveData
 
     private val userTrackState = MutableLiveData<UserTrackState?>(null)
     fun getUserTrackLiveData(): LiveData<UserTrackState?> = userTrackState
@@ -39,6 +45,12 @@ class PlayerViewModel(
                 trackFavouritesInteractor.flowTrackChanges().collect { state ->
                     userTrackState.postValue(state)
                 }
+            }
+        }
+
+        viewModelScope.launch {
+            playlistInteractor.getPlaylists().collect { items ->
+                playlistsLiveData.postValue(items)
             }
         }
     }

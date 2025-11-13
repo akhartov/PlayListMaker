@@ -43,7 +43,6 @@ android {
 dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
-    annotationProcessor(libs.glidecompiler)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
@@ -55,6 +54,7 @@ dependencies {
     implementation(libs.fragment.ktx)
     implementation(libs.converter.gson)
     implementation(libs.glide)
+    annotationProcessor(libs.glidecompiler)
     implementation(libs.gson.gson)
     implementation(libs.koin)
     implementation(libs.kotlinx.coroutines)

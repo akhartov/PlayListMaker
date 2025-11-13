@@ -1,11 +1,11 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.practicum.playlistmaker.di.databaseModule
 import com.practicum.playlistmaker.library.di.libraryViewModelModule
 import com.practicum.playlistmaker.player.di.playerModule
 import com.practicum.playlistmaker.player.di.playerViewModelModule
+import com.practicum.playlistmaker.playlist.di.playlistViewModelModule
 import com.practicum.playlistmaker.search.di.searchModule
 import com.practicum.playlistmaker.search.di.searchViewModelModule
 import com.practicum.playlistmaker.settings.di.settingsModule
@@ -17,16 +17,17 @@ import org.koin.core.context.startKoin
 
 class App : Application() {
 
-    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
             modules(
+                databaseModule,
                 searchModule, searchViewModelModule,
                 playerModule, playerViewModelModule,
                 settingsModule, settingsViewModelModule,
-                libraryViewModelModule
+                libraryViewModelModule,
+                playlistViewModelModule
             )
         }
 

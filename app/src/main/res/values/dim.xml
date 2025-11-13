@@ -33,4 +33,6 @@
     <dimen name="big_player_margin">24dp</dimen>
     <dimen name="normal_round_button">52dp</dimen>
     <dimen name="big_round_button">100dp</dimen>
+    <dimen name="add_cover_rect">312dp</dimen>
+    <dimen name="add_cover_image">100dp</dimen>
 </resources>

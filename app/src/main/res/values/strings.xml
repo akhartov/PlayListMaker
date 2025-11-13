@@ -27,4 +27,7 @@
     <string name="history_tracks_is_empty">Ваша медиатека пуста</string>
     <string name="no_playlists_text">Вы не создали\nни одного плейлиста</string>
     <string name="new_playlist">Новый плейлист</string>
+    <string name="text_add_to_playlist">Добавить в плейлист</string>
+    <string name="text_new_playlist">Новый плейлист</string>
+    <string name="text_create">Создать</string>
 </resources>

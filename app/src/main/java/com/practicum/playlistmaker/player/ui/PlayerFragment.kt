@@ -8,15 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
+import com.practicum.playlistmaker.playlist.ui.PlaylistEditorFragment
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.search.ui.TrackAdapter
 import com.practicum.playlistmaker.ui.BindingFragment
+import com.practicum.playlistmaker.ui.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+
 
 class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     override fun createBinding(
@@ -28,6 +34,21 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(requireArguments().getParcelable(TRACK, Track::class.java))
+    }
+
+    private val playlistClickDebounce =
+        debounce<Int>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { id ->
+            //viewModel.openTrack(track)
+            findNavController().navigate(
+                R.id.action_playerFragment_to_playlistEditorFragment,
+                PlaylistEditorFragment.createArgs(id)
+            )
+        }
+
+    private val playlistsAdapter by lazy {
+        PlaylistAdapter { playlist ->
+            //tracksClickDebounce(track)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,6 +70,10 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             }
         }
 
+        viewModel.getPlaylistLiveData().observe(viewLifecycleOwner) { items ->
+            playlistsAdapter.updateItems(items)
+        }
+
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -58,11 +83,42 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         binding.buttonAddToList.setOnClickListener {
+            BottomSheetBehavior.from(binding.playerBottomSheet).apply {
+                state = BottomSheetBehavior.STATE_COLLAPSED
+            }
             viewModel.likeCurrentTrack()
         }
 
         binding.buttonChangeFavourites.setOnClickListener {
             viewModel.tapFavouriteTrack()
+        }
+
+        binding.newPlaylistButton.setOnClickListener {
+            playlistClickDebounce(0)
+        }
+
+        binding.playlistsRecyclerView.adapter = playlistsAdapter
+
+
+        BottomSheetBehavior.from(binding.playerBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            binding.overlay.visibility = View.GONE
+                        }
+
+                        else -> {
+                            binding.overlay.visibility = View.VISIBLE
+                        }
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
         }
     }
 
@@ -108,6 +164,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     companion object {
         const val TRACK = "TRACK"
+        const val CLICK_DEBOUNCE_DELAY = 500L
 
         fun createArgs(track: Track): Bundle =
             bundleOf(TRACK to track)

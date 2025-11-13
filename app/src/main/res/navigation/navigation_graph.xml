@@ -70,5 +70,22 @@
         android:name="com.practicum.playlistmaker.player.ui.PlayerFragment"
         android:label="fragment_player"
         tools:layout="@layout/fragment_player"
+        >
+
+        <action
+            android:id="@+id/action_playerFragment_to_playlistEditorFragment"
+            app:destination="@id/playlistEditorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/playlistEditorFragment"
+        android:name="com.practicum.playlistmaker.playlist.ui.PlaylistEditorFragment"
+        android:label="fragment_playlist_editor"
+        tools:layout="@layout/fragment_playlist_editor"
         />
 </navigation>

@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.library.domain
 
-import com.practicum.playlistmaker.library.db.FavouritesRepository
 import com.practicum.playlistmaker.player.ui.UserTrackState
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
