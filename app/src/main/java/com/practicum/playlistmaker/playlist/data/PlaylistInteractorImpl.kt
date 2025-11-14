@@ -6,6 +6,7 @@ import com.practicum.playlistmaker.playlist.domain.PlaylistCover
 import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
 import com.practicum.playlistmaker.playlist.domain.PlaylistRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class PlaylistInteractorImpl(
@@ -32,16 +33,33 @@ class PlaylistInteractorImpl(
         return true
     }
 
+
     override fun getPlaylists(): Flow<List<PlaylistCover>> {
         return playlistRepository.getPlaylists().map { playlists ->
             playlists.map {
                 PlaylistCover(
+                    id = it.id,
                     title = it.title,
                     description = it.description,
                     tracksInfo = it.items,
-                    imagePath = it.coverImagePath
+                    imagePath = fileRepository.getImagePath(it.coverFilename) ?: ""
                 )
             }
         }
+    }
+
+    override fun getPlaylist(playlistId: Int): Flow<PlaylistCover> = flow {
+        playlistRepository.getPlaylist(playlistId).collect { emit(map(it)) }
+    }
+
+
+    private fun map(entry: PlaylistEntry): PlaylistCover {
+        return PlaylistCover(
+            id = entry.id,
+            title = entry.title,
+            description = entry.description,
+            tracksInfo = entry.items,
+            imagePath = fileRepository.getImagePath(entry.coverFilename) ?: ""
+        )
     }
 }

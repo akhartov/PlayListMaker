@@ -9,6 +9,6 @@ data class PlaylistEntry(
     val id: Int,
     val title: String,
     val description: String,
-    val coverImagePath: String,
+    val coverFilename: String,
     val items: String = ""
 )

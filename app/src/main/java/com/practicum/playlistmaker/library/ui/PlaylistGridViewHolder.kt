@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.library.ui
 
-import android.net.Uri
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -24,8 +23,9 @@ class PlaylistGridViewHolder(
         binding.title.text = cover.title
         binding.info.text = cover.tracksInfo
 
+
         Glide.with(itemView.context)
-            .load(Uri.parse(cover.imagePath))
+            .load(cover.imagePath)
             .placeholder(R.drawable.track_placeholder)
             .fitCenter()
             .transform(RoundedCorners(dpToPx(itemView.resources.getDimension(R.dimen.track_image_radius))))

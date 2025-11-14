@@ -8,4 +8,6 @@ interface PlaylistInteractor {
     suspend fun createCover(title: String, description: String, coverFullPath: Uri?): Boolean
 
     fun getPlaylists(): Flow<List<PlaylistCover>>
+
+    fun getPlaylist(playlistId: Int): Flow<PlaylistCover>
 }

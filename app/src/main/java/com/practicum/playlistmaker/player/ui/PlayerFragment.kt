@@ -17,7 +17,6 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.playlist.ui.PlaylistEditorFragment
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.search.ui.TrackAdapter
 import com.practicum.playlistmaker.ui.BindingFragment
 import com.practicum.playlistmaker.ui.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -37,17 +36,16 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     }
 
     private val playlistClickDebounce =
-        debounce<Int>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { id ->
-            //viewModel.openTrack(track)
+        debounce<Pair<Int, Track?>>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { pair ->
             findNavController().navigate(
                 R.id.action_playerFragment_to_playlistEditorFragment,
-                PlaylistEditorFragment.createArgs(id)
+                PlaylistEditorFragment.createArgs(pair.first, pair.second?.trackId?:0)
             )
         }
 
     private val playlistsAdapter by lazy {
         PlaylistAdapter { playlist ->
-            //tracksClickDebounce(track)
+            playlistClickDebounce(Pair(playlist.id, requireArguments().getParcelable(TRACK, Track::class.java)))
         }
     }
 
@@ -94,7 +92,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         binding.newPlaylistButton.setOnClickListener {
-            playlistClickDebounce(0)
+            playlistClickDebounce(Pair(0, null))
         }
 
         binding.playlistsRecyclerView.adapter = playlistsAdapter

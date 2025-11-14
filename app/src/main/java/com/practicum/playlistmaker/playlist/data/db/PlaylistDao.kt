@@ -14,4 +14,7 @@ interface PlaylistDao {
 
     @Query("SELECT * FROM playlists ORDER BY title")
     fun getItems(): Flow<List<PlaylistEntry>>
+
+    @Query("SELECT * FROM playlists WHERE id = :playlistId")
+    fun getItem(playlistId:Int): Flow<PlaylistEntry>
 }

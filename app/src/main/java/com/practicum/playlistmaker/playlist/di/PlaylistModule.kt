@@ -12,11 +12,11 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val playlistViewModelModule = module {
-    viewModel { (playlistId: Int) ->
-        PlaylistEditorViewModel(playlistId, get())
+    viewModel { (playlistId: Int, trackId: Int) ->
+        PlaylistEditorViewModel(playlistId, trackId, get())
     }
 
-    single<PlaylistRepository> { PlaylistRepositoryImpl(get(), get()) }
+    single<PlaylistRepository> { PlaylistRepositoryImpl(get()) }
 
     factory<PlaylistInteractor> { PlaylistInteractorImpl(get(), get()) }
     factory { PlaylistMapper() }

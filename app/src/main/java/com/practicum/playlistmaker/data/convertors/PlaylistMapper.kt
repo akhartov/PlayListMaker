@@ -9,7 +9,7 @@ class PlaylistMapper {
             id = 0,
             title = playlistCover.title,
             description = playlistCover.description,
-            coverImagePath = playlistCover.imagePath
+            coverFilename = playlistCover.imagePath
         )
     }
 }
