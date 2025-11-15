@@ -7,18 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
+import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistEditorBinding
 import com.practicum.playlistmaker.ui.BindingFragment
+import com.practicum.playlistmaker.ui.floatDpToPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() {
-    private val viewModel: PlaylistEditorViewModel by viewModel {
-        parametersOf(requireArguments().getInt(PLAYLIST_ID), requireArguments().getInt(TRACK_ID))
-    }
-    private var imageUri: Uri? = null
+    private val viewModel: PlaylistEditorViewModel by viewModel()
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -31,12 +31,8 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
         super.onViewCreated(view, savedInstanceState)
 
         binding.newPlaylistButton.setOnClickListener {
-            if (imageUri != null && !binding.playlistName.text.isNullOrEmpty() && binding.playlistDescription.text.isNullOrEmpty()) {
-                viewModel.savePlaylist(
-                    binding.playlistName.text.toString(),
-                    binding.playlistDescription.text.toString(),
-                    imageUri
-                )
+            if (!binding.playlistName.text.isNullOrEmpty()) {
+                viewModel.savePlaylist()
             }
 
             findNavController().navigateUp()
@@ -44,25 +40,56 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
 
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-                imageUri = uri
-                binding.coverImage.setImageURI(uri)
+                viewModel.imageUri = uri
+                applyImage(uri)
             }
 
         binding.coverImage.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
-        viewModel.getPlaylistLiveData().observe(viewLifecycleOwner) { playlistCover ->
-            binding.playlistName.setText(playlistCover.title)
-            binding.playlistDescription.setText(playlistCover.description)
+        binding.playlistName.addTextChangedListener { text ->
+            viewModel.playlistName = text.toString()
+            binding.newPlaylistButton.isEnabled = !text.isNullOrBlank()
+        }
+
+        binding.playlistDescription.addTextChangedListener { text ->
+            viewModel.playlistDescription = text.toString()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(URI, viewModel.imageUri)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if(savedInstanceState == null)
+            return
+
+        applyImage(savedInstanceState.getParcelable(URI, Uri::class.java))
+    }
+
+    private fun applyImage(uri: Uri?) {
+        uri?.let { existingUri ->
+            Glide.with(requireContext())
+                .load(existingUri)
+                .placeholder(R.drawable.track_placeholder)
+                .circleCrop()
+                .transform(
+                    RoundedCorners(
+                        floatDpToPx(
+                            resources,
+                            resources.getDimension(R.dimen.big_image_radius)
+                        )
+                    )
+                )
+                .into(binding.coverImage)
         }
     }
 
     companion object {
-        const val PLAYLIST_ID = "PLAYLIST_ID"
-        const val TRACK_ID = "TRACK_ID"
-
-        fun createArgs(playlistId: Int, trackId: Int): Bundle =
-            bundleOf(PLAYLIST_ID to playlistId, TRACK_ID to trackId)
+        private const val URI = "URI"
     }
 }

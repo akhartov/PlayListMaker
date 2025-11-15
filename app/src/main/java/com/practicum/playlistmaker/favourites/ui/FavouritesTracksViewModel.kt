@@ -1,11 +1,11 @@
-package com.practicum.playlistmaker.library.ui
+package com.practicum.playlistmaker.favourites.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.library.domain.FavouritesInteractor
-import com.practicum.playlistmaker.library.domain.FavouritesState
+import com.practicum.playlistmaker.favourites.domain.FavouritesInteractor
+import com.practicum.playlistmaker.favourites.domain.FavouritesState
 import kotlinx.coroutines.launch
 
 class FavouritesTracksViewModel(

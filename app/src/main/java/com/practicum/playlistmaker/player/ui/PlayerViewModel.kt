@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.library.domain.FavouritesInteractor
+import com.practicum.playlistmaker.favourites.domain.FavouritesInteractor
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
 import com.practicum.playlistmaker.player.domain.api.TrackPlayingState
 import com.practicum.playlistmaker.playlist.domain.PlaylistCover
@@ -25,8 +25,8 @@ class PlayerViewModel(
     private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Loaded(track))
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
 
-    private val playlistsLiveData = MutableLiveData<List<PlaylistCover>>()
-    fun getPlaylistLiveData(): LiveData<List<PlaylistCover>> = playlistsLiveData
+    private val _playlistsLiveData = MutableLiveData<List<PlaylistCover>>()
+    val playlistLiveData: LiveData<List<PlaylistCover>> = _playlistsLiveData
 
     private val userTrackState = MutableLiveData<UserTrackState?>(null)
     fun getUserTrackLiveData(): LiveData<UserTrackState?> = userTrackState
@@ -49,9 +49,13 @@ class PlayerViewModel(
         }
 
         viewModelScope.launch {
-            playlistInteractor.getPlaylists().collect { items ->
-                playlistsLiveData.postValue(items)
+            playlistInteractor.playlistsFlow.collect { items ->
+                _playlistsLiveData.postValue(items)
             }
+        }
+
+        viewModelScope.launch {
+            playlistInteractor.update()
         }
     }
 
@@ -75,8 +79,12 @@ class PlayerViewModel(
         }
     }
 
-    fun likeCurrentTrack() {
-        //TODO: implement in a future sprint
+    fun trackToPlaylist(playlistId: Int) {
+        track?.let { existingTrack ->
+            viewModelScope.launch {
+                playlistInteractor.addTrackToPlaylist(playlistId, existingTrack)
+            }
+        }
     }
 
     fun pause() {

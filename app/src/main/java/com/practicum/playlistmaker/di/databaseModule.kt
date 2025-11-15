@@ -10,7 +10,7 @@ val databaseModule = module {
         Room.databaseBuilder(
             androidContext(),
             AppDatabase::class.java,
-            "track_history.db"
+            "app.db"
         ).
         build()
     }

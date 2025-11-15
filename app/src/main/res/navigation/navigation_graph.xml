@@ -25,9 +25,9 @@
 
     <fragment
         android:id="@+id/libraryFragment"
-        android:name="com.practicum.playlistmaker.library.ui.LibraryFragment"
+        android:name="com.practicum.playlistmaker.mediacollection.ui.MediaCollectionFragment"
         android:label="fragment_library"
-        tools:layout="@layout/fragment_library"
+        tools:layout="@layout/fragment_media_collection"
         >
 
         <action

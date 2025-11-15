@@ -30,4 +30,7 @@
     <string name="text_add_to_playlist">Добавить в плейлист</string>
     <string name="text_new_playlist">Новый плейлист</string>
     <string name="text_create">Создать</string>
+    <string name="word_track">трек</string>
+    <string name="word_tracka">трека</string>
+    <string name="word_trackov">треков</string>
 </resources>

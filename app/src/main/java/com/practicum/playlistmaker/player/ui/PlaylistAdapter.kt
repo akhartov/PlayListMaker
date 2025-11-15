@@ -36,7 +36,7 @@ class PlaylistAdapter(private val clickListener: OnClickListener?): RecyclerView
             }
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldItems[oldItemPosition] == newItems[newItemPosition]
+                return oldItems[oldItemPosition].id == newItems[newItemPosition].id
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

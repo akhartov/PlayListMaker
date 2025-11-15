@@ -1,15 +1,15 @@
-package com.practicum.playlistmaker.library.ui
+package com.practicum.playlistmaker.playlist.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.playlist.domain.PlaylistCover
 
-class PlaylistGridAdapter(private val clickListener: PlaylistGridViewHolder.OnClickListener?): RecyclerView.Adapter<PlaylistGridViewHolder>() {
+class PlaylistGridAdapter : RecyclerView.Adapter<PlaylistGridViewHolder>() {
     private var items = listOf<PlaylistCover>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistGridViewHolder {
-        return PlaylistGridViewHolder.from(parent, clickListener)
+        return PlaylistGridViewHolder.from(parent)
     }
 
     override fun getItemCount(): Int {
@@ -21,7 +21,7 @@ class PlaylistGridAdapter(private val clickListener: PlaylistGridViewHolder.OnCl
     }
 
     fun updateItems(newItems: List<PlaylistCover>?) {
-        if(newItems == null)
+        if (newItems == null)
             return
 
         val oldItems = items
@@ -35,7 +35,7 @@ class PlaylistGridAdapter(private val clickListener: PlaylistGridViewHolder.OnCl
             }
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldItems[oldItemPosition] == newItems[newItemPosition]
+                return oldItems[oldItemPosition].id == newItems[newItemPosition].id
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

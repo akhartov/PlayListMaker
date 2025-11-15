@@ -1,9 +1,9 @@
-package com.practicum.playlistmaker.library.data.db
+package com.practicum.playlistmaker.favourites.data
 
 import com.practicum.playlistmaker.data.convertors.TrackMapper
 import com.practicum.playlistmaker.data.db.AppDatabase
-import com.practicum.playlistmaker.library.data.TrackEntity
-import com.practicum.playlistmaker.library.domain.FavouritesRepository
+import com.practicum.playlistmaker.favourites.data.db.FavouriteTrackEntity
+import com.practicum.playlistmaker.favourites.domain.FavouritesRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,22 +14,22 @@ class FavouritesRepositoryImpl(
     private val mapper: TrackMapper
 ) : FavouritesRepository {
     override suspend fun getAllTracks(): Flow<List<Track>> {
-        return database.trackDao().getTracks().map { tracks -> convertFromMovieEntity(tracks) }
+        return database.favouriteTrackDao().getTracks().map { tracks -> convertFromMovieEntity(tracks) }
     }
 
     override suspend fun getAllTracksIds(): Flow<List<Int>> = flow {
-        database.trackDao().getAllTracksIds().let { emit(it) }
+        database.favouriteTrackDao().getAllTracksIds().let { emit(it) }
     }
 
     override suspend fun addTrack(track: Track) {
-        database.trackDao().insertTrack(mapper.map(track, System.currentTimeMillis()))
+        database.favouriteTrackDao().insertTrack(mapper.map(track, System.currentTimeMillis()))
     }
 
     override suspend fun deleteTrack(trackId: Int) {
-        database.trackDao().deleteTrackById(trackId)
+        database.favouriteTrackDao().deleteTrackById(trackId)
     }
 
-    private fun convertFromMovieEntity(tracks: List<TrackEntity>): List<Track> {
+    private fun convertFromMovieEntity(tracks: List<FavouriteTrackEntity>): List<Track> {
         return tracks.map { track -> mapper.map(track) }
     }
 }

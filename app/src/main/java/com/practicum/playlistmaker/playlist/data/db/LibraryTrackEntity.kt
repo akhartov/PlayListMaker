@@ -1,12 +1,24 @@
-package com.practicum.playlistmaker.library.data
+package com.practicum.playlistmaker.playlist.data.db
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "tracks_history")
-data class TrackEntity(
-    @PrimaryKey
-    val trackId: Int,             // Уникальный идентификатор записи
+@Entity(
+    tableName = "library_track",
+    foreignKeys = [
+        ForeignKey(
+            entity = PlaylistEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["playlistId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
+data class LibraryTrackEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,                  // Уникальный идентификатор записи в таблице БД
+    val playlistId: Int,          // Ключ плейлиста для этого трека
     val insertTime: Long,         // Время добавления в базу данных
     val trackName: String,        // Название композиции
     val artistName: String,       // Имя исполнителя

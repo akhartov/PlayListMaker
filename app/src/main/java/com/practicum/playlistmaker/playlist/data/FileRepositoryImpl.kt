@@ -19,7 +19,7 @@ class FileRepositoryImpl(private val context: Context) : FileRepository {
     }
 
     override fun saveImage(uri: Uri?, fileName: String): Boolean {
-        if(uri == null)
+        if (uri == null)
             return false
 
         return try {
@@ -41,7 +41,10 @@ class FileRepositoryImpl(private val context: Context) : FileRepository {
         }
     }
 
-    override fun getImagePath(fileName: String): String? {
+    override fun getImagePath(fileName: String?): String? {
+        if (fileName == null)
+            return null
+
         val file = File(baseDirectory, fileName)
         return if (file.exists()) file.absolutePath else null
     }

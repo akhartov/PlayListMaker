@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.player.ui
 
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +8,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.PlaylistViewBinding
 import com.practicum.playlistmaker.playlist.domain.PlaylistCover
+import com.practicum.playlistmaker.ui.floatDpToPx
 
 class PlaylistViewHolder(
     private val binding: PlaylistViewBinding,
@@ -23,20 +23,12 @@ class PlaylistViewHolder(
             .load(cover.imagePath)
             .placeholder(R.drawable.track_placeholder)
             .fitCenter()
-            .transform(RoundedCorners(dpToPx(itemView.resources.getDimension(R.dimen.track_image_radius))))
+            .transform(RoundedCorners(floatDpToPx(itemView.resources, itemView.resources.getDimension(R.dimen.image_radius))))
             .into(binding.coverImage)
 
         itemView.setOnClickListener {
             clickListener?.onPlaylistClick(cover)
         }
-    }
-
-    private fun dpToPx(dp: Float): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_PX,
-            dp,
-            itemView.resources.displayMetrics
-        ).toInt()
     }
 
     fun interface OnClickListener {

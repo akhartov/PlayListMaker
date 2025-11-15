@@ -2,7 +2,6 @@ package com.practicum.playlistmaker.player.ui
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +14,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
-import com.practicum.playlistmaker.playlist.ui.PlaylistEditorFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.ui.BindingFragment
 import com.practicum.playlistmaker.ui.debounce
+import com.practicum.playlistmaker.ui.floatDpToPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -35,17 +34,26 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         parametersOf(requireArguments().getParcelable(TRACK, Track::class.java))
     }
 
-    private val playlistClickDebounce =
-        debounce<Pair<Int, Track?>>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { pair ->
+    private val newPlaylistClickDebounce =
+        debounce<Any>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) {
             findNavController().navigate(
-                R.id.action_playerFragment_to_playlistEditorFragment,
-                PlaylistEditorFragment.createArgs(pair.first, pair.second?.trackId?:0)
+                R.id.action_playerFragment_to_playlistEditorFragment
             )
+        }
+
+    private val trackToPlaylistClickDebounce =
+        debounce<Int>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { playlistId ->
+            viewModel.trackToPlaylist(playlistId)
+            BottomSheetBehavior.from(binding.playerBottomSheet).apply {
+                state = BottomSheetBehavior.STATE_HIDDEN
+            }
         }
 
     private val playlistsAdapter by lazy {
         PlaylistAdapter { playlist ->
-            playlistClickDebounce(Pair(playlist.id, requireArguments().getParcelable(TRACK, Track::class.java)))
+            requireArguments().getParcelable(TRACK, Track::class.java)?.let { track ->
+                trackToPlaylistClickDebounce(playlist.id)
+            }
         }
     }
 
@@ -68,7 +76,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             }
         }
 
-        viewModel.getPlaylistLiveData().observe(viewLifecycleOwner) { items ->
+        viewModel.playlistLiveData.observe(viewLifecycleOwner) { items ->
             playlistsAdapter.updateItems(items)
         }
 
@@ -84,7 +92,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             BottomSheetBehavior.from(binding.playerBottomSheet).apply {
                 state = BottomSheetBehavior.STATE_COLLAPSED
             }
-            viewModel.likeCurrentTrack()
         }
 
         binding.buttonChangeFavourites.setOnClickListener {
@@ -92,7 +99,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         binding.newPlaylistButton.setOnClickListener {
-            playlistClickDebounce(Pair(0, null))
+            newPlaylistClickDebounce(0)
         }
 
         binding.playlistsRecyclerView.adapter = playlistsAdapter
@@ -143,16 +150,15 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         Glide.with(requireContext()).load(Uri.parse(trackUrl))
             .placeholder(R.drawable.track_placeholder)
             .fitCenter()
-            .transform(RoundedCorners(dpToPx(resources.getDimension(R.dimen.track_big_image_radius))))
+            .transform(
+                RoundedCorners(
+                    floatDpToPx(
+                        resources,
+                        resources.getDimension(R.dimen.big_image_radius)
+                    )
+                )
+            )
             .into(binding.cover)
-    }
-
-    private fun dpToPx(dp: Float): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_PX,
-            dp,
-            resources.displayMetrics
-        ).toInt()
     }
 
     override fun onPause() {
