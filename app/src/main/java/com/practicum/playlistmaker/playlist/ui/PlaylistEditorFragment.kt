@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -36,7 +37,7 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
         super.onViewCreated(view, savedInstanceState)
 
         binding.newPlaylistButton.setOnClickListener {
-            if (!binding.playlistName.text.isNullOrEmpty()) {
+            if (!binding.playlistTitle.text.isNullOrEmpty()) {
                 viewModel.savePlaylist()
             }
 
@@ -54,13 +55,15 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
         }
 
         binding.newPlaylistButton.isEnabled = false
-        binding.playlistName.addTextChangedListener { text ->
+        binding.playlistTitle.addTextChangedListener { text ->
             viewModel.playlistName = text.toString()
             binding.newPlaylistButton.isEnabled = !text.isNullOrBlank()
+            binding.playlistTitleHint.isVisible = !text.isNullOrBlank()
         }
 
         binding.playlistDescription.addTextChangedListener { text ->
             viewModel.playlistDescription = text.toString()
+            binding.playlistDescriptionHint.isVisible = !text.isNullOrBlank()
         }
 
         confirmDialog = MaterialAlertDialogBuilder(requireContext())

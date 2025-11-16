@@ -23,7 +23,7 @@ class PlaylistGridViewHolder(
             .load(cover.imagePath)
             .placeholder(R.drawable.track_placeholder)
             .fitCenter()
-            .transform(RoundedCorners(floatDpToPx(itemView.resources, itemView.resources.getDimension(R.dimen.image_radius))))
+            .transform(RoundedCorners(floatDpToPx(itemView.resources, itemView.resources.getDimension(R.dimen.big_image_radius))))
             .into(binding.coverImage)
     }
 
