@@ -5,7 +5,8 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.SharedFlow
 
 interface PlaylistInteractor {
-    val playlistsFlow: SharedFlow<List<PlaylistCover>>
+    val playlistsFlow: SharedFlow<PlaylistsState>
+    val playlistEventFlow: SharedFlow<PlaylistsEvent>
 
     suspend fun update()
     suspend fun createCover(title: String, description: String, coverFullPath: Uri?): Boolean

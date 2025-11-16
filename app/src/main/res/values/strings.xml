@@ -33,4 +33,9 @@
     <string name="word_track">трек</string>
     <string name="word_tracka">трека</string>
     <string name="word_trackov">треков</string>
+    <string name="new_playlist_created">Плейлист %s создан</string>
+    <string name="ask_finish_playlist_creation">Завершить создание плейлиста?</string>
+    <string name="all_data_will_lost">Все несохраненные данные будут потеряны</string>
+    <string name="cancel">Отмена</string>
+    <string name="finish">Завершить</string>
 </resources>

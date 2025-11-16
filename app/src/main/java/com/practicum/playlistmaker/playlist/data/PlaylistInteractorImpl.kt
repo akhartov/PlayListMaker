@@ -7,6 +7,8 @@ import com.practicum.playlistmaker.playlist.domain.LibraryRepository
 import com.practicum.playlistmaker.playlist.domain.PlaylistCover
 import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
 import com.practicum.playlistmaker.playlist.domain.PlaylistRepository
+import com.practicum.playlistmaker.playlist.domain.PlaylistsEvent
+import com.practicum.playlistmaker.playlist.domain.PlaylistsState
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,16 +35,19 @@ class PlaylistInteractorImpl(
         fileName?.let { fileRepository.saveImage(coverFullPath, it) }
 
         playlistRepository.addCover(title, description, fileName)
+        _playlistEventFlow.emit(PlaylistsEvent.NewPlaylist(title))
         emitPlaylists()
         return true
     }
 
-    private val _playlistsFlow = MutableSharedFlow<List<PlaylistCover>>(
+    private val _playlistsFlow = MutableSharedFlow<PlaylistsState>(
         replay = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
+    override val playlistsFlow: SharedFlow<PlaylistsState> = _playlistsFlow.asSharedFlow()
 
-    override val playlistsFlow: SharedFlow<List<PlaylistCover>> = _playlistsFlow.asSharedFlow()
+    private val _playlistEventFlow = MutableSharedFlow<PlaylistsEvent>()
+    override val playlistEventFlow: SharedFlow<PlaylistsEvent> = _playlistEventFlow.asSharedFlow()
 
     override suspend fun addTrackToPlaylist(playlistId: Int, track: Track) {
         libraryRepository.addTrack(playlistId, track)
@@ -51,7 +56,7 @@ class PlaylistInteractorImpl(
 
     private suspend fun emitPlaylists() {
         playlistRepository.getPlaylists().collect { items ->
-            _playlistsFlow.emit(map(items))
+            _playlistsFlow.emit(PlaylistsState(map(items)))
         }
     }
 

@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistEditorBinding
 import com.practicum.playlistmaker.ui.BindingFragment
@@ -19,6 +21,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() {
     private val viewModel: PlaylistEditorViewModel by viewModel()
+    private lateinit var backCallback: OnBackPressedCallback
+    lateinit var confirmDialog: MaterialAlertDialogBuilder
+
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -56,6 +61,27 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
         binding.playlistDescription.addTextChangedListener { text ->
             viewModel.playlistDescription = text.toString()
         }
+
+        confirmDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.ask_finish_playlist_creation))
+            .setMessage(resources.getString(R.string.all_data_will_lost))
+            .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
+            }.setNegativeButton(resources.getString(R.string.finish)) { dialog, which ->
+                findNavController().navigateUp()
+            }
+
+        backCallback = object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                confirmDialog.show()
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(backCallback)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        backCallback.remove()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

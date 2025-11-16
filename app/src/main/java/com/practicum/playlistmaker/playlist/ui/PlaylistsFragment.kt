@@ -46,9 +46,9 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
             playlistClickDebounce(0)
         }
 
-        viewModel.playlistLiveData.observe(viewLifecycleOwner) { items ->
-            playlistsAdapter.updateItems(items)
-            binding.placeholderGroup.isVisible = items.isEmpty()
+        viewModel.playlistLiveData.observe(viewLifecycleOwner) { state ->
+            playlistsAdapter.updateItems(state.items)
+            binding.placeholderGroup.isVisible = state.items.isEmpty()
         }
     }
 

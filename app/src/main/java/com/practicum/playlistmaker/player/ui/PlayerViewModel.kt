@@ -49,8 +49,8 @@ class PlayerViewModel(
         }
 
         viewModelScope.launch {
-            playlistInteractor.playlistsFlow.collect { items ->
-                _playlistsLiveData.postValue(items)
+            playlistInteractor.playlistsFlow.collect { state ->
+                _playlistsLiveData.postValue(state.items)
             }
         }
 

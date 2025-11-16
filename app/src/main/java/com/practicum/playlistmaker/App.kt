@@ -6,6 +6,7 @@ import com.practicum.playlistmaker.favourites.di.favouritesModule
 import com.practicum.playlistmaker.player.di.playerModule
 import com.practicum.playlistmaker.player.di.playerViewModelModule
 import com.practicum.playlistmaker.playlist.di.playlistViewModelModule
+import com.practicum.playlistmaker.root.di.rootModule
 import com.practicum.playlistmaker.search.di.searchModule
 import com.practicum.playlistmaker.search.di.searchViewModelModule
 import com.practicum.playlistmaker.settings.di.settingsModule
@@ -22,7 +23,7 @@ class App : Application() {
         startKoin {
             androidContext(this@App)
             modules(
-                databaseModule,
+                rootModule, databaseModule,
                 searchModule, searchViewModelModule,
                 playerModule, playerViewModelModule,
                 settingsModule, settingsViewModelModule,
