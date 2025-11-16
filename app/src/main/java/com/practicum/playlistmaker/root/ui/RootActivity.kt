@@ -33,8 +33,11 @@ class RootActivity : AppCompatActivity() {
         binding.bottomNavigationView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.rootControlsGroup.isVisible =
-                if (destination.id == R.id.playerFragment) false else true
+            binding.rootControlsGroup.isVisible = when(destination.id) {
+                R.id.playerFragment -> false
+                R.id.playlistEditorFragment -> false
+                else -> true
+            }
 
             binding.backButton.title = when (destination.id) {
                 R.id.searchFragment -> resources.getString(R.string.search_text)
