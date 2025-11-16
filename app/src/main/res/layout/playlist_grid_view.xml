@@ -35,7 +35,7 @@
 
     <TextView
         android:id="@+id/info"
-        style="@style/SmallestTrackText"
+        style="@style/NormalTrackText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"

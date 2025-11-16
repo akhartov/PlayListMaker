@@ -1,10 +1,9 @@
 package com.practicum.playlistmaker.playlist.data
 
 import android.net.Uri
-import com.practicum.playlistmaker.playlist.data.db.PlaylistEntity
+import com.practicum.playlistmaker.data.convertors.PlaylistMapper
 import com.practicum.playlistmaker.playlist.domain.FileRepository
 import com.practicum.playlistmaker.playlist.domain.LibraryRepository
-import com.practicum.playlistmaker.playlist.domain.PlaylistCover
 import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
 import com.practicum.playlistmaker.playlist.domain.PlaylistRepository
 import com.practicum.playlistmaker.playlist.domain.PlaylistsEvent
@@ -19,7 +18,7 @@ class PlaylistInteractorImpl(
     val playlistRepository: PlaylistRepository,
     val libraryRepository: LibraryRepository,
     val fileRepository: FileRepository,
-    val wordDeclension: WordDeclension
+    val playlistMapper: PlaylistMapper
 ) : PlaylistInteractor {
 
     override suspend fun update() {
@@ -56,24 +55,7 @@ class PlaylistInteractorImpl(
 
     private suspend fun emitPlaylists() {
         playlistRepository.getPlaylists().collect { items ->
-            _playlistsFlow.emit(PlaylistsState(map(items)))
+            _playlistsFlow.emit(PlaylistsState(playlistMapper.map(items)))
         }
-    }
-
-    private suspend fun map(entry: PlaylistEntity?): PlaylistCover {
-        return entry?.let {
-            val tracksCount = libraryRepository.getTracksIds(it.id).size
-            PlaylistCover(
-                id = it.id,
-                title = it.title,
-                description = it.description,
-                tracksInfo = "${tracksCount} ${wordDeclension.getTrackString(tracksCount)}",
-                imagePath = fileRepository.getImagePath(it.coverFilename) ?: ""
-            )
-        } ?: PlaylistCover(0, "", "", "", "")
-    }
-
-    private suspend fun map(entries: List<PlaylistEntity>): List<PlaylistCover> {
-        return entries.map { map(it) }
     }
 }

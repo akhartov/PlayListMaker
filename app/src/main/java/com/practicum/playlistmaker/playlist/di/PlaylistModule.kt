@@ -25,6 +25,6 @@ val playlistViewModelModule = module {
     single { WordDeclension(androidContext()) }
 
     single<PlaylistInteractor> { PlaylistInteractorImpl(get(), get(), get(), get()) }
-    factory { PlaylistMapper() }
+    factory { PlaylistMapper(get(), get(), get()) }
     single<FileRepository> { FileRepositoryImpl(get()) }
 }

@@ -9,7 +9,7 @@ class PlaylistRepositoryImpl(
     private val database: AppDatabase
 ) : PlaylistRepository {
     override suspend fun addCover(title: String, description: String?, imagePath: String?) {
-        database.playlistDao().insertCover(PlaylistEntity(0, title, description.toString(), imagePath.toString()))
+        database.playlistDao().insertCover(PlaylistEntity(0, System.currentTimeMillis(), title, description.toString(), imagePath.toString()))
     }
 
     override fun getPlaylists(): Flow<List<PlaylistEntity>> {

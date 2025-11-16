@@ -11,6 +11,6 @@ interface PlaylistDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCover(playlistCover: PlaylistEntity)
 
-    @Query("SELECT * FROM playlists")
+    @Query("SELECT * FROM playlists ORDER BY insertTime DESC")
     fun getItems(): Flow<List<PlaylistEntity>>
 }

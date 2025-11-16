@@ -53,6 +53,7 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
+        binding.newPlaylistButton.isEnabled = false
         binding.playlistName.addTextChangedListener { text ->
             viewModel.playlistName = text.toString()
             binding.newPlaylistButton.isEnabled = !text.isNullOrBlank()
