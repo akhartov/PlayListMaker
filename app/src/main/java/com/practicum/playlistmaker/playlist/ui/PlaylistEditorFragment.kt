@@ -57,7 +57,7 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
         binding.newPlaylistButton.isEnabled = false
         binding.playlistTitle.addTextChangedListener { text ->
             viewModel.playlistName = text.toString()
-            binding.newPlaylistButton.isEnabled = !text.isNullOrBlank()
+            binding.newPlaylistButton.isEnabled = viewModel.canSavePlaylist()
             binding.playlistTitleHint.isVisible = !text.isNullOrBlank()
         }
 
@@ -76,7 +76,10 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
 
         backCallback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed() {
-                confirmDialog.show()
+                if(viewModel.hasUserTypedText())
+                    confirmDialog.show()
+                else
+                    findNavController().navigateUp()
             }
         }
 
@@ -105,8 +108,7 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
         uri?.let { existingUri ->
             Glide.with(requireContext())
                 .load(existingUri)
-                .placeholder(R.drawable.track_placeholder)
-                .circleCrop()
+                .centerCrop()
                 .transform(
                     RoundedCorners(
                         floatDpToPx(

@@ -18,4 +18,12 @@ class PlaylistEditorViewModel(
             playlistInteractor.createCover(playlistName, playlistDescription, imageUri)
         }
     }
+
+    fun canSavePlaylist() : Boolean {
+        return playlistName.isNotBlank()
+    }
+
+    fun hasUserTypedText() : Boolean {
+        return playlistName.isNotBlank() or playlistDescription.isNotBlank()
+    }
 }
