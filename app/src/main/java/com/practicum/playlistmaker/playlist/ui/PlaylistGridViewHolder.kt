@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.PlaylistGridViewBinding
@@ -22,8 +23,15 @@ class PlaylistGridViewHolder(
         Glide.with(itemView.context)
             .load(cover.imagePath)
             .placeholder(R.drawable.track_placeholder)
-            .fitCenter()
-            .transform(RoundedCorners(floatDpToPx(itemView.resources, itemView.resources.getDimension(R.dimen.big_image_radius))))
+            .transform(
+                CenterCrop(),
+                RoundedCorners(
+                    floatDpToPx(
+                        itemView.resources,
+                        itemView.resources.getDimension(R.dimen.big_image_radius)
+                    )
+                )
+            )
             .into(binding.coverImage)
     }
 

@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
@@ -74,9 +75,9 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
                 findNavController().navigateUp()
             }
 
-        backCallback = object : OnBackPressedCallback(true){
+        backCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(viewModel.hasUserTypedText())
+                if (viewModel.hasUserTypedText())
                     confirmDialog.show()
                 else
                     findNavController().navigateUp()
@@ -98,7 +99,7 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if(savedInstanceState == null)
+        if (savedInstanceState == null)
             return
 
         applyImage(savedInstanceState.getParcelable(URI, Uri::class.java))
@@ -108,13 +109,10 @@ class PlaylistEditorFragment : BindingFragment<FragmentPlaylistEditorBinding>() 
         uri?.let { existingUri ->
             Glide.with(requireContext())
                 .load(existingUri)
-                .centerCrop()
                 .transform(
+                    CenterCrop(),
                     RoundedCorners(
-                        floatDpToPx(
-                            resources,
-                            resources.getDimension(R.dimen.big_image_radius)
-                        )
+                        floatDpToPx(resources, resources.getDimension(R.dimen.big_image_radius))
                     )
                 )
                 .into(binding.coverImage)

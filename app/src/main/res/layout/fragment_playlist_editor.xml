@@ -40,7 +40,6 @@
         android:layout_height="@dimen/add_cover_rect"
         android:layout_marginVertical="32dp"
         app:srcCompat="@drawable/ic_312_add_cover"
-        app:layout_constraintDimensionRatio="h,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/back_button"
