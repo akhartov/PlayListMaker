@@ -314,6 +314,7 @@
             style="@style/NoTracksText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:gravity="center"
             android:text="@string/text_add_to_playlist"
             />
@@ -324,6 +325,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/text_new_playlist"
+            android:layout_marginVertical="16dp"
             />
 
         <androidx.recyclerview.widget.RecyclerView
