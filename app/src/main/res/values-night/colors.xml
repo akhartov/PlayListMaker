@@ -3,6 +3,7 @@
     <color name="icon_inactive">@color/white</color>
     <color name="icon_active">@color/white</color>
     <color name="main_background">#1A1B22</color>
+    <color name="button_blue_background">#3772E7</color>
     <color name="editor_background">@color/white</color>
     <color name="search_hint">#1A1B22</color>
 
@@ -22,4 +23,6 @@
 
     <color name="bottom_navi_selected_color">#3772E7</color>
     <color name="bottom_navi_default_color">#FFFFFF</color>
+    <color name="toast_background">#FFFFFF</color>
+    <color name="toast_text">#1A1B22</color>
 </resources>

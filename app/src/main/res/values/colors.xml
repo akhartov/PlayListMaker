@@ -5,7 +5,7 @@
 
     <color name="main_background">#3772E7</color>
     <color name="main_button_text">#1A1B22</color>
-    <color name="main_button_background">#FFFFFFFF</color>
+    <color name="button_blue_background">#3772E7</color>
 
     <color name="icon_inactive">#AEAFB4</color>
     <color name="icon_active">#1A1B22</color>
@@ -30,4 +30,6 @@
 
     <color name="bottom_navi_selected_color">#3772E7</color>
     <color name="bottom_navi_default_color">#1A1B22</color>
+    <color name="toast_background">#1A1B22</color>
+    <color name="toast_text">@color/white</color>
 </resources>

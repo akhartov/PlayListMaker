@@ -28,16 +28,14 @@
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">@dimen/icon_padding</item>
         <item name="iconTint">@color/black</item>
-        <item name="cornerRadius">@dimen/button_corner</item>
-        <item name="android:textSize">@dimen/title_text_size</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:textSize">@dimen/normal_text_size</item>
         <item name="android:textColor">@color/main_button_text</item>
         <item name="textAllCaps">false</item>
         <item name="android:layout_marginVertical">@dimen/margin_vertical</item>
         <item name="android:layout_marginHorizontal">@dimen/margin_horizontal</item>
         <item name="android:layout_gravity">center</item>
-        <item name="backgroundTint">@color/main_button_background</item>
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
     <style name="SearchButton" parent="Widget.MaterialComponents.Button.TextButton">
@@ -109,6 +107,13 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="textAllCaps">false</item>
         <item name="textFillColor">@color/simple_button_text</item>
+    </style>
+
+    <style name="HintTextView">
+        <item name="android:textSize">12sp</item>
+        <item name="android:paddingHorizontal">4dp</item>
+        <item name="android:background">@color/button_play_background</item>
+        <item name="layout_constraintHorizontal_bias">0.05</item>
     </style>
 
 </resources>

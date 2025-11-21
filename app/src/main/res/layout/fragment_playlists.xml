@@ -5,6 +5,14 @@
     android:layout_height="match_parent"
     >
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/placeholder_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:constraint_referenced_ids="no_playlists_image,no_playlists_text"
+        />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/new_playlist_button"
         style="@style/SearchButton"
@@ -15,6 +23,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlistsRecyclerView"
+        style="@style/TextControl"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginVertical="@dimen/track_vertical_border"
+        android:outlineAmbientShadowColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/new_playlist_button"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
 
     <ImageView

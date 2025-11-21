@@ -2,21 +2,25 @@ package com.practicum.playlistmaker.player.ui
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.ui.BindingFragment
+import com.practicum.playlistmaker.ui.debounce
+import com.practicum.playlistmaker.ui.floatDpToPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+
 
 class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     override fun createBinding(
@@ -28,6 +32,29 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(requireArguments().getParcelable(TRACK, Track::class.java))
+    }
+
+    private val newPlaylistClickDebounce =
+        debounce<Any>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) {
+            findNavController().navigate(
+                R.id.action_playerFragment_to_playlistEditorFragment
+            )
+        }
+
+    private val trackToPlaylistClickDebounce =
+        debounce<Int>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { playlistId ->
+            viewModel.trackToPlaylist(playlistId)
+            BottomSheetBehavior.from(binding.playerBottomSheet).apply {
+                state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
+
+    private val playlistsAdapter by lazy {
+        PlaylistAdapter { playlist ->
+            requireArguments().getParcelable(TRACK, Track::class.java)?.let { track ->
+                trackToPlaylistClickDebounce(playlist.id)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,6 +76,10 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             }
         }
 
+        viewModel.playlistLiveData.observe(viewLifecycleOwner) { items ->
+            playlistsAdapter.updateItems(items)
+        }
+
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -58,11 +89,41 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         binding.buttonAddToList.setOnClickListener {
-            viewModel.likeCurrentTrack()
+            BottomSheetBehavior.from(binding.playerBottomSheet).apply {
+                state = BottomSheetBehavior.STATE_COLLAPSED
+            }
         }
 
         binding.buttonChangeFavourites.setOnClickListener {
             viewModel.tapFavouriteTrack()
+        }
+
+        binding.newPlaylistButton.setOnClickListener {
+            newPlaylistClickDebounce(0)
+        }
+
+        binding.playlistsRecyclerView.adapter = playlistsAdapter
+
+
+        BottomSheetBehavior.from(binding.playerBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            binding.overlay.visibility = View.GONE
+                        }
+
+                        else -> {
+                            binding.overlay.visibility = View.VISIBLE
+                        }
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
         }
     }
 
@@ -89,16 +150,15 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         Glide.with(requireContext()).load(Uri.parse(trackUrl))
             .placeholder(R.drawable.track_placeholder)
             .fitCenter()
-            .transform(RoundedCorners(dpToPx(resources.getDimension(R.dimen.track_big_image_radius))))
+            .transform(
+                RoundedCorners(
+                    floatDpToPx(
+                        resources,
+                        resources.getDimension(R.dimen.big_image_radius)
+                    )
+                )
+            )
             .into(binding.cover)
-    }
-
-    private fun dpToPx(dp: Float): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_PX,
-            dp,
-            resources.displayMetrics
-        ).toInt()
     }
 
     override fun onPause() {
@@ -108,6 +168,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     companion object {
         const val TRACK = "TRACK"
+        const val CLICK_DEBOUNCE_DELAY = 500L
 
         fun createArgs(track: Track): Bundle =
             bundleOf(TRACK to track)

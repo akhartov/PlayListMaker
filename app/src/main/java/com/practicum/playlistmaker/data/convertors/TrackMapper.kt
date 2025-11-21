@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.data.convertors
 
-import com.practicum.playlistmaker.library.data.TrackEntity
+import com.practicum.playlistmaker.favourites.data.db.FavouriteTrackEntity
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.millisToMMSS
@@ -24,9 +24,9 @@ class TrackMapper {
         )
     }
 
-    fun map(track: TrackEntity): Track {
+    fun map(track: FavouriteTrackEntity): Track {
         return Track(
-            trackId = track.trackId,
+            trackId = track.id,
             trackName = track.trackName,
             artistName = track.artistName,
             length = track.length,
@@ -40,9 +40,9 @@ class TrackMapper {
         )
     }
 
-    fun map(track: Track, insertTime: Long): TrackEntity {
-        return TrackEntity(
-            trackId = track.trackId,
+    fun map(track: Track, insertTime: Long): FavouriteTrackEntity {
+        return FavouriteTrackEntity(
+            id = track.trackId,
             trackName = track.trackName,
             artistName = track.artistName,
             length = track.length,
