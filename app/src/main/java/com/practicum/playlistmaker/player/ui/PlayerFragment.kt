@@ -130,7 +130,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     private fun showTrackData(track: Track) {
         binding.trackTitle.text = track.trackName
         binding.trackArtist.text = track.artistName
-        binding.trackLength.text = track.length
+        binding.trackLength.text = track.lengthText
 
         binding.albumGroup.isVisible = track.collectionName.isNotEmpty()
         binding.trackAlbum.text = track.collectionName

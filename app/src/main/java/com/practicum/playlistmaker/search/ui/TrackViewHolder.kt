@@ -24,7 +24,7 @@ class TrackViewHolder(private val binding: TrackViewBinding, private val trackCl
     fun bind(track: Track) {
         binding.artistName.text = track.artistName
         binding.trackName.text = track.trackName
-        binding.trackTime.text = track.length
+        binding.trackTime.text = track.lengthText
 
         Glide.with(itemView.context)
             .load(Uri.parse(track.artworkUrl100))

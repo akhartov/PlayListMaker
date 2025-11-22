@@ -1,15 +1,15 @@
-package com.practicum.playlistmaker.playlist.ui
+package com.practicum.playlistmaker.playlist.ui.grid
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.playlist.domain.PlaylistCover
 
-class PlaylistGridAdapter : RecyclerView.Adapter<PlaylistGridViewHolder>() {
+class PlaylistGridAdapter(private val onPlaylistClickListener: PlaylistGridViewHolder.OnClickListener) : RecyclerView.Adapter<PlaylistGridViewHolder>() {
     private var items = listOf<PlaylistCover>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistGridViewHolder {
-        return PlaylistGridViewHolder.from(parent)
+        return PlaylistGridViewHolder.from(parent, onPlaylistClickListener)
     }
 
     override fun getItemCount(): Int {

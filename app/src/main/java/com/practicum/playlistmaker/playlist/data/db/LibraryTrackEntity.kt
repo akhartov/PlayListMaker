@@ -22,7 +22,7 @@ data class LibraryTrackEntity(
     val insertTime: Long,         // Время добавления в базу данных
     val trackName: String,        // Название композиции
     val artistName: String,       // Имя исполнителя
-    val length: String,           // Продолжительность трека
+    val trackTimeMillis: Int,     // Продолжительность трека
     val artworkUrl100: String,    // Ссылка на изображение обложки
     val collectionName: String,   // Название альбома
     val trackYear: String,        // Год релиза трека

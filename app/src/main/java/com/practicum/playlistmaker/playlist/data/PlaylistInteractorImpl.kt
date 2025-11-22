@@ -4,21 +4,29 @@ import android.net.Uri
 import com.practicum.playlistmaker.data.convertors.PlaylistMapper
 import com.practicum.playlistmaker.playlist.domain.FileRepository
 import com.practicum.playlistmaker.playlist.domain.LibraryRepository
+import com.practicum.playlistmaker.playlist.domain.PlaylistCover
 import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
 import com.practicum.playlistmaker.playlist.domain.PlaylistRepository
+import com.practicum.playlistmaker.playlist.domain.PlaylistViewerState
 import com.practicum.playlistmaker.playlist.domain.PlaylistsEvent
 import com.practicum.playlistmaker.playlist.domain.PlaylistsState
 import com.practicum.playlistmaker.search.domain.model.Track
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.flow
+import java.util.concurrent.TimeUnit
 
 class PlaylistInteractorImpl(
     val playlistRepository: PlaylistRepository,
     val libraryRepository: LibraryRepository,
     val fileRepository: FileRepository,
-    val playlistMapper: PlaylistMapper
+    val playlistMapper: PlaylistMapper,
+    val wordDeclension: WordDeclension,
 ) : PlaylistInteractor {
 
     override suspend fun update() {
@@ -58,4 +66,33 @@ class PlaylistInteractorImpl(
             _playlistsFlow.emit(PlaylistsState(playlistMapper.map(items)))
         }
     }
+
+    override suspend fun getPlaylistViewerFlow(cover: PlaylistCover?): Flow<PlaylistViewerState> =
+        flow {
+            cover?.let {
+                coroutineScope {
+                    val tracksCount = async { libraryRepository.getTracksCount(cover.id).toInt() }
+                    val tracksLength = async {
+                        wordDeclension.getMinutesString(
+                            TimeUnit.MILLISECONDS.toMinutes(
+                                libraryRepository.getTracksLength(cover.id)
+                            ).toInt()
+                        )
+                    }
+
+                    val tracksCountText = wordDeclension.getTrackString(tracksCount.await())
+
+                    emit(
+                        PlaylistViewerState(
+                            cover.title,
+                            cover.description,
+                            tracksLength.await(),
+                            tracksCountText,
+                            cover.imagePath
+                        )
+                    )
+                }
+            }
+
+        }
 }

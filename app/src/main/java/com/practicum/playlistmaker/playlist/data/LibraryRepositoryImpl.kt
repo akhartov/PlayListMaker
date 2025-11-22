@@ -1,12 +1,18 @@
 package com.practicum.playlistmaker.playlist.data
 
+import com.practicum.playlistmaker.data.convertors.TrackMapper
 import com.practicum.playlistmaker.data.db.AppDatabase
 import com.practicum.playlistmaker.playlist.data.db.LibraryTrackEntity
 import com.practicum.playlistmaker.playlist.domain.LibraryRepository
+import com.practicum.playlistmaker.playlist.domain.TrackShortInfo
 import com.practicum.playlistmaker.search.domain.model.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class LibraryRepositoryImpl(
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val trackMapper: TrackMapper
 ): LibraryRepository {
     override suspend fun addTrack(playlistId: Int, track: Track) {
         database.libraryTrackDao().insertTrack(LibraryTrackEntity(
@@ -15,7 +21,7 @@ class LibraryRepositoryImpl(
             insertTime = System.currentTimeMillis(),
             trackName = track.trackName,
             artistName = track.artistName,
-            length = track.length,
+            trackTimeMillis = track.trackTimeMillis,
             artworkUrl100 = track.artworkUrl100,
             collectionName = track.collectionName,
             trackYear = track.trackYear,
@@ -27,5 +33,17 @@ class LibraryRepositoryImpl(
 
     override suspend fun getTracksIds(playlistId: Int): List<Int> {
         return database.libraryTrackDao().getTracksIds(playlistId)
+    }
+
+    override fun getTracks(playlistId: Int): Flow<List<TrackShortInfo>> = flow {
+        database.libraryTrackDao().getTracks(playlistId).map { entities -> entities.map { trackMapper.map(it) } }
+    }
+
+    override suspend fun getTracksLength(playlistId: Int): Long {
+        return database.libraryTrackDao().getTracksLength(playlistId) ?: 0
+    }
+
+    override suspend fun getTracksCount(playlistId: Int): Long {
+        return database.libraryTrackDao().getTracksCount(playlistId) ?: 0
     }
 }

@@ -10,7 +10,8 @@ data class Track(
     val trackId: Int,              // Уникальный идентификатор записи
     val trackName: String,         // Название композиции
     val artistName: String,        // Имя исполнителя
-    val length: String,            // Продолжительность трека
+    val trackTimeMillis: Int,      // Продолжительность трека в миллисекундах
+    val lengthText: String,        // Продолжительность трека в формате 00:00
     val artworkUrl100: String,     // Ссылка на изображение обложки
     val coverArtwork: String,      // Ссылка на изображение обложки
     val collectionName: String,   // Название альбома

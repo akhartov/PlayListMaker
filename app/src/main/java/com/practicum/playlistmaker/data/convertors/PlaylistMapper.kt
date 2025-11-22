@@ -11,20 +11,20 @@ class PlaylistMapper(
     val fileRepository: FileRepository,
     val wordDeclension: WordDeclension
 ) {
-    suspend fun map(entry: PlaylistEntity?): PlaylistCover {
+    suspend fun map(entry: PlaylistEntity?): PlaylistCover? {
         return entry?.let {
-            val tracksCount = libraryRepository.getTracksIds(it.id).size
+            val tracksCount = libraryRepository.getTracksCount(it.id).toInt()
             PlaylistCover(
                 id = it.id,
                 title = it.title,
                 description = it.description,
-                tracksInfo = "${tracksCount} ${wordDeclension.getTrackString(tracksCount)}",
+                tracksInfo = wordDeclension.getTrackString(tracksCount),
                 imagePath = fileRepository.getImagePath(it.coverFilename) ?: ""
             )
-        } ?: PlaylistCover(0, "", "", "", "")
+        }
     }
 
     suspend fun map(entries: List<PlaylistEntity>): List<PlaylistCover> {
-        return entries.map { map(it) }
+        return entries.map { map(it) }.filterNotNull()
     }
 }

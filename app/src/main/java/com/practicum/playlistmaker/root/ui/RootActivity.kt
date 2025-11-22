@@ -36,6 +36,7 @@ class RootActivity : AppCompatActivity() {
             binding.rootControlsGroup.isVisible = when(destination.id) {
                 R.id.playerFragment -> false
                 R.id.playlistEditorFragment -> false
+                R.id.playlistViewerFragment -> false
                 else -> true
             }
 

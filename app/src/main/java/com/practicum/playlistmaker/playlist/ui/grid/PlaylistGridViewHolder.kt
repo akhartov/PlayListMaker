@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.playlist.ui
+package com.practicum.playlistmaker.playlist.ui.grid
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,13 +12,13 @@ import com.practicum.playlistmaker.playlist.domain.PlaylistCover
 import com.practicum.playlistmaker.ui.floatDpToPx
 
 class PlaylistGridViewHolder(
-    private val binding: PlaylistGridViewBinding
+    private val binding: PlaylistGridViewBinding,
+    private val clickListener: OnClickListener?
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(cover: PlaylistCover) {
         binding.title.text = cover.title
         binding.info.text = cover.tracksInfo
-
 
         Glide.with(itemView.context)
             .load(cover.imagePath)
@@ -33,13 +33,21 @@ class PlaylistGridViewHolder(
                 )
             )
             .into(binding.coverImage)
+
+        itemView.setOnClickListener {
+            clickListener?.onPlaylistClick(cover)
+        }
+    }
+
+    fun interface OnClickListener {
+        fun onPlaylistClick(cover: PlaylistCover)
     }
 
     companion object {
-        fun from(parent: ViewGroup): PlaylistGridViewHolder {
+        fun from(parent: ViewGroup, clickListener: OnClickListener?): PlaylistGridViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = PlaylistGridViewBinding.inflate(inflater, parent, false)
-            return PlaylistGridViewHolder(binding)
+            return PlaylistGridViewHolder(binding, clickListener)
         }
     }
 }

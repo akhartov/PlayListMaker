@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker.data.convertors
 
 import com.practicum.playlistmaker.favourites.data.db.FavouriteTrackEntity
+import com.practicum.playlistmaker.playlist.data.db.LibraryTrackEntity
+import com.practicum.playlistmaker.playlist.domain.TrackShortInfo
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.millisToMMSS
@@ -13,7 +15,8 @@ class TrackMapper {
             trackId = dto.trackId,
             trackName = dto.trackName,
             artistName = dto.artistName,
-            length = millisToMMSS(dto.trackTimeMillis),
+            trackTimeMillis = dto.trackTimeMillis,
+            lengthText = millisToMMSS(dto.trackTimeMillis),
             artworkUrl100 = dto.artworkUrl100,
             coverArtwork = artworkUrlToCoverUrl(dto.artworkUrl100),
             collectionName = dto.collectionName ?: "",
@@ -29,7 +32,8 @@ class TrackMapper {
             trackId = track.id,
             trackName = track.trackName,
             artistName = track.artistName,
-            length = track.length,
+            trackTimeMillis = track.trackTimeMillis,
+            lengthText = millisToMMSS(track.trackTimeMillis),
             artworkUrl100 = track.artworkUrl100,
             coverArtwork = artworkUrlToCoverUrl(track.artworkUrl100),
             collectionName = track.collectionName,
@@ -45,7 +49,7 @@ class TrackMapper {
             id = track.trackId,
             trackName = track.trackName,
             artistName = track.artistName,
-            length = track.length,
+            trackTimeMillis = track.trackTimeMillis,
             artworkUrl100 = track.artworkUrl100,
             collectionName = track.collectionName,
             trackYear = track.trackYear,
@@ -70,5 +74,14 @@ class TrackMapper {
 
     private fun artworkUrlToCoverUrl(artworkUrl: String): String {
         return artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
+    }
+
+    fun map(entity: LibraryTrackEntity): TrackShortInfo {
+        return TrackShortInfo(
+            title = entity.trackName,
+            artist = entity.artistName,
+            length = millisToMMSS(entity.trackTimeMillis),
+            artworkUrl100 = entity.artworkUrl100
+        )
     }
 }

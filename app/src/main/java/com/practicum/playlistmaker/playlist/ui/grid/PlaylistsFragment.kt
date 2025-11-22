@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.playlist.ui
+package com.practicum.playlistmaker.playlist.ui.grid
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,12 +11,18 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.player.ui.PlayerFragment.Companion.CLICK_DEBOUNCE_DELAY
+import com.practicum.playlistmaker.playlist.ui.view.PlaylistViewerFragment
 import com.practicum.playlistmaker.ui.BindingFragment
 import com.practicum.playlistmaker.ui.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
-    private val playlistsAdapter by lazy { PlaylistGridAdapter() }
+    private val playlistsAdapter by lazy { PlaylistGridAdapter { cover ->
+        findNavController().navigate(
+            R.id.action_libraryFragment_to_playlistViewerFragment,
+            PlaylistViewerFragment.createArgs(cover)
+        )
+    } }
 
     override fun createBinding(
         inflater: LayoutInflater,
