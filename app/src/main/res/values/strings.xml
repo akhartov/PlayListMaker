@@ -36,6 +36,9 @@
     <string name="new_playlist_created">Плейлист %s создан</string>
     <string name="ask_finish_playlist_creation">Завершить создание плейлиста?</string>
     <string name="all_data_will_lost">Все несохраненные данные будут потеряны</string>
+    <string name="do_you_want_remove_track">Хотите удалить трек?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
     <string name="cancel">Отмена</string>
     <string name="finish">Завершить</string>
     <string name="playlist_title">Название*</string>
@@ -51,7 +54,7 @@
     <plurals name="minute_count">
         <item quantity="zero">%d минут</item>
         <item quantity="one">%d минута</item>
-        <item quantity="few">%d минут</item>
+        <item quantity="few">%d минуты</item>
         <item quantity="many">%d минут</item>
     </plurals>
 

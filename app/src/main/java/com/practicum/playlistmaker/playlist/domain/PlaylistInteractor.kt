@@ -13,4 +13,6 @@ interface PlaylistInteractor {
     suspend fun createCover(title: String, description: String, coverFullPath: Uri?): Boolean
     suspend fun addTrackToPlaylist(playlistId: Int, track: Track)
     suspend fun getPlaylistViewerFlow(cover: PlaylistCover?): Flow<PlaylistViewerState>
+    suspend fun getTracksFlow(playlistId: Int): Flow<List<Track>>
+    suspend fun deleteTrack(playlistId: Int, track: Track)
 }

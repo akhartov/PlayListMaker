@@ -14,8 +14,8 @@ interface LibraryTrackDao {
     @Query("SELECT * FROM library_track WHERE playlistId = :playlistId ORDER BY insertTime DESC")
     fun getTracks(playlistId: Int): Flow<List<LibraryTrackEntity>>
 
-    @Query("DELETE FROM library_track WHERE id = :trackId")
-    suspend fun deleteTrackById(trackId: Int)
+    @Query("DELETE FROM library_track WHERE playlistId = :playlistId AND id = :trackId")
+    suspend fun deleteTrackById(playlistId: Int, trackId: Int)
 
     @Query("SELECT id FROM library_track WHERE playlistId = :playlistId")
     suspend fun getTracksIds(playlistId: Int): List<Int>

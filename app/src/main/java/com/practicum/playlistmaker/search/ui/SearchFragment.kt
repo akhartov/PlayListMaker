@@ -25,12 +25,18 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private var textWatcher: TextWatcher? = null
 
     private val tracksAdapter by lazy {
-        TrackAdapter { track ->
-            tracksClickDebounce(track)
-        }
+        TrackAdapter(
+            trackClickListener = object : TrackViewHolder.OnTrackClickListener {
+                override fun onTrackClick(track: Track) {
+                    trackClickDebounce(track)
+                }
+
+                override fun onTrackLongClick(track: Track) = false
+            }
+        )
     }
 
-    private val tracksClickDebounce =
+    private val trackClickDebounce =
         debounce<Track>(CLICK_TRACK_DEBOUNCE_DELAY, lifecycleScope, true) { track ->
             viewModel.openTrack(track)
             findNavController().navigate(

@@ -31,12 +31,16 @@ class LibraryRepositoryImpl(
         ))
     }
 
+    override suspend fun deleteTrack(playlistId: Int, track: Track) {
+        database.libraryTrackDao().deleteTrackById(playlistId, track.trackId)
+    }
+
     override suspend fun getTracksIds(playlistId: Int): List<Int> {
         return database.libraryTrackDao().getTracksIds(playlistId)
     }
 
-    override fun getTracks(playlistId: Int): Flow<List<TrackShortInfo>> = flow {
-        database.libraryTrackDao().getTracks(playlistId).map { entities -> entities.map { trackMapper.map(it) } }
+    override suspend fun getTrackShortInfoFlow(playlistId: Int): Flow<List<TrackShortInfo>> = flow {
+        database.libraryTrackDao().getTracks(playlistId).map { entities -> entities.map { trackMapper.mapShortInfo(it) } }
     }
 
     override suspend fun getTracksLength(playlistId: Int): Long {
@@ -45,5 +49,11 @@ class LibraryRepositoryImpl(
 
     override suspend fun getTracksCount(playlistId: Int): Long {
         return database.libraryTrackDao().getTracksCount(playlistId) ?: 0
+    }
+
+    override suspend fun getPlaylistTracks(playlistId: Int): Flow<List<Track>> {
+        return database.libraryTrackDao().getTracks(playlistId).map { entities ->
+            entities.map { trackMapper.map(it) }
+        }
     }
 }

@@ -13,16 +13,23 @@ import com.practicum.playlistmaker.favourites.domain.FavouritesState
 import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.TrackAdapter
+import com.practicum.playlistmaker.search.ui.TrackViewHolder
 import com.practicum.playlistmaker.ui.BindingFragment
 import com.practicum.playlistmaker.ui.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavouritesTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>() {
-    private var tracksAdapter: TrackAdapter? = TrackAdapter { track ->
-        tracksClickDebounce(track)
-    }
+    private var tracksAdapter: TrackAdapter? = TrackAdapter(
+        trackClickListener = object : TrackViewHolder.OnTrackClickListener {
+            override fun onTrackClick(track: Track) {
+                trackClickDebounce(track)
+            }
 
-    private val tracksClickDebounce =
+            override fun onTrackLongClick(track: Track) = false
+        }
+    )
+
+    private val trackClickDebounce =
         debounce<Track>(CLICK_TRACK_DEBOUNCE_DELAY, lifecycleScope, true) { track ->
             findNavController().navigate(
                 R.id.action_libraryFragment_to_playerFragment,

@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.search.ui
 
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -36,9 +37,16 @@ class TrackViewHolder(private val binding: TrackViewBinding, private val trackCl
         itemView.setOnClickListener {
             trackClickListener?.onTrackClick(track)
         }
+
+        itemView.setOnLongClickListener(object : View.OnLongClickListener {
+            override fun onLongClick(p0: View?): Boolean {
+                return trackClickListener?.onTrackLongClick(track) ?: false
+            }
+        })
     }
 
-    fun interface OnTrackClickListener {
+    interface OnTrackClickListener {
         fun onTrackClick(track: Track)
+        fun onTrackLongClick(track: Track): Boolean
     }
 }

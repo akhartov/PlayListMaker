@@ -60,10 +60,6 @@ class TrackMapper {
         )
     }
 
-    fun map(dto: List<TrackDto>): List<Track> {
-        return dto.map { map(it) }
-    }
-
     private fun getYearFromUtcDateTimeString(dateTimeString: String): String {
         return try {
             OffsetDateTime.parse(dateTimeString).year.toString()
@@ -76,7 +72,7 @@ class TrackMapper {
         return artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
     }
 
-    fun map(entity: LibraryTrackEntity): TrackShortInfo {
+    fun mapShortInfo(entity: LibraryTrackEntity): TrackShortInfo {
         return TrackShortInfo(
             title = entity.trackName,
             artist = entity.artistName,
@@ -84,4 +80,29 @@ class TrackMapper {
             artworkUrl100 = entity.artworkUrl100
         )
     }
+
+    fun map(entity: LibraryTrackEntity): Track {
+        return Track(
+            trackId = entity.id,
+            trackName = entity.trackName,
+            artistName = entity.artistName,
+            trackTimeMillis = entity.trackTimeMillis,
+            lengthText = millisToMMSS(entity.trackTimeMillis),
+            artworkUrl100 = entity.artworkUrl100,
+            coverArtwork = artworkUrlToCoverUrl(entity.artworkUrl100),
+            collectionName = entity.collectionName,
+            trackYear = entity.trackYear,
+            primaryGenreName = entity.primaryGenreName,
+            country = entity.country,
+            previewUrl = entity.previewUrl
+        )
+    }
+
+    fun map(dto: List<TrackDto>): List<Track> {
+        return dto.map { map(it) }
+    }
+/*
+    fun mapLibrary(entities: List<LibraryTrackEntity>): List<Track> {
+        return entities.map { map(it) }
+    }*/
 }
