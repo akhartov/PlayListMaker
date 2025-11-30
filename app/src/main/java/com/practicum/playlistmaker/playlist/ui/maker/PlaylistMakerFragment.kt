@@ -40,14 +40,22 @@ class PlaylistMakerFragment : PlaylistCoverFragment() {
 
         backCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (makerViewModel.hasUserTypedText())
-                    confirmDialog.show()
-                else
-                    findNavController().navigateUp()
+                backPreviousView()
             }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(backCallback)
+
+        binding.backButton.setOnClickListener {
+            backPreviousView()
+        }
+    }
+
+    private fun backPreviousView() {
+        if (makerViewModel.hasUserTypedText())
+            confirmDialog.show()
+        else
+            findNavController().navigateUp()
     }
 
     override fun onDestroyView() {

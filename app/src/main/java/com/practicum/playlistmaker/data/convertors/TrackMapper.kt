@@ -91,8 +91,4 @@ class TrackMapper {
     fun map(dto: List<TrackDto>): List<Track> {
         return dto.map { map(it) }
     }
-/*
-    fun mapLibrary(entities: List<LibraryTrackEntity>): List<Track> {
-        return entities.map { map(it) }
-    }*/
 }

@@ -70,6 +70,7 @@ abstract class PlaylistCoverFragment : BindingFragment<FragmentPlaylistEditorBin
         uri?.let { existingUri ->
             Glide.with(requireContext())
                 .load(existingUri)
+                .placeholder(R.drawable.ic_312_add_cover)
                 .transform(
                     CenterCrop(),
                     RoundedCorners(

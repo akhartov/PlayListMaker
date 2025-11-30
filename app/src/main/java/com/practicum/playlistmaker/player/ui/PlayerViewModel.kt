@@ -20,7 +20,6 @@ class PlayerViewModel(
     private val player: AudioPlayer,
     private val trackFavouritesInteractor: FavouritesInteractor,
     private val coversInteractor: CoversInteractor,
-    //private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
     private var timerJob: Job? = null
     private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Loaded(track))

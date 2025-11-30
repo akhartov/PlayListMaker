@@ -32,6 +32,7 @@ class PlaylistEditorFragment : PlaylistCoverFragment() {
 
             Glide.with(requireContext())
                     .load(cover.imagePath)
+                    .placeholder(R.drawable.ic_312_add_cover)
                     .transform(
                         CenterCrop(),
                         RoundedCorners(
@@ -42,10 +43,14 @@ class PlaylistEditorFragment : PlaylistCoverFragment() {
         }
 
         binding.newPlaylistButton.setOnClickListener {
-            if (!binding.playlistTitle.text.isNullOrEmpty()) {
+            if(editorViewModel.canSavePlaylist()) {
                 editorViewModel.savePlaylist()
             }
 
+            findNavController().navigateUp()
+        }
+
+        binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
     }
