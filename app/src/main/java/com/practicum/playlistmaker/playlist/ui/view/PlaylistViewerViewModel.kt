@@ -61,9 +61,9 @@ class PlaylistViewerViewModel(
 
     fun sharePlaylist() {
         if (playlistMessagingCache.hasTracks()) {
-            _sharingLiveData.postValue(TracksSharingEvent.NoTracksForSharing)
-        } else {
             sharingInteractor.shareCustomText(playlistMessagingCache.makeMessage())
+        } else {
+            _sharingLiveData.postValue(TracksSharingEvent.NoTracksForSharing)
         }
     }
 }

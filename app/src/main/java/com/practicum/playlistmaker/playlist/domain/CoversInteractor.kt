@@ -16,7 +16,8 @@ import kotlinx.coroutines.flow.map
 class CoversInteractor(
     private val coverRepository: CoverRepository,
     private val fileRepository: FileRepository,
-    private val tracksLibraryRepository: TracksLibraryRepository
+    private val tracksLibraryRepository: TracksLibraryRepository,
+    private val pathResolver: PathResolver,
 ) {
     private val _coverEventFlow = MutableSharedFlow<PlaylistsEvent>()
     val coverEventFlow: SharedFlow<PlaylistsEvent> = _coverEventFlow.asSharedFlow()
@@ -43,11 +44,27 @@ class CoversInteractor(
         description: String,
         coverFullPath: Uri?
     ): Boolean {
-        val fileName = PathResolver.getFilename(coverFullPath)
-        fileName?.let { fileRepository.saveImage(coverFullPath, it) }
+
+        val fileName = pathResolver.getFilename(coverFullPath)
+        if(fileName.isNotBlank())
+            fileRepository.saveImage(coverFullPath, fileName)
 
         coverRepository.addCover(title, description, fileName)
         _coverEventFlow.emit(PlaylistsEvent.NewPlaylist(title))
+        return true
+    }
+
+    suspend fun updateCover(
+        playlistId: Int,
+        title: String,
+        description: String,
+        coverFullPath: Uri?
+    ): Boolean {
+        val fileName = pathResolver.getFilename(coverFullPath)
+        if(fileName.isNotBlank())
+            fileRepository.saveImage(coverFullPath, fileName)
+
+        coverRepository.updateCover(playlistId, title, description, fileName)
         return true
     }
 

@@ -12,6 +12,9 @@ interface CoverDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCover(playlistCover: CoverEntity)
 
+    @Query("UPDATE playlists SET title = :title, description = :description, coverFilename = :coverFilename WHERE id = :entityId")
+    suspend fun updateCover(entityId: Int, title: String, description: String, coverFilename: String?)
+
     @Query("SELECT * FROM playlists ORDER BY insertTime DESC")
     fun getItems(): Flow<List<CoverEntity>>
 

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 class CoverRepositoryImpl(
     private val database: AppDatabase,
     private val playlistMapper: PlaylistMapper,
+    private val pathResolver: PathResolver,
 ) : CoverRepository {
     override suspend fun addCover(title: String, description: String?, imagePath: String?) {
         database.playlistDao().insertCover(
@@ -19,9 +20,18 @@ class CoverRepositoryImpl(
                 System.currentTimeMillis(),
                 title,
                 description.toString(),
-                imagePath.toString()
+                pathResolver.getFilename(imagePath)
             )
         )
+    }
+
+    override suspend fun updateCover(
+        playlistId: Int,
+        title: String,
+        description: String,
+        fileName: String?
+    ) {
+        database.playlistDao().updateCover(playlistId, title, description, fileName)
     }
 
     override suspend fun deleteCover(playlistId: Int) {

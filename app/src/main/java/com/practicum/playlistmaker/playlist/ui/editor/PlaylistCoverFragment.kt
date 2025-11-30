@@ -17,9 +17,12 @@ import com.practicum.playlistmaker.databinding.FragmentPlaylistEditorBinding
 import com.practicum.playlistmaker.ui.BindingFragment
 import com.practicum.playlistmaker.ui.floatDpToPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 open class PlaylistCoverFragment : BindingFragment<FragmentPlaylistEditorBinding>() {
-    open val viewModel: PlaylistMakerViewModel by viewModel()
+    open val viewModel: PlaylistCoverViewModel by viewModel {
+        parametersOf(0)
+    }
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -67,7 +70,7 @@ open class PlaylistCoverFragment : BindingFragment<FragmentPlaylistEditorBinding
         applyImage(savedInstanceState.getParcelable(URI, Uri::class.java))
     }
 
-    private fun applyImage(uri: Uri?) {
+    fun applyImage(uri: Uri?) {
         uri?.let { existingUri ->
             Glide.with(requireContext())
                 .load(existingUri)

@@ -4,10 +4,11 @@ import android.net.Uri
 import java.io.File
 
 class PathResolver {
-    companion object {
-        @JvmStatic
-        fun getFilename(uri: Uri?): String? {
-            return uri?.path?.let { File(it).name}
-        }
+    fun getFilename(filePath: String?): String {
+        return filePath?.let { File(it).name} ?: ""
+    }
+
+    fun getFilename(uri: Uri?): String {
+        return uri?.path?.let { File(it).name} ?: ""
     }
 }
