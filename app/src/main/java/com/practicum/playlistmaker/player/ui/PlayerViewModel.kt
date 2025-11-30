@@ -8,8 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.favourites.domain.FavouritesInteractor
 import com.practicum.playlistmaker.player.domain.api.AudioPlayer
 import com.practicum.playlistmaker.player.domain.api.TrackPlayingState
-import com.practicum.playlistmaker.playlist.domain.PlaylistCover
-import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
+import com.practicum.playlistmaker.playlist.domain.CoversInteractor
+import com.practicum.playlistmaker.playlist.domain.model.PlaylistCover
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,14 +19,15 @@ class PlayerViewModel(
     val track: Track?,
     private val player: AudioPlayer,
     private val trackFavouritesInteractor: FavouritesInteractor,
-    private val playlistInteractor: PlaylistInteractor
+    private val coversInteractor: CoversInteractor,
+    //private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
     private var timerJob: Job? = null
     private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Loaded(track))
     fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
 
     private val _playlistsLiveData = MutableLiveData<List<PlaylistCover>>()
-    val playlistLiveData: LiveData<List<PlaylistCover>> = _playlistsLiveData
+    val playlistsLiveData: LiveData<List<PlaylistCover>> = _playlistsLiveData
 
     private val userTrackState = MutableLiveData<UserTrackState?>(null)
     fun getUserTrackLiveData(): LiveData<UserTrackState?> = userTrackState
@@ -49,13 +50,9 @@ class PlayerViewModel(
         }
 
         viewModelScope.launch {
-            playlistInteractor.playlistsFlow.collect { state ->
+            coversInteractor.subscribeToCoversFlow().collect { state ->
                 _playlistsLiveData.postValue(state.items)
             }
-        }
-
-        viewModelScope.launch {
-            playlistInteractor.update()
         }
     }
 
@@ -79,10 +76,10 @@ class PlayerViewModel(
         }
     }
 
-    fun trackToPlaylist(playlistId: Int) {
+    fun addTrackToPlaylist(playlistId: Int) {
         track?.let { existingTrack ->
             viewModelScope.launch {
-                playlistInteractor.addTrackToPlaylist(playlistId, existingTrack)
+                coversInteractor.addTrack(playlistId, existingTrack)
             }
         }
     }

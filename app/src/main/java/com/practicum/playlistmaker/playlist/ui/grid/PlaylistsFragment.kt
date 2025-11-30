@@ -17,12 +17,14 @@ import com.practicum.playlistmaker.ui.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
-    private val playlistsAdapter by lazy { PlaylistGridAdapter { cover ->
-        findNavController().navigate(
-            R.id.action_libraryFragment_to_playlistViewerFragment,
-            PlaylistViewerFragment.createArgs(cover)
-        )
-    } }
+    private val playlistsAdapter by lazy {
+        PlaylistGridAdapter { cover ->
+            findNavController().navigate(
+                R.id.action_libraryFragment_to_playlistViewerFragment,
+                PlaylistViewerFragment.createArgs(cover.id)
+            )
+        }
+    }
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -34,10 +36,8 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
     private val viewModel: PlaylistsViewModel by viewModel()
 
     private val playlistClickDebounce =
-        debounce<Int>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { playlistId ->
-            findNavController().navigate(
-                R.id.action_libraryFragment_to_playlistEditorFragment
-            )
+        debounce<Int>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { _ ->
+            findNavController().navigate(R.id.action_libraryFragment_to_playlistMakerFragment)
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,7 +52,7 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
             playlistClickDebounce(0)
         }
 
-        viewModel.playlistLiveData.observe(viewLifecycleOwner) { state ->
+        viewModel.coverLibraryLiveData.observe(viewLifecycleOwner) { state ->
             playlistsAdapter.updateItems(state.items)
             binding.placeholderGroup.isVisible = state.items.isEmpty()
         }

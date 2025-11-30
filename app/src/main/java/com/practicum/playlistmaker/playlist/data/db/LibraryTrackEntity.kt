@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
     tableName = "library_track",
     foreignKeys = [
         ForeignKey(
-            entity = PlaylistEntity::class,
+            entity = CoverEntity::class,
             parentColumns = ["id"],
             childColumns = ["playlistId"],
             onDelete = ForeignKey.CASCADE

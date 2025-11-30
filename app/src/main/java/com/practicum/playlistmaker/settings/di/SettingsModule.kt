@@ -10,10 +10,10 @@ import com.practicum.playlistmaker.settings.data.model.SettingsRepository
 import com.practicum.playlistmaker.settings.domain.impl.NightModeInteractorImpl
 import com.practicum.playlistmaker.settings.domain.model.NightModeInteractor
 import com.practicum.playlistmaker.settings.ui.SettingsViewModel
-import com.practicum.playlistmaker.sharing.data.impl.ExternalNavigatorImpl
-import com.practicum.playlistmaker.sharing.data.model.ExternalNavigator
-import com.practicum.playlistmaker.sharing.domain.impl.SharingInteractorImpl
-import com.practicum.playlistmaker.sharing.domain.model.SharingInteractor
+import com.practicum.playlistmaker.data.ExternalNavigatorImpl
+import com.practicum.playlistmaker.domain.ExternalNavigator
+import com.practicum.playlistmaker.data.SharingInteractorImpl
+import com.practicum.playlistmaker.domain.SharingInteractor
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

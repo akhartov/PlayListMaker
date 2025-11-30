@@ -4,25 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
-import com.practicum.playlistmaker.playlist.domain.PlaylistsState
+import com.practicum.playlistmaker.playlist.domain.CoversInteractor
+import com.practicum.playlistmaker.playlist.domain.model.CoverLibraryState
 import kotlinx.coroutines.launch
 
 class PlaylistsViewModel(
-    val playlistInteractor: PlaylistInteractor
+    private val coversInteractor: CoversInteractor,
 ): ViewModel() {
-    private val _playlistsLiveData = MutableLiveData<PlaylistsState>()
-    val playlistLiveData: LiveData<PlaylistsState> = _playlistsLiveData
+    private val _coverLibraryLiveData = MutableLiveData<CoverLibraryState>()
+    val coverLibraryLiveData: LiveData<CoverLibraryState> = _coverLibraryLiveData
 
     init {
         viewModelScope.launch {
-            playlistInteractor.playlistsFlow.collect { state ->
-                _playlistsLiveData.postValue(state)
+            coversInteractor.subscribeToCoversFlow().collect { state ->
+                _coverLibraryLiveData.postValue(state)
             }
-        }
-
-        viewModelScope.launch {
-            playlistInteractor.update()
         }
     }
 }

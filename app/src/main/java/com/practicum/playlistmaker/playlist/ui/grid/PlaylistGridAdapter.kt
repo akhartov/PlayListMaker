@@ -3,7 +3,7 @@ package com.practicum.playlistmaker.playlist.ui.grid
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.playlist.domain.PlaylistCover
+import com.practicum.playlistmaker.playlist.domain.model.PlaylistCover
 
 class PlaylistGridAdapter(private val onPlaylistClickListener: PlaylistGridViewHolder.OnClickListener) : RecyclerView.Adapter<PlaylistGridViewHolder>() {
     private var items = listOf<PlaylistCover>()

@@ -4,17 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistViewerBinding
 import com.practicum.playlistmaker.player.ui.PlayerFragment
-import com.practicum.playlistmaker.playlist.domain.PlaylistCover
+import com.practicum.playlistmaker.playlist.domain.model.PlaylistCover
+import com.practicum.playlistmaker.playlist.domain.model.TracksSharingEvent
+import com.practicum.playlistmaker.playlist.ui.editor.PlaylistEditorFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.TrackAdapter
 import com.practicum.playlistmaker.search.ui.TrackViewHolder
@@ -26,7 +31,7 @@ import org.koin.core.parameter.parametersOf
 
 class PlaylistViewerFragment : BindingFragment<FragmentPlaylistViewerBinding>() {
     private val viewerViewModel: PlaylistViewerViewModel by viewModel {
-        parametersOf(requireArguments().getParcelable(COVER, PlaylistCover::class.java))
+        parametersOf(requireArguments().getInt(PLAYLIST_ID))
     }
 
     private val trackClickDebounce =
@@ -60,19 +65,32 @@ class PlaylistViewerFragment : BindingFragment<FragmentPlaylistViewerBinding>() 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.tracksRecyclerView.adapter = tracksAdapter
+        binding.tracksBottomSheet.isVisible = true
+
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
 
-        initPlaylist()
+        viewerViewModel.coverLiveData.observe(viewLifecycleOwner) { cover ->
+            cover?.let {
+                initPlaylist(it)
+                initMenu(it)
+            }
+        }
 
-        initTracks()
-    }
+        viewerViewModel.sharingLiveData.observe(viewLifecycleOwner) { state ->
+            when(state) {
+                is TracksSharingEvent.NoTracksForSharing -> Toast.makeText(requireContext(), resources.getString(R.string.no_tracks_for_sharing), Toast.LENGTH_SHORT).show()
+            }
+        }
 
-    private fun initTracks() {
-        binding.tracksRecyclerView.adapter = tracksAdapter
         viewerViewModel.tracksLiveData.observe(viewLifecycleOwner) { tracks ->
             tracksAdapter?.updateItems(tracks)
+        }
+
+        binding.playlistShare.setOnClickListener {
+            viewerViewModel.sharePlaylist()
         }
     }
 
@@ -80,37 +98,85 @@ class PlaylistViewerFragment : BindingFragment<FragmentPlaylistViewerBinding>() 
         MaterialAlertDialogBuilder(requireContext())
             .setMessage(resources.getString(R.string.do_you_want_remove_track))
             .setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
-            .setPositiveButton(resources.getString(R.string.yes)) { _, _ -> viewerViewModel.deleteTrack(track) }
+            .setPositiveButton(resources.getString(R.string.yes)) { _, _ -> viewerViewModel.deleteTrack(requireArguments().getInt(PLAYLIST_ID), track) }
             .show()
     }
 
-    private fun initPlaylist() {
-        viewerViewModel.stateLiveData.observe(viewLifecycleOwner) { state ->
-            binding.playlistTitle.text = state.title
-            binding.playlistDescription.text = state.description
-            binding.tracksLength.text = state.tracksLength
-            binding.tracksCount.text = state.tracksCount
+    private fun initPlaylist(cover: PlaylistCover) {
+            binding.playlistTitle.text = cover.title
+            binding.playlistDescription.text = cover.description
+            binding.tracksLength.text = cover.tracksMinutesText
+            binding.tracksCount.text = cover.tracksCountText
             Glide.with(requireContext())
-                .load(state.imagePath)
+                .load(cover.imagePath)
                 .placeholder(R.drawable.track_placeholder)
                 .transform(
-                    CenterCrop(),
-                    RoundedCorners(
-                        floatDpToPx(
-                            resources,
-                            resources.getDimension(R.dimen.big_image_radius)
-                        )
-                    )
+                    CenterCrop()
                 )
                 .into(binding.coverImage)
+    }
+
+    private fun initMenu(cover: PlaylistCover) {
+        Glide.with(requireContext())
+            .load(cover.imagePath)
+            .placeholder(R.drawable.track_placeholder)
+            .transform(CenterCrop(), RoundedCorners(floatDpToPx(resources, resources.getDimension(R.dimen.image_radius))))
+            .into(binding.coverSmallImage)
+        binding.menuPlaylistTitle.text = cover.title
+        binding.menuPlaylistInfo.text = cover.tracksCountText
+
+        binding.menuItemSharePlaylist.setOnClickListener {
+            viewerViewModel.sharePlaylist()
+        }
+
+        binding.menuItemEditPlaylist.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_playlistViewerFragment_to_playlistEditorFragment,
+                PlaylistEditorFragment.createArgs(cover.id)
+            )
+        }
+
+        binding.menuItemDeletePlaylist.setOnClickListener {
+            viewerViewModel.deletePlaylist(cover.id)
+            findNavController().navigateUp()
+        }
+
+        binding.playlistMenu.setOnClickListener {
+            binding.menuBottomSheet.isVisible = true
+            BottomSheetBehavior.from(binding.menuBottomSheet).apply {
+                state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
+
+        BottomSheetBehavior.from(binding.menuBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            binding.overlay.visibility = View.GONE
+                            binding.tracksBottomSheet.isVisible = true
+                        }
+
+                        else -> {
+                            binding.overlay.visibility = View.VISIBLE
+                            binding.tracksBottomSheet.isVisible = false
+                        }
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
         }
     }
 
     companion object {
         private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
-        private const val COVER = "COVER"
+        private const val PLAYLIST_ID = "PLAYLIST_ID"
 
-        fun createArgs(cover: PlaylistCover): Bundle =
-            bundleOf(COVER to cover)
+        fun createArgs(playlistId: Int): Bundle =
+            bundleOf(PLAYLIST_ID to playlistId)
     }
 }

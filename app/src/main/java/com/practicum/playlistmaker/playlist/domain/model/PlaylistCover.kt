@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.playlist.domain
+package com.practicum.playlistmaker.playlist.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -8,6 +8,7 @@ data class PlaylistCover(
     val id: Int,
     val title: String,
     val description: String,
-    val tracksInfo: String,
+    val tracksCountText: String,
+    val tracksMinutesText: String,
     val imagePath: String,
 ) : Parcelable

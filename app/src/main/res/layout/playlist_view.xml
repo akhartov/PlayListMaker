@@ -7,7 +7,7 @@
     >
 
     <ImageView
-        android:id="@+id/cover_image"
+        android:id="@+id/cover_small_image"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
@@ -22,7 +22,7 @@
         />
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/playlist_title"
         style="@style/NormalTrackText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,14 +31,14 @@
         android:minLines="1"
         android:text="playlist title"
         android:layout_marginHorizontal="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cover_image"
-        app:layout_constraintStart_toEndOf="@+id/cover_image"
-        app:layout_constraintTop_toTopOf="@+id/cover_image"
+        app:layout_constraintBottom_toBottomOf="@+id/cover_small_image"
+        app:layout_constraintStart_toEndOf="@+id/cover_small_image"
+        app:layout_constraintTop_toTopOf="@+id/cover_small_image"
         app:layout_constraintVertical_bias="0.25"
         />
 
     <TextView
-        android:id="@+id/info"
+        android:id="@+id/playlist_info"
         style="@style/SmallestTrackText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,8 +47,8 @@
         android:maxLines="1"
         android:minLines="1"
         android:text="0 tracks"
-        app:layout_constraintStart_toStartOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintStart_toStartOf="@+id/playlist_title"
+        app:layout_constraintTop_toBottomOf="@+id/playlist_title"
         />
 
 

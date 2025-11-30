@@ -106,7 +106,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                     is SearchState.NotFound -> {
                         tracksAdapter.updateItems(emptyList())
                         binding.noTracksImage.setImageResource(R.drawable.img_tracks_not_found)
-                        binding.noTracksTextview.setText(resources.getString(R.string.tracks_not_found))
+                        binding.noTracksTextview.text = resources.getString(R.string.tracks_not_found)
                         binding.updateTracksButton.isVisible = false
                         binding.placeholderGroup.isVisible = true
                         binding.tracksSearchProgress.isVisible = false

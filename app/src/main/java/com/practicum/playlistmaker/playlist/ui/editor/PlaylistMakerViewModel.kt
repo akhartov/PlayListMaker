@@ -3,19 +3,19 @@ package com.practicum.playlistmaker.playlist.ui.editor
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
+import com.practicum.playlistmaker.playlist.domain.CoversInteractor
 import kotlinx.coroutines.launch
 
-class PlaylistEditorViewModel(
-    val playlistInteractor: PlaylistInteractor
+class PlaylistMakerViewModel(
+    private val coversInteractor: CoversInteractor
 ) : ViewModel() {
     var playlistName = ""
     var playlistDescription = ""
     var imageUri: Uri? = null
 
-    fun savePlaylist() {
+    fun makePlaylistCover() {
         viewModelScope.launch {
-            playlistInteractor.createCover(playlistName, playlistDescription, imageUri)
+            coversInteractor.makeCover(playlistName, playlistDescription, imageUri)
         }
     }
 

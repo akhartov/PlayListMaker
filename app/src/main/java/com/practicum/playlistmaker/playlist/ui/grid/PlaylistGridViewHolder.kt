@@ -8,7 +8,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.PlaylistGridViewBinding
-import com.practicum.playlistmaker.playlist.domain.PlaylistCover
+import com.practicum.playlistmaker.playlist.domain.model.PlaylistCover
 import com.practicum.playlistmaker.ui.floatDpToPx
 
 class PlaylistGridViewHolder(
@@ -18,7 +18,7 @@ class PlaylistGridViewHolder(
 
     fun bind(cover: PlaylistCover) {
         binding.title.text = cover.title
-        binding.info.text = cover.tracksInfo
+        binding.info.text = cover.tracksCountText
 
         Glide.with(itemView.context)
             .load(cover.imagePath)

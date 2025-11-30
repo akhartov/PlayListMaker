@@ -3,17 +3,15 @@ package com.practicum.playlistmaker.playlist.data
 import com.practicum.playlistmaker.data.convertors.TrackMapper
 import com.practicum.playlistmaker.data.db.AppDatabase
 import com.practicum.playlistmaker.playlist.data.db.LibraryTrackEntity
-import com.practicum.playlistmaker.playlist.domain.LibraryRepository
-import com.practicum.playlistmaker.playlist.domain.TrackShortInfo
+import com.practicum.playlistmaker.playlist.domain.TracksLibraryRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-class LibraryRepositoryImpl(
+class TracksLibraryRepositoryImpl(
     private val database: AppDatabase,
     private val trackMapper: TrackMapper
-): LibraryRepository {
+): TracksLibraryRepository {
     override suspend fun addTrack(playlistId: Int, track: Track) {
         database.libraryTrackDao().insertTrack(LibraryTrackEntity(
             id = 0,
@@ -31,16 +29,12 @@ class LibraryRepositoryImpl(
         ))
     }
 
-    override suspend fun deleteTrack(playlistId: Int, track: Track) {
-        database.libraryTrackDao().deleteTrackById(playlistId, track.trackId)
+    override suspend fun deleteTrack(playlistId: Int, trackId: Int) {
+        database.libraryTrackDao().deleteTrackById(playlistId, trackId)
     }
 
     override suspend fun getTracksIds(playlistId: Int): List<Int> {
         return database.libraryTrackDao().getTracksIds(playlistId)
-    }
-
-    override suspend fun getTrackShortInfoFlow(playlistId: Int): Flow<List<TrackShortInfo>> = flow {
-        database.libraryTrackDao().getTracks(playlistId).map { entities -> entities.map { trackMapper.mapShortInfo(it) } }
     }
 
     override suspend fun getTracksLength(playlistId: Int): Long {

@@ -7,7 +7,7 @@ import com.practicum.playlistmaker.player.domain.api.AudioPlayer
 import com.practicum.playlistmaker.player.domain.api.TrackPlayingState
 
 class AudioPlayerImpl(private var mediaPlayer: MediaPlayer) : AudioPlayer {
-    private val trackPlayingState = MutableLiveData<TrackPlayingState>(TrackPlayingState.NoTrack)
+    private val trackPlayingState = MutableLiveData(TrackPlayingState.NoTrack)
     override fun observeTrackPlayingState(): LiveData<TrackPlayingState> = trackPlayingState
 
     override fun open(linkUrl: String) {

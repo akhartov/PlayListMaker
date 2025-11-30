@@ -2,7 +2,6 @@ package com.practicum.playlistmaker.data.convertors
 
 import com.practicum.playlistmaker.favourites.data.db.FavouriteTrackEntity
 import com.practicum.playlistmaker.playlist.data.db.LibraryTrackEntity
-import com.practicum.playlistmaker.playlist.domain.TrackShortInfo
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.millisToMMSS
@@ -70,15 +69,6 @@ class TrackMapper {
 
     private fun artworkUrlToCoverUrl(artworkUrl: String): String {
         return artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
-    }
-
-    fun mapShortInfo(entity: LibraryTrackEntity): TrackShortInfo {
-        return TrackShortInfo(
-            title = entity.trackName,
-            artist = entity.artistName,
-            length = millisToMMSS(entity.trackTimeMillis),
-            artworkUrl100 = entity.artworkUrl100
-        )
     }
 
     fun map(entity: LibraryTrackEntity): Track {
