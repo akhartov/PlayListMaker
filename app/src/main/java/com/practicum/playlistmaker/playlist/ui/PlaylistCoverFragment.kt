@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.playlist.ui.editor
+package com.practicum.playlistmaker.playlist.ui
 
 import android.net.Uri
 import android.os.Bundle
@@ -16,13 +16,9 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistEditorBinding
 import com.practicum.playlistmaker.ui.BindingFragment
 import com.practicum.playlistmaker.ui.floatDpToPx
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
-open class PlaylistCoverFragment : BindingFragment<FragmentPlaylistEditorBinding>() {
-    open val viewModel: PlaylistCoverViewModel by viewModel {
-        parametersOf(0)
-    }
+abstract class PlaylistCoverFragment : BindingFragment<FragmentPlaylistEditorBinding>() {
+    abstract fun getViewModel(): PlaylistCoverViewModel
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -36,7 +32,7 @@ open class PlaylistCoverFragment : BindingFragment<FragmentPlaylistEditorBinding
 
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-                viewModel.imageUri = uri
+                getViewModel().imageUri = uri
                 applyImage(uri)
             }
 
@@ -46,20 +42,20 @@ open class PlaylistCoverFragment : BindingFragment<FragmentPlaylistEditorBinding
 
         binding.newPlaylistButton.isEnabled = false
         binding.playlistTitle.addTextChangedListener { text ->
-            viewModel.playlistName = text.toString()
-            binding.newPlaylistButton.isEnabled = viewModel.canSavePlaylist()
+            getViewModel().playlistName = text.toString()
+            binding.newPlaylistButton.isEnabled = getViewModel().canSavePlaylist()
             binding.playlistTitleHint.isVisible = !text.isNullOrBlank()
         }
 
         binding.playlistDescription.addTextChangedListener { text ->
-            viewModel.playlistDescription = text.toString()
+            getViewModel().playlistDescription = text.toString()
             binding.playlistDescriptionHint.isVisible = !text.isNullOrBlank()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(URI, viewModel.imageUri)
+        outState.putParcelable(URI, getViewModel().imageUri)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

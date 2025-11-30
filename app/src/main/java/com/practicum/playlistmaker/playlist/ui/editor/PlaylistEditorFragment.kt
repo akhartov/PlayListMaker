@@ -8,22 +8,25 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.playlist.ui.PlaylistCoverFragment
+import com.practicum.playlistmaker.playlist.ui.PlaylistCoverViewModel
 import com.practicum.playlistmaker.ui.floatDpToPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class PlaylistEditorFragment : PlaylistCoverFragment() {
-
-    override val viewModel: PlaylistCoverViewModel by viewModel {
+    val editorViewModel: PlaylistEditorViewModel by viewModel {
         parametersOf(requireArguments().getInt(PLAYLIST_ID))
     }
+
+    override fun getViewModel(): PlaylistCoverViewModel = editorViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.newPlaylistButton.text = resources.getString(R.string.save)
 
-        viewModel.coverLiveData.observe(viewLifecycleOwner) { cover ->
+        editorViewModel.coverLiveData.observe(viewLifecycleOwner) { cover ->
             binding.playlistTitle.setText(cover.title)
             binding.playlistDescription.setText(cover.description)
 
@@ -40,7 +43,7 @@ class PlaylistEditorFragment : PlaylistCoverFragment() {
 
         binding.newPlaylistButton.setOnClickListener {
             if (!binding.playlistTitle.text.isNullOrEmpty()) {
-                viewModel.savePlaylist()
+                editorViewModel.savePlaylist()
             }
 
             findNavController().navigateUp()

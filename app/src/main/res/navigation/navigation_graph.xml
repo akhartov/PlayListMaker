@@ -121,7 +121,7 @@
 
     <fragment
         android:id="@+id/playlistMakerFragment"
-        android:name="com.practicum.playlistmaker.playlist.ui.editor.PlaylistMakerFragment"
+        android:name="com.practicum.playlistmaker.playlist.ui.maker.PlaylistMakerFragment"
         android:label="fragment_playlist_maker"
         tools:layout="@layout/fragment_playlist_editor"
         />
