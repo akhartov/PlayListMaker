@@ -38,9 +38,12 @@
     <string name="ask_finish_playlist_creation">Завершить создание плейлиста?</string>
     <string name="all_data_will_lost">Все несохраненные данные будут потеряны</string>
     <string name="do_you_want_remove_track">Хотите удалить трек?</string>
+    <string name="remove_cover">Удалить плейлист</string>
+    <string name="do_you_want_remove_cover">Вы уверены, что хотите удалить этот плейлист?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
     <string name="finish">Завершить</string>
     <string name="playlist_title">Название*</string>
     <string name="playlist_descrition">Описание</string>

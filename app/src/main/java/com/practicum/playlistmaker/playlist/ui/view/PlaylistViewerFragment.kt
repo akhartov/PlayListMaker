@@ -102,6 +102,18 @@ class PlaylistViewerFragment : BindingFragment<FragmentPlaylistViewerBinding>() 
             .show()
     }
 
+    private fun showDeleteCoverDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.remove_cover))
+            .setMessage(resources.getString(R.string.do_you_want_remove_cover))
+            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
+            .setPositiveButton(resources.getString(R.string.delete)) { _, _ ->
+                viewerViewModel.deletePlaylist(requireArguments().getInt(PLAYLIST_ID))
+                findNavController().navigateUp()
+            }
+            .show()
+    }
+
     private fun initPlaylist(cover: PlaylistCover) {
             binding.playlistTitle.text = cover.title
             binding.playlistDescription.text = cover.description
@@ -137,8 +149,7 @@ class PlaylistViewerFragment : BindingFragment<FragmentPlaylistViewerBinding>() 
         }
 
         binding.menuItemDeletePlaylist.setOnClickListener {
-            viewerViewModel.deletePlaylist(cover.id)
-            findNavController().navigateUp()
+            showDeleteCoverDialog()
         }
 
         binding.playlistMenu.setOnClickListener {
