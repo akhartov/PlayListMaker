@@ -23,15 +23,15 @@ class CoversInteractor(
     val coverEventFlow: SharedFlow<PlaylistsEvent> = _coverEventFlow.asSharedFlow()
 
 
-    suspend fun subscribeToTracksFlow(playlistId: Int): Flow<List<Track>> {
+    fun getTracksFlow(playlistId: Int): Flow<List<Track>> {
         return tracksLibraryRepository.getPlaylistTracks(playlistId)
     }
 
-    fun subscribeToCover(playlistId: Int): Flow<PlaylistCover?> {
+    fun getCoverFlow(playlistId: Int): Flow<PlaylistCover?> {
         return coverRepository.getCoverWithStatistics(playlistId)
     }
 
-    fun subscribeToCoversFlow(): Flow<CoverLibraryState> {
+    fun getAllCoversFlow(): Flow<CoverLibraryState> {
         return coverRepository.getCoversWithStatistics().map { covers ->
             CoverLibraryState(
                 items = covers

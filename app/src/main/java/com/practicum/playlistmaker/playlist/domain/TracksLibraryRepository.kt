@@ -8,6 +8,7 @@ interface TracksLibraryRepository {
     suspend fun getTracksIds(playlistId: Int): List<Int>
     suspend fun getTracksLength(playlistId: Int): Long
     suspend fun getTracksCount(playlistId: Int): Long
-    suspend fun getPlaylistTracks(playlistId: Int): Flow<List<Track>>
     suspend fun deleteTrack(playlistId: Int, trackId: Int)
+
+    fun getPlaylistTracks(playlistId: Int): Flow<List<Track>>
 }

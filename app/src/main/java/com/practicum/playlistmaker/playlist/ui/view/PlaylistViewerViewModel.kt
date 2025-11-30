@@ -31,14 +31,14 @@ class PlaylistViewerViewModel(
 
     init {
         viewModelScope.launch {
-            coversInteractor.subscribeToTracksFlow(playlistId).collect { tracks ->
+            coversInteractor.getTracksFlow(playlistId).collect { tracks ->
                 _tracksLiveData.postValue(tracks)
                 playlistMessagingCache.update(tracks)
             }
         }
 
         viewModelScope.launch {
-            coversInteractor.subscribeToCover(playlistId).collect { cover ->
+            coversInteractor.getCoverFlow(playlistId).collect { cover ->
                 cover?.let {
                     _coverLiveData.postValue(it)
                     playlistMessagingCache.update(it)

@@ -18,7 +18,7 @@ class PlaylistEditorViewModel(
 
     init {
         viewModelScope.launch {
-            coversInteractor.subscribeToCover(playlistId).collect { cover ->
+            coversInteractor.getCoverFlow(playlistId).collect { cover ->
                 cover?.let {
                     playlistName = it.title
                     playlistDescription = it.description

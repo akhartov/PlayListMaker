@@ -16,7 +16,7 @@ class PlaylistsViewModel(
 
     init {
         viewModelScope.launch {
-            coversInteractor.subscribeToCoversFlow().collect { state ->
+            coversInteractor.getAllCoversFlow().collect { state ->
                 _coverLibraryLiveData.postValue(state)
             }
         }

@@ -49,7 +49,7 @@ class PlayerViewModel(
         }
 
         viewModelScope.launch {
-            coversInteractor.subscribeToCoversFlow().collect { state ->
+            coversInteractor.getAllCoversFlow().collect { state ->
                 _playlistsLiveData.postValue(state.items)
             }
         }
