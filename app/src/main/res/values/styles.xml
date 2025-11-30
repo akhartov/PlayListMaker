@@ -73,6 +73,16 @@
 
     <style name="ItemText" parent="Theme.MaterialComponents.DayNight.NoActionBar">
     </style>
+    <style name="CoverTitle" parent="ItemText">
+        <item name="android:textSize">@dimen/title_text_size</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/main_button_text</item>
+    </style>
+    <style name="CoverDetails" parent="ItemText">
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/main_button_text</item>
+    </style>
 
     <style name="ItemTitle" parent="ItemText">
         <item name="android:textSize">@dimen/title_text_size</item>
@@ -83,12 +93,6 @@
     <style name="ItemDetails" parent="ItemText">
         <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:textColor">@color/icon_active</item>
-    </style>
-
-    <style name="ItemDetailsBig" parent="ItemText">
-        <item name="android:textSize">@dimen/big_text_size</item>
-        <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">@color/icon_active</item>
     </style>
 

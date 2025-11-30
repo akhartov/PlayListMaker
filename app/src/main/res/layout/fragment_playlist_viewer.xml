@@ -10,7 +10,7 @@
         android:id="@+id/playerFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/editor_background"
+        android:background="@color/cover_background"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -62,7 +62,7 @@
 
         <TextView
             android:id="@+id/playlist_title"
-            style="@style/ItemTitle"
+            style="@style/CoverTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/big_player_margin"
@@ -80,7 +80,7 @@
 
         <TextView
             android:id="@+id/playlist_description"
-            style="@style/ItemDetailsBig"
+            style="@style/CoverDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -92,7 +92,7 @@
 
         <TextView
             android:id="@+id/tracks_length"
-            style="@style/ItemDetailsBig"
+            style="@style/CoverDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -117,7 +117,7 @@
 
         <TextView
             android:id="@+id/tracks_count"
-            style="@style/ItemDetailsBig"
+            style="@style/CoverDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
@@ -204,7 +204,7 @@
         android:background="@drawable/rounder"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:behavior_hideable="true"
         app:behavior_peekHeight="240dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
