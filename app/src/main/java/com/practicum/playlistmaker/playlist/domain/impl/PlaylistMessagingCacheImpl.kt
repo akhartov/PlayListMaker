@@ -25,7 +25,7 @@ class PlaylistMessagingCacheImpl(
         tracks?.let {
             wordDeclension.getTrackString(it.size) + "\n"
             it.forEachIndexed { index, track ->
-                message += "${index + 1}.${track.artistName} - ${track.trackName} (${track.lengthText})\n"
+                message += "${index + 1} .${track.artistName} - ${track.trackName} (${track.lengthText})\n"
             }
         }
 
