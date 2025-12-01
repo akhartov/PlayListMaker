@@ -3,10 +3,10 @@ package com.practicum.playlistmaker.player.ui
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.player.ui.PlaylistViewHolder.OnClickListener
-import com.practicum.playlistmaker.playlist.domain.PlaylistCover
+import com.practicum.playlistmaker.player.ui.PlaylistViewHolder.OnCoverClickListener
+import com.practicum.playlistmaker.playlist.domain.model.PlaylistCover
 
-class PlaylistAdapter(private val clickListener: OnClickListener?): RecyclerView.Adapter<PlaylistViewHolder>() {
+class PlaylistAdapter(private val clickListener: OnCoverClickListener?): RecyclerView.Adapter<PlaylistViewHolder>() {
     private var items = listOf<PlaylistCover>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {

@@ -1,0 +1,14 @@
+package com.practicum.playlistmaker.playlist.data.db
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "playlists")
+data class CoverEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
+    val insertTime: Long,
+    val title: String,
+    val description: String,
+    val coverFilename: String,
+)

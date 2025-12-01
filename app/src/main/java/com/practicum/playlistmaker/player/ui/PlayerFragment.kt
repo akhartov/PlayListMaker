@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,20 +31,29 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         return FragmentPlayerBinding.inflate(inflater, container, false)
     }
 
+    @Suppress("DEPRECATION")
+    private fun getTrackFromArgs(): Track? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelable(TRACK, Track::class.java)
+        } else {
+            requireArguments().getParcelable(TRACK) as Track?
+        }
+    }
+
     private val viewModel: PlayerViewModel by viewModel {
-        parametersOf(requireArguments().getParcelable(TRACK, Track::class.java))
+        parametersOf(getTrackFromArgs())
     }
 
     private val newPlaylistClickDebounce =
         debounce<Any>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) {
             findNavController().navigate(
-                R.id.action_playerFragment_to_playlistEditorFragment
+                R.id.action_playerFragment_to_playlistMakerFragment
             )
         }
 
     private val trackToPlaylistClickDebounce =
         debounce<Int>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { playlistId ->
-            viewModel.trackToPlaylist(playlistId)
+            viewModel.addTrackToPlaylist(playlistId)
             BottomSheetBehavior.from(binding.playerBottomSheet).apply {
                 state = BottomSheetBehavior.STATE_HIDDEN
             }
@@ -51,7 +61,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private val playlistsAdapter by lazy {
         PlaylistAdapter { playlist ->
-            requireArguments().getParcelable(TRACK, Track::class.java)?.let { track ->
+            getTrackFromArgs()?.let { track ->
                 trackToPlaylistClickDebounce(playlist.id)
             }
         }
@@ -62,7 +72,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
         viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
             state.track?.let { showTrackData(it) }
-            state.isPlaying?.let { isPlaying -> binding.buttonPlay.setImageResource(if (isPlaying == true) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100) }
+            state.isPlaying?.let { isPlaying -> binding.buttonPlay.setImageResource(if (isPlaying) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100) }
             state.trackTimePosition?.let { positionText ->
                 binding.trackTimePosition.text = positionText
             }
@@ -76,8 +86,8 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             }
         }
 
-        viewModel.playlistLiveData.observe(viewLifecycleOwner) { items ->
-            playlistsAdapter.updateItems(items)
+        viewModel.playlistsLiveData.observe(viewLifecycleOwner) { playlists ->
+            playlistsAdapter.updateItems(playlists)
         }
 
         binding.backButton.setOnClickListener {
@@ -130,7 +140,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     private fun showTrackData(track: Track) {
         binding.trackTitle.text = track.trackName
         binding.trackArtist.text = track.artistName
-        binding.trackLength.text = track.length
+        binding.trackLength.text = track.lengthText
 
         binding.albumGroup.isVisible = track.collectionName.isNotEmpty()
         binding.trackAlbum.text = track.collectionName

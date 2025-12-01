@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.data.convertors
 
 import com.practicum.playlistmaker.favourites.data.db.FavouriteTrackEntity
+import com.practicum.playlistmaker.playlist.data.db.LibraryTrackEntity
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.millisToMMSS
@@ -13,7 +14,8 @@ class TrackMapper {
             trackId = dto.trackId,
             trackName = dto.trackName,
             artistName = dto.artistName,
-            length = millisToMMSS(dto.trackTimeMillis),
+            trackTimeMillis = dto.trackTimeMillis,
+            lengthText = millisToMMSS(dto.trackTimeMillis),
             artworkUrl100 = dto.artworkUrl100,
             coverArtwork = artworkUrlToCoverUrl(dto.artworkUrl100),
             collectionName = dto.collectionName ?: "",
@@ -29,7 +31,8 @@ class TrackMapper {
             trackId = track.id,
             trackName = track.trackName,
             artistName = track.artistName,
-            length = track.length,
+            trackTimeMillis = track.trackTimeMillis,
+            lengthText = millisToMMSS(track.trackTimeMillis),
             artworkUrl100 = track.artworkUrl100,
             coverArtwork = artworkUrlToCoverUrl(track.artworkUrl100),
             collectionName = track.collectionName,
@@ -45,7 +48,7 @@ class TrackMapper {
             id = track.trackId,
             trackName = track.trackName,
             artistName = track.artistName,
-            length = track.length,
+            trackTimeMillis = track.trackTimeMillis,
             artworkUrl100 = track.artworkUrl100,
             collectionName = track.collectionName,
             trackYear = track.trackYear,
@@ -54,10 +57,6 @@ class TrackMapper {
             previewUrl = track.previewUrl,
             insertTime = insertTime
         )
-    }
-
-    fun map(dto: List<TrackDto>): List<Track> {
-        return dto.map { map(it) }
     }
 
     private fun getYearFromUtcDateTimeString(dateTimeString: String): String {
@@ -70,5 +69,26 @@ class TrackMapper {
 
     private fun artworkUrlToCoverUrl(artworkUrl: String): String {
         return artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
+    }
+
+    fun map(entity: LibraryTrackEntity): Track {
+        return Track(
+            trackId = entity.id,
+            trackName = entity.trackName,
+            artistName = entity.artistName,
+            trackTimeMillis = entity.trackTimeMillis,
+            lengthText = millisToMMSS(entity.trackTimeMillis),
+            artworkUrl100 = entity.artworkUrl100,
+            coverArtwork = artworkUrlToCoverUrl(entity.artworkUrl100),
+            collectionName = entity.collectionName,
+            trackYear = entity.trackYear,
+            primaryGenreName = entity.primaryGenreName,
+            country = entity.country,
+            previewUrl = entity.previewUrl
+        )
+    }
+
+    fun map(dto: List<TrackDto>): List<Track> {
+        return dto.map { map(it) }
     }
 }

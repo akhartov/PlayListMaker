@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.settings.domain.model.NightModeInteractor
-import com.practicum.playlistmaker.sharing.domain.model.SharingInteractor
+import com.practicum.playlistmaker.domain.SharingInteractor
 
 class SettingsViewModel(
     private val sharingInteractor: SharingInteractor,

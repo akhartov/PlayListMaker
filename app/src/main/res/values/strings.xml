@@ -29,15 +29,43 @@
     <string name="new_playlist">Новый плейлист</string>
     <string name="text_add_to_playlist">Добавить в плейлист</string>
     <string name="text_new_playlist">Новый плейлист</string>
-    <string name="text_create">Создать</string>
+    <string name="create">Создать</string>
+    <string name="save">Сохранить</string>
     <string name="word_track">трек</string>
     <string name="word_tracka">трека</string>
     <string name="word_trackov">треков</string>
     <string name="new_playlist_created">Плейлист %s создан</string>
     <string name="ask_finish_playlist_creation">Завершить создание плейлиста?</string>
     <string name="all_data_will_lost">Все несохраненные данные будут потеряны</string>
+    <string name="do_you_want_remove_track">Хотите удалить трек?</string>
+    <string name="remove_cover">Удалить плейлист</string>
+    <string name="do_you_want_remove_cover">Вы уверены, что хотите удалить этот плейлист?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
     <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
     <string name="finish">Завершить</string>
     <string name="playlist_title">Название*</string>
     <string name="playlist_descrition">Описание</string>
+    <string name="no_tracks_for_sharing">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="edit_playlist">Редактировать плейлист</string>
+    <string name="share">Поделиться</string>
+
+    <plurals name="track_count">
+        <item quantity="zero">%d треков</item>
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
+
+    <plurals name="minute_count">
+        <item quantity="zero">%d минут</item>
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
+
 </resources>

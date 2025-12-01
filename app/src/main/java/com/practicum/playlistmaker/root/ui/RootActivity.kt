@@ -11,7 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityRootBinding
-import com.practicum.playlistmaker.playlist.domain.PlaylistsEvent
+import com.practicum.playlistmaker.playlist.domain.model.PlaylistsEvent
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RootActivity : AppCompatActivity() {
@@ -36,6 +36,8 @@ class RootActivity : AppCompatActivity() {
             binding.rootControlsGroup.isVisible = when(destination.id) {
                 R.id.playerFragment -> false
                 R.id.playlistEditorFragment -> false
+                R.id.playlistMakerFragment -> false
+                R.id.playlistViewerFragment -> false
                 else -> true
             }
 
@@ -57,7 +59,7 @@ class RootActivity : AppCompatActivity() {
         }
     }
 
-    fun showCustomToastWithLayout(context: Context, message: String) {
+    private fun showCustomToastWithLayout(context: Context, message: String) {
         val toast = Toast(context)
 
         val layout = layoutInflater.inflate(R.layout.custom_toast, null)

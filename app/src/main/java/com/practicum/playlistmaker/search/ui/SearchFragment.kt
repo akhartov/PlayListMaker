@@ -25,12 +25,18 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private var textWatcher: TextWatcher? = null
 
     private val tracksAdapter by lazy {
-        TrackAdapter { track ->
-            tracksClickDebounce(track)
-        }
+        TrackAdapter(
+            trackClickListener = object : TrackViewHolder.OnTrackClickListener {
+                override fun onTrackClick(track: Track) {
+                    trackClickDebounce(track)
+                }
+
+                override fun onTrackLongClick(track: Track) = false
+            }
+        )
     }
 
-    private val tracksClickDebounce =
+    private val trackClickDebounce =
         debounce<Track>(CLICK_TRACK_DEBOUNCE_DELAY, lifecycleScope, true) { track ->
             viewModel.openTrack(track)
             findNavController().navigate(
@@ -100,7 +106,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                     is SearchState.NotFound -> {
                         tracksAdapter.updateItems(emptyList())
                         binding.noTracksImage.setImageResource(R.drawable.img_tracks_not_found)
-                        binding.noTracksTextview.setText(resources.getString(R.string.tracks_not_found))
+                        binding.noTracksTextview.text = resources.getString(R.string.tracks_not_found)
                         binding.updateTracksButton.isVisible = false
                         binding.placeholderGroup.isVisible = true
                         binding.tracksSearchProgress.isVisible = false

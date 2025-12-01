@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 
 class FavouritesInteractorImpl(
-    val favouritesRepository: FavouritesRepository
+    private val favouritesRepository: FavouritesRepository
 ) : FavouritesInteractor {
 
     private val _trackFlow: MutableStateFlow<UserTrackState?> = MutableStateFlow(null)

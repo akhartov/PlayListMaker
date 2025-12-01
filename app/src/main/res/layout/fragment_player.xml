@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/playerFragment"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/playerFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
@@ -62,7 +62,7 @@
 
         <TextView
             android:id="@+id/track_title"
-            style="@style/PlayerTrackName"
+            style="@style/ItemTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/big_player_margin"
@@ -77,7 +77,7 @@
 
         <TextView
             android:id="@+id/track_artist"
-            style="@style/PlayerArtist"
+            style="@style/ItemDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/small_player_margin"
@@ -126,7 +126,7 @@
 
         <TextView
             android:id="@+id/track_time_position"
-            style="@style/PlayerArtist"
+            style="@style/ItemDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -146,7 +146,7 @@
 
         <TextView
             android:id="@+id/track_length_label"
-            style="@style/PlayerOtherTitle"
+            style="@style/ItemOtherName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/track_length_text"
@@ -156,7 +156,7 @@
 
         <TextView
             android:id="@+id/track_length"
-            style="@style/PlayerOtherValue"
+            style="@style/ItemOtherValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
@@ -168,7 +168,7 @@
 
         <TextView
             android:id="@+id/track_album_label"
-            style="@style/PlayerOtherTitle"
+            style="@style/ItemOtherName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/album_text"
@@ -179,7 +179,7 @@
 
         <TextView
             android:id="@+id/track_album"
-            style="@style/PlayerOtherValue"
+            style="@style/ItemOtherValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
@@ -199,7 +199,7 @@
 
         <TextView
             android:id="@+id/track_year_label"
-            style="@style/PlayerOtherTitle"
+            style="@style/ItemOtherName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/year_text"
@@ -209,7 +209,7 @@
 
         <TextView
             android:id="@+id/track_year"
-            style="@style/PlayerOtherValue"
+            style="@style/ItemOtherValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
@@ -229,7 +229,7 @@
 
         <TextView
             android:id="@+id/track_genre_label"
-            style="@style/PlayerOtherTitle"
+            style="@style/ItemOtherName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/genre_text"
@@ -239,7 +239,7 @@
 
         <TextView
             android:id="@+id/track_genre"
-            style="@style/PlayerOtherValue"
+            style="@style/ItemOtherValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
@@ -260,7 +260,7 @@
 
         <TextView
             android:id="@+id/track_country_label"
-            style="@style/PlayerOtherTitle"
+            style="@style/ItemOtherName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/country_text"
@@ -270,7 +270,7 @@
 
         <TextView
             android:id="@+id/track_country"
-            style="@style/PlayerOtherValue"
+            style="@style/ItemOtherValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"

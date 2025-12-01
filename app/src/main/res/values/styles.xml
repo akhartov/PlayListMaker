@@ -71,22 +71,32 @@
         <item name="android:textSize">@dimen/placeholder_text_size</item>
     </style>
 
-    <style name="PlayerText" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="ItemText" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    </style>
+    <style name="CoverTitle" parent="ItemText">
+        <item name="android:textSize">@dimen/title_text_size</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/main_button_text</item>
+    </style>
+    <style name="CoverDetails" parent="ItemText">
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/main_button_text</item>
     </style>
 
-    <style name="PlayerTrackName" parent="PlayerText">
+    <style name="ItemTitle" parent="ItemText">
         <item name="android:textSize">@dimen/title_text_size</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textColor">@color/icon_active</item>
     </style>
 
-    <style name="PlayerArtist" parent="PlayerText">
+    <style name="ItemDetails" parent="ItemText">
         <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textColor">@color/icon_active</item>
     </style>
 
-    <style name="PlayerOtherTitle" parent="PlayerText">
+    <style name="ItemOtherName" parent="ItemText">
         <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">@color/track_other_title_color</item>
@@ -94,7 +104,7 @@
         <item name="layout_goneMarginBottom">49dp</item>
     </style>
 
-    <style name="PlayerOtherValue" parent="PlayerText">
+    <style name="ItemOtherValue" parent="ItemText">
         <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">@color/icon_active</item>
