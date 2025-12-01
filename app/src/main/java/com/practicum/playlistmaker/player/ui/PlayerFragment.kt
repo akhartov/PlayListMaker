@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,8 +31,17 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         return FragmentPlayerBinding.inflate(inflater, container, false)
     }
 
+    @Suppress("DEPRECATION")
+    private fun getTrackFromArgs(): Track? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelable(TRACK, Track::class.java)
+        } else {
+            requireArguments().getParcelable(TRACK) as Track?
+        }
+    }
+
     private val viewModel: PlayerViewModel by viewModel {
-        parametersOf(requireArguments().getParcelable(TRACK, Track::class.java))
+        parametersOf(getTrackFromArgs())
     }
 
     private val newPlaylistClickDebounce =
@@ -51,7 +61,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private val playlistsAdapter by lazy {
         PlaylistAdapter { playlist ->
-            requireArguments().getParcelable(TRACK, Track::class.java)?.let { track ->
+            getTrackFromArgs()?.let { track ->
                 trackToPlaylistClickDebounce(playlist.id)
             }
         }

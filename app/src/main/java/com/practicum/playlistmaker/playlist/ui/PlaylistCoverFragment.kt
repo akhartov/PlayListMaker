@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.playlist.ui
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -63,7 +64,16 @@ abstract class PlaylistCoverFragment : BindingFragment<FragmentPlaylistEditorBin
         if (savedInstanceState == null)
             return
 
-        applyImage(savedInstanceState.getParcelable(URI, Uri::class.java))
+        applyImage(getUriFromBundle(savedInstanceState))
+    }
+
+    @Suppress("DEPRECATION")
+    private fun getUriFromBundle(savedInstanceState: Bundle?): Uri? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            savedInstanceState?.getParcelable(URI, Uri::class.java)
+        } else {
+            savedInstanceState?.getParcelable(URI) as Uri?
+        }
     }
 
     fun applyImage(uri: Uri?) {

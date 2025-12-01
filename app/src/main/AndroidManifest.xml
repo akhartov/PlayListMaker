@@ -14,8 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:enableOnBackInvokedCallback="true"
-        android:theme="@style/Base.Theme.PlayListMaker"
-        tools:targetApi="31">
+        android:theme="@style/Base.Theme.PlayListMaker">
         <activity
             android:name=".root.ui.RootActivity"
             android:exported="true"
