@@ -39,67 +39,58 @@
         android:layout_width="@dimen/add_cover_rect"
         android:layout_height="@dimen/add_cover_rect"
         android:layout_marginVertical="32dp"
-        app:srcCompat="@drawable/ic_312_add_cover"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/back_button"
+        app:srcCompat="@drawable/ic_312_add_cover"
         />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/playlist_title"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/playlist_title_container"
+        style="@style/CoverMakerTextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="32dp"
-        android:background="@drawable/text_input_field"
         android:hint="@string/playlist_title"
-        android:paddingHorizontal="16dp"
-        android:singleLine="true"
+        app:hintTextAppearance="@style/CoverMakerHintTextAppearance"
         app:layout_constraintEnd_toStartOf="@id/right_guideline"
         app:layout_constraintStart_toEndOf="@id/left_guideline"
-        app:layout_constraintTop_toBottomOf="@+id/cover_image"
-        />
+        app:layout_constraintTop_toBottomOf="@id/cover_image"
+        >
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/playlist_title_hint"
-        style="@style/HintTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/playlist_title"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/playlist_title"
-        app:layout_constraintEnd_toEndOf="@id/playlist_title"
-        app:layout_constraintStart_toStartOf="@id/playlist_title"
-        app:layout_constraintTop_toBottomOf="@+id/cover_image"
-        app:layout_constraintVertical_bias="0.32"
-        />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/playlist_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/ys_display_regular"
+            android:singleLine="true"
+            android:textSize="@dimen/normal_text_size"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/playlist_description"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/playlist_description_container"
+        style="@style/CoverMakerTextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="16dp"
-        android:background="@drawable/text_input_field"
+        android:layout_marginVertical="32dp"
         android:hint="@string/playlist_descrition"
-        android:paddingHorizontal="16dp"
-        android:singleLine="true"
+        app:hintTextAppearance="@style/CoverMakerHintTextAppearance"
         app:layout_constraintEnd_toStartOf="@id/right_guideline"
         app:layout_constraintStart_toEndOf="@id/left_guideline"
-        app:layout_constraintTop_toBottomOf="@+id/playlist_title"
-        />
+        app:layout_constraintTop_toBottomOf="@id/playlist_title_container"
+        >
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/playlist_description_hint"
-        style="@style/HintTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/playlist_descrition"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/playlist_description"
-        app:layout_constraintEnd_toEndOf="@id/playlist_description"
-        app:layout_constraintStart_toStartOf="@id/playlist_description"
-        app:layout_constraintTop_toBottomOf="@+id/playlist_title"
-        app:layout_constraintVertical_bias="0.12"
-        />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/playlist_description"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/ys_display_regular"
+            android:singleLine="true"
+            android:textSize="@dimen/normal_text_size"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/new_playlist_button"
