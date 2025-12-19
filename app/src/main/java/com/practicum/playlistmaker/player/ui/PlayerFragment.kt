@@ -15,6 +15,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
+import com.practicum.playlistmaker.player.ui.presentation.PlayerViewModel
+import com.practicum.playlistmaker.player.ui.presentation.PlaylistAdapter
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.ui.BindingFragment
 import com.practicum.playlistmaker.ui.debounce
@@ -72,7 +74,9 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
         viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
             state.track?.let { showTrackData(it) }
-            state.isPlaying?.let { isPlaying -> binding.buttonPlay.setImageResource(if (isPlaying) R.drawable.ic_button_pause_100 else R.drawable.ic_button_play_100) }
+            state.isPlaying?.let {
+                isPlaying -> binding.buttonPlayback.setPlayingSilent(isPlaying)
+            }
             state.trackTimePosition?.let { positionText ->
                 binding.trackTimePosition.text = positionText
             }
@@ -94,7 +98,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             findNavController().navigateUp()
         }
 
-        binding.buttonPlay.setOnClickListener {
+        binding.buttonPlayback.setOnClickListener {
             viewModel.clickPlay()
         }
 
