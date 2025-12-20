@@ -1,15 +1,13 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
-import androidx.core.graphics.drawable.toBitmap
 import com.practicum.playlistmaker.R
 
 
@@ -20,35 +18,30 @@ class PlaybackButtonView @JvmOverloads constructor(
     @StyleRes defStyleRes: Int = 0,
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
-    var isClickHandlingEnabled = true
+    private var isClickHandlingEnabled = true
     private var isTouchInsideBounds = false
+
+    private var currentDraw: Drawable? = null
+    private var playingDraw: Drawable? = null
+    private var stoppedDraw: Drawable? = null
 
     var isPlaying: Boolean = false
         set(value) {
             if (field != value) {
                 field = value
                 updateBitmap()
-                // Перерисовываем View при изменении состояния
                 invalidate()
             }
         }
 
-    var currentBitmap: Bitmap? = null
-    var playingBitmap: Bitmap? = null
-    var stoppedBitmap: Bitmap? = null
-
-    private var imageRect = RectF(0f, 0f, 0f, 0f)
 
     init {
         context.theme.obtainStyledAttributes(
-            attrs,
-            R.styleable.PlaybackButtonView,
-            defStyleAttr,
-            defStyleRes
+            attrs, R.styleable.PlaybackButtonView, defStyleAttr, defStyleRes
         ).apply {
             try {
-                playingBitmap = getDrawable(R.styleable.PlaybackButtonView_imageResIdPlaying)?.toBitmap()
-                stoppedBitmap = getDrawable(R.styleable.PlaybackButtonView_imageResIdStopped)?.toBitmap()
+                playingDraw = getDrawable(R.styleable.PlaybackButtonView_imageResIdPlaying)
+                stoppedDraw = getDrawable(R.styleable.PlaybackButtonView_imageResIdStopped)
             } finally {
                 recycle()
             }
@@ -71,10 +64,9 @@ class PlaybackButtonView @JvmOverloads constructor(
             }
 
             MotionEvent.ACTION_UP -> {
-                if(isTouchInsideBounds && isClickHandlingEnabled) {
+                if (isTouchInsideBounds && isClickHandlingEnabled) {
                     return performClick()
-                } else
-                    return true
+                } else return true
             }
 
             else -> {
@@ -97,20 +89,17 @@ class PlaybackButtonView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        currentBitmap?.let { bitmap ->
-            canvas.drawBitmap(bitmap, null, imageRect, null)
-        }
+        currentDraw?.draw(canvas)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        imageRect = RectF(0f, 0f, measuredWidth.toFloat(), measuredHeight.toFloat())
+        playingDraw?.setBounds(0, 0, w, h)
+        stoppedDraw?.setBounds(0, 0, w, h)
+
     }
 
     private fun updateBitmap() {
-        currentBitmap = when(isPlaying) {
-            true -> playingBitmap
-            else -> stoppedBitmap
-        }
+        currentDraw = if (isPlaying) playingDraw else stoppedDraw
     }
 }
