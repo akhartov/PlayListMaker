@@ -119,11 +119,19 @@
         <item name="textFillColor">@color/simple_button_text</item>
     </style>
 
-    <style name="HintTextView">
+    <style name="CoverMakerHintTextAppearance" parent="TextAppearance.Design.Hint">
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:letterSpacing">0.04</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:paddingHorizontal">4dp</item>
-        <item name="android:background">@color/button_play_background</item>
-        <item name="layout_constraintHorizontal_bias">0.05</item>
+    </style>
+
+    <style name="CoverMakerTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/icon_active</item>
+        <item name="hintTextColor">@color/icon_inactive</item>
+        <item name="android:textColorHint">@color/hint_state_list</item>
+        <item name="boxStrokeColor">@color/text_input_border</item>
     </style>
 
 </resources>

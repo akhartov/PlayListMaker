@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.favourites.domain
 
-import com.practicum.playlistmaker.player.ui.UserTrackState
+import com.practicum.playlistmaker.player.ui.presentation.UserTrackState
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
