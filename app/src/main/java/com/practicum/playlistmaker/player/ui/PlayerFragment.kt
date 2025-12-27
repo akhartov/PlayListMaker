@@ -19,6 +19,8 @@ import com.practicum.playlistmaker.player.ui.presentation.PlayerViewModel
 import com.practicum.playlistmaker.player.ui.presentation.PlaylistAdapter
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.ui.BindingFragment
+import com.practicum.playlistmaker.ui.BroadcastReceiverOwner
+import com.practicum.playlistmaker.ui.NetworkBroadcastReceiver
 import com.practicum.playlistmaker.ui.debounce
 import com.practicum.playlistmaker.ui.floatDpToPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -26,24 +28,15 @@ import org.koin.core.parameter.parametersOf
 
 
 class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
-    override fun createBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentPlayerBinding {
-        return FragmentPlayerBinding.inflate(inflater, container, false)
-    }
-
-    @Suppress("DEPRECATION")
-    private fun getTrackFromArgs(): Track? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireArguments().getParcelable(TRACK, Track::class.java)
-        } else {
-            requireArguments().getParcelable(TRACK) as Track?
-        }
-    }
-
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(getTrackFromArgs())
+    }
+
+    private val broadcastReceiverOwner by lazy {
+        BroadcastReceiverOwner(
+            NetworkBroadcastReceiver(),
+            NetworkBroadcastReceiver.ACTION
+        )
     }
 
     private val newPlaylistClickDebounce =
@@ -69,13 +62,29 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
     }
 
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentPlayerBinding {
+        return FragmentPlayerBinding.inflate(inflater, container, false)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun getTrackFromArgs(): Track? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelable(TRACK, Track::class.java)
+        } else {
+            requireArguments().getParcelable(TRACK) as Track?
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getStateLiveData().observe(viewLifecycleOwner) { state ->
             state.track?.let { showTrackData(it) }
-            state.isPlaying?.let {
-                isPlaying -> binding.buttonPlayback.setPlayingSilent(isPlaying)
+            state.isPlaying?.let { isPlaying ->
+                binding.buttonPlayback.setPlayingSilent(isPlaying)
             }
             state.trackTimePosition?.let { positionText ->
                 binding.trackTimePosition.text = positionText
@@ -178,6 +187,13 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     override fun onPause() {
         super.onPause()
         viewModel.pause()
+        broadcastReceiverOwner.unregister(requireActivity())
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        broadcastReceiverOwner.register(requireContext())
     }
 
     companion object {

@@ -17,12 +17,21 @@ import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.ui.BindingFragment
+import com.practicum.playlistmaker.ui.BroadcastReceiverOwner
+import com.practicum.playlistmaker.ui.NetworkBroadcastReceiver
 import com.practicum.playlistmaker.ui.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private val viewModel: SearchViewModel by viewModel()
     private var textWatcher: TextWatcher? = null
+
+    private val broadcastReceiverOwner by lazy {
+        BroadcastReceiverOwner(
+            NetworkBroadcastReceiver(),
+            NetworkBroadcastReceiver.ACTION
+        )
+    }
 
     private val tracksAdapter by lazy {
         TrackAdapter(
@@ -106,7 +115,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                     is SearchState.NotFound -> {
                         tracksAdapter.updateItems(emptyList())
                         binding.noTracksImage.setImageResource(R.drawable.img_tracks_not_found)
-                        binding.noTracksTextview.text = resources.getString(R.string.tracks_not_found)
+                        binding.noTracksTextview.text =
+                            resources.getString(R.string.tracks_not_found)
                         binding.updateTracksButton.isVisible = false
                         binding.placeholderGroup.isVisible = true
                         binding.tracksSearchProgress.isVisible = false
@@ -165,6 +175,17 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
 
         inputMethodManager?.hideSoftInputFromWindow(binding.searchText.windowToken, 0)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        broadcastReceiverOwner.register(requireContext())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        broadcastReceiverOwner.unregister(requireActivity())
+
     }
 
     companion object {

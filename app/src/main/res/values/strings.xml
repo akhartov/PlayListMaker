@@ -51,6 +51,7 @@
     <string name="delete_playlist">Удалить плейлист</string>
     <string name="edit_playlist">Редактировать плейлист</string>
     <string name="share">Поделиться</string>
+    <string name="no_connectivity">Отсутствует подключение к интернету</string>
 
     <plurals name="track_count">
         <item quantity="zero">%d треков</item>
