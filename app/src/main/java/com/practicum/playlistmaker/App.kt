@@ -3,7 +3,6 @@ package com.practicum.playlistmaker
 import android.app.Application
 import com.practicum.playlistmaker.di.databaseModule
 import com.practicum.playlistmaker.favourites.di.favouritesModule
-import com.practicum.playlistmaker.player.di.playerModule
 import com.practicum.playlistmaker.player.di.playerViewModelModule
 import com.practicum.playlistmaker.playlist.di.playlistViewModelModule
 import com.practicum.playlistmaker.root.di.rootModule
@@ -25,7 +24,7 @@ class App : Application() {
             modules(
                 rootModule, databaseModule,
                 searchModule, searchViewModelModule,
-                playerModule, playerViewModelModule,
+                playerViewModelModule,
                 settingsModule, settingsViewModelModule,
                 favouritesModule,
                 playlistViewModelModule

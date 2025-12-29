@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Playlist maker</string>
+    <string name="app_name">Playlist Maker</string>
     <string name="settings_text">Настройки</string>
     <string name="library_text">Медиатека</string>
     <string name="search_text">Поиск</string>
@@ -14,6 +14,7 @@
     <string name="uri_link_practicum_offer">https://yandex.ru/legal/practicum_offer/</string>
     <string name="tracks_not_found">Ничего не нашлось</string>
     <string name="no_internet_no_tracks">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="notifications_not_allowed">Уведомления можно включить в настройках</string>
     <string name="update_tracks">Обновить</string>
     <string name="you_looking_for_text">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
