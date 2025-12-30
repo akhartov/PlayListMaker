@@ -1,22 +1,21 @@
 package com.practicum.playlistmaker.player.ui.presentation
 
-import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.search.domain.model.millisToMMSS
-
 sealed class PlayerState(
-    val track: Track?,
-    val isPlaying: Boolean? = null,
-    val trackTimePosition: String? = null
+    val isEnabled: Boolean,
+    val isPlaying: Boolean,
+    val trackTimePosition: String
 ) {
-    class Loaded(track: Track?) :
-        PlayerState(track, false, millisToMMSS(0))
+    class Default() :
+        PlayerState(false,false, "00:00")
+    class Loaded() :
+        PlayerState(true,false, "00:00")
 
-    class Playing(track: Track?, position: Int) :
-        PlayerState(track, true, millisToMMSS(position))
+    class Playing(position: String) :
+        PlayerState(true, true, position)
 
-    class Paused(track: Track?, position: Int) :
-        PlayerState(track, false, millisToMMSS(position))
+    class Paused(position: String) :
+        PlayerState(true, false, position)
 
-    class Stopped(track: Track?) :
-        PlayerState(track, false, millisToMMSS(0))
+    class Stopped() :
+        PlayerState(true, false, "00:00")
 }

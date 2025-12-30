@@ -2,42 +2,30 @@ package com.practicum.playlistmaker.player.ui.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.favourites.domain.FavouritesInteractor
-import com.practicum.playlistmaker.player.domain.api.AudioPlayer
-import com.practicum.playlistmaker.player.domain.api.TrackPlayingState
 import com.practicum.playlistmaker.playlist.domain.CoversInteractor
 import com.practicum.playlistmaker.playlist.domain.model.PlaylistCover
 import com.practicum.playlistmaker.search.domain.model.Track
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     val track: Track?,
-    private val player: AudioPlayer,
     private val trackFavouritesInteractor: FavouritesInteractor,
     private val coversInteractor: CoversInteractor,
 ) : ViewModel() {
-    private var timerJob: Job? = null
-    private val stateLiveData = MutableLiveData<PlayerState>(PlayerState.Loaded(track))
-    fun getStateLiveData(): LiveData<PlayerState> = stateLiveData
+    private var audioPlayerControl: AudioPlayerControl? = null
+    private val _trackStateLiveData = MutableLiveData(TrackState(track))
+    fun getTrackStateLiveData(): LiveData<TrackState> = _trackStateLiveData
 
     private val _playlistsLiveData = MutableLiveData<List<PlaylistCover>>()
     val playlistsLiveData: LiveData<List<PlaylistCover>> = _playlistsLiveData
 
     private val userTrackState = MutableLiveData<UserTrackState?>(null)
     fun getUserTrackLiveData(): LiveData<UserTrackState?> = userTrackState
-    private val playingObserver = Observer<TrackPlayingState> { state ->
-        stateLiveData.postValue(PlayerState.Stopped(track))
-        timerJob?.cancel()
-    }
 
     init {
-        track?.previewUrl?.let { player.open(it) }
-        player.observeTrackPlayingState().observeForever(playingObserver)
 
         track?.let {
             viewModelScope.launch {
@@ -55,16 +43,12 @@ class PlayerViewModel(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        player.observeTrackPlayingState().removeObserver(playingObserver)
-    }
-
     fun clickPlay() {
-        if (player.isPlaying()) {
-            pause()
-        } else
-            play()
+        if (playerState.value is PlayerState.Playing) {
+            audioPlayerControl?.pausePlayer()
+        } else {
+            audioPlayerControl?.startPlayer()
+        }
     }
 
     fun tapFavouriteTrack() {
@@ -83,23 +67,28 @@ class PlayerViewModel(
         }
     }
 
-    fun pause() {
-        player.pause()
-        timerJob?.cancel()
-        stateLiveData.postValue(PlayerState.Paused(track, player.getCurrentPosition()))
+    fun onViewPaused() {
+        audioPlayerControl?.moveToForeground()
     }
 
-    private fun play() {
-        player.play()
-        startTimer()
+    fun onViewResumed() {
+        audioPlayerControl?.hideNotification()
     }
 
-    private fun startTimer() {
-        timerJob = viewModelScope.launch {
-            while (player.isPlaying()) {
-                stateLiveData.postValue(PlayerState.Playing(track, player.getCurrentPosition()))
-                delay(300L)
+    fun setAudioPlayerControl(audioPlayerControl: AudioPlayerControl) {
+        this.audioPlayerControl = audioPlayerControl
+
+        viewModelScope.launch {
+            audioPlayerControl.getPlayerState().collect {
+                playerState.postValue(it)
             }
         }
     }
+
+    fun removeAudioPlayerControl() {
+        audioPlayerControl = null
+    }
+
+    private val playerState = MutableLiveData<PlayerState>(PlayerState.Default())
+    fun observePlayerState(): LiveData<PlayerState> = playerState
 }
