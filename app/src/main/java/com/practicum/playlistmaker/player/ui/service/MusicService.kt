@@ -23,7 +23,7 @@ import com.practicum.playlistmaker.player.ui.presentation.AudioPlayerControl
 import com.practicum.playlistmaker.player.ui.presentation.PlayerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,31 +33,21 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 internal class MusicService : Service(), AudioPlayerControl {
-    companion object {
-        const val TRACK_URL = "song_url"
-        const val CONTENT_TITLE = "content_title"
-        const val CONTENT_MESSAGE = "content_message"
-        private const val NOTIFICATION_CHANNEL_ID = "music_service_channel"
-        private const val SERVICE_NOTIFICATION_ID = 100
-        private const val LOG_TAG = "MusicService"
-    }
-
     private val _playerState = MutableStateFlow<PlayerState>(PlayerState.Default())
-
-    // Переменная для хранения MediaPlayer
     private var mediaPlayer: MediaPlayer? = null
     private var trackUrl = ""
     private var contentTitle = ""
     private var contentMessage = ""
 
     private var allowNotifications = false
-    private var timerJob: Job? = null
+
+    private val serviceScope = CoroutineScope(Dispatchers.Default)
 
     private fun startTimer() {
-        timerJob = CoroutineScope(Dispatchers.Default).launch {
+        serviceScope.launch {
             while (mediaPlayer?.isPlaying == true) {
-                delay(300L)
                 _playerState.value = PlayerState.Playing(getCurrentPlayerPosition())
+                delay(TRACK_PROGRESS_TIMEOUT)
             }
         }
     }
@@ -104,17 +94,12 @@ internal class MusicService : Service(), AudioPlayerControl {
 
     override fun pausePlayer() {
         mediaPlayer?.pause()
-        timerJob?.cancel()
         _playerState.value = PlayerState.Paused(getCurrentPlayerPosition())
     }
 
     override fun moveToForeground() {
         if (_playerState.value is PlayerState.Playing)
             showNotification()
-    }
-
-    override fun moveToNormal() {
-        hideNotification()
     }
 
     override fun getPlayerState(): StateFlow<PlayerState> {
@@ -134,12 +119,9 @@ internal class MusicService : Service(), AudioPlayerControl {
             createNotificationChannel()
     }
 
-    // Освобождение ресурсов
     override fun onDestroy() {
+        serviceScope.cancel()
         releasePlayer()
-
-        if (allowNotifications)
-            deleteNotificationChannel()
     }
 
     fun showNotification() {
@@ -152,7 +134,7 @@ internal class MusicService : Service(), AudioPlayerControl {
             )
     }
 
-    fun hideNotification() {
+    override fun hideNotification() {
         if (allowNotifications)
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
     }
@@ -171,23 +153,20 @@ internal class MusicService : Service(), AudioPlayerControl {
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            "Playlist Maker Music Service",
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-        channel.description = "Service for playing music"
-
-        val notificationManager =
-            getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
-    }
-
-    private fun deleteNotificationChannel() {
         val notificationManager =
             getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID)
+        val existingChannel = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID)
+        if (existingChannel == null) {
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                "Playlist Maker Music Service",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            channel.description = "Service for playing music"
+
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun initMediaPlayer() {
@@ -199,14 +178,12 @@ internal class MusicService : Service(), AudioPlayerControl {
             _playerState.value = PlayerState.Loaded()
         }
         mediaPlayer?.setOnCompletionListener {
-            timerJob?.cancel()
             hideNotification()
             _playerState.value = PlayerState.Stopped()
         }
     }
 
     private fun releasePlayer() {
-        timerJob?.cancel()
         _playerState.value = PlayerState.Default()
 
         mediaPlayer?.setOnPreparedListener(null)
@@ -221,5 +198,16 @@ internal class MusicService : Service(), AudioPlayerControl {
         } else {
             0
         }
+    }
+
+    companion object {
+        const val TRACK_URL = "song_url"
+        const val CONTENT_TITLE = "content_title"
+        const val CONTENT_MESSAGE = "content_message"
+        private const val NOTIFICATION_CHANNEL_ID = "music_service_channel"
+        private const val SERVICE_NOTIFICATION_ID = 100
+
+        private const val TRACK_PROGRESS_TIMEOUT = 300L
+        private const val LOG_TAG = "MusicService"
     }
 }

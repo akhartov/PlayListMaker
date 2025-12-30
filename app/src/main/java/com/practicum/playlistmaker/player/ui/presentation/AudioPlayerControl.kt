@@ -8,5 +8,5 @@ interface AudioPlayerControl {
     fun pausePlayer()
 
     fun moveToForeground()
-    fun moveToNormal()
+    fun hideNotification()
 }

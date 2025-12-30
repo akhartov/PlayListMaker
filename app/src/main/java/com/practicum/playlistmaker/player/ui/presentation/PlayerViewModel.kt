@@ -72,7 +72,7 @@ class PlayerViewModel(
     }
 
     fun onViewResumed() {
-        audioPlayerControl?.moveToNormal()
+        audioPlayerControl?.hideNotification()
     }
 
     fun setAudioPlayerControl(audioPlayerControl: AudioPlayerControl) {
