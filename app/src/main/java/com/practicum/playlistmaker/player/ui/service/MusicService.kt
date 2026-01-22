@@ -2,22 +2,12 @@ package com.practicum.playlistmaker.player.ui.service
 
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.media.MediaPlayer
 import android.os.Binder
-import android.os.IBinder
-import android.util.Log
-
-
-import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.pm.PackageManager
-import android.content.pm.ServiceInfo
 import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.core.app.ServiceCompat
-import androidx.core.content.ContextCompat
+import android.os.IBinder
+
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.ui.presentation.AudioPlayerControl
 import com.practicum.playlistmaker.player.ui.presentation.PlayerState
@@ -38,9 +28,6 @@ internal class MusicService : Service(), AudioPlayerControl {
     private var trackUrl = ""
     private var contentTitle = ""
     private var contentMessage = ""
-
-    private var allowNotifications = false
-
     private val serviceScope = CoroutineScope(Dispatchers.Default)
 
     private fun startTimer() {
@@ -58,6 +45,7 @@ internal class MusicService : Service(), AudioPlayerControl {
     }
 
     private val binder = MusicServiceBinder()
+    private var serviceController: ServiceController? = null
 
     inner class MusicServiceBinder : Binder() {
         fun getService(): MusicService = this@MusicService
@@ -68,6 +56,14 @@ internal class MusicService : Service(), AudioPlayerControl {
         contentTitle = intent?.getStringExtra(CONTENT_TITLE) ?: "No title"
         contentMessage = intent?.getStringExtra(CONTENT_MESSAGE) ?: "No message"
 
+        serviceController = ServiceController(
+            service = this,
+            foregroundServiceType = getForegroundServiceTypeConstant(),
+            notificationChannelId = NOTIFICATION_CHANNEL_ID,
+            channelName = "Playlist Maker Music Service",
+            channelDescription = "Service for playing music",
+        )
+
         initMediaPlayer()
 
         return binder
@@ -75,15 +71,16 @@ internal class MusicService : Service(), AudioPlayerControl {
 
     override fun onUnbind(intent: Intent?): Boolean {
         releasePlayer()
-
+        serviceController = null
         return super.onUnbind(intent)
     }
 
-    private fun checkNotificationPermissions(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED
+    private fun getForegroundServiceTypeConstant(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+        } else {
+            0
+        }
     }
 
     override fun startPlayer() {
@@ -99,7 +96,10 @@ internal class MusicService : Service(), AudioPlayerControl {
 
     override fun moveToForeground() {
         if (_playerState.value is PlayerState.Playing)
-            showNotification()
+            serviceController?.startForeground(SERVICE_NOTIFICATION_ID) { builder ->
+                builder.setSmallIcon(R.mipmap.ic_launcher).setContentTitle(contentTitle)
+                    .setContentText(contentMessage)
+            }
     }
 
     override fun getPlayerState(): StateFlow<PlayerState> {
@@ -111,12 +111,6 @@ internal class MusicService : Service(), AudioPlayerControl {
         super.onCreate()
 
         mediaPlayer = MediaPlayer()
-        if (checkNotificationPermissions())
-            allowNotifications = true
-
-        Log.i(LOG_TAG, "Notifications allowed: ${allowNotifications}")
-        if (allowNotifications)
-            createNotificationChannel()
     }
 
     override fun onDestroy() {
@@ -124,49 +118,8 @@ internal class MusicService : Service(), AudioPlayerControl {
         releasePlayer()
     }
 
-    fun showNotification() {
-        if (allowNotifications)
-            ServiceCompat.startForeground(
-                this,
-                SERVICE_NOTIFICATION_ID,
-                createNotification(),
-                getForegroundServiceTypeConstant()
-            )
-    }
-
     override fun hideNotification() {
-        if (allowNotifications)
-            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
-    }
-
-    private fun createNotification(): Notification {
-        return NotificationCompat.Builder(
-            this,
-            NOTIFICATION_CHANNEL_ID
-        )
-            .setContentTitle(contentTitle)
-            .setContentText(contentMessage)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            .build()
-    }
-
-    private fun createNotificationChannel() {
-        val notificationManager =
-            getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        val existingChannel = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID)
-        if (existingChannel == null) {
-            val channel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                "Playlist Maker Music Service",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            channel.description = "Service for playing music"
-
-            notificationManager.createNotificationChannel(channel)
-        }
+        serviceController?.stopForeground()
     }
 
     private fun initMediaPlayer() {
@@ -192,22 +145,14 @@ internal class MusicService : Service(), AudioPlayerControl {
         mediaPlayer = null
     }
 
-    private fun getForegroundServiceTypeConstant(): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
-        } else {
-            0
-        }
-    }
-
     companion object {
         const val TRACK_URL = "song_url"
         const val CONTENT_TITLE = "content_title"
         const val CONTENT_MESSAGE = "content_message"
-        private const val NOTIFICATION_CHANNEL_ID = "music_service_channel"
+
         private const val SERVICE_NOTIFICATION_ID = 100
+        private const val NOTIFICATION_CHANNEL_ID = "music_service_channel"
 
         private const val TRACK_PROGRESS_TIMEOUT = 300L
-        private const val LOG_TAG = "MusicService"
     }
 }
