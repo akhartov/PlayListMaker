@@ -51,6 +51,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.material3)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     implementation(libs.androidx.activity)
@@ -78,6 +81,7 @@ dependencies {
     implementation(libs.coil)
 
     annotationProcessor(libs.room.compiler)
+    debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.room.compiler)
     testImplementation(libs.junit)
 }
