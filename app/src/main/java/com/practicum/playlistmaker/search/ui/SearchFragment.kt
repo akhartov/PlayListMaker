@@ -1,40 +1,68 @@
 package com.practicum.playlistmaker.search.ui
 
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_NO
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.ui.BindingFragment
 import com.practicum.playlistmaker.ui.debounce
+import com.practicum.playlistmaker.ui.theme.EditorTextColor
+import com.practicum.playlistmaker.ui.theme.SearchCursorColor
+import com.practicum.playlistmaker.ui.theme.YsTheme
+import com.practicum.playlistmaker.ui.theme.getEditorBackgroundColor
+import com.practicum.playlistmaker.ui.theme.getEditorIconColor
+import com.practicum.playlistmaker.ui.theme.getInactiveColor
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchFragment : BindingFragment<FragmentSearchBinding>() {
+class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModel()
-    private var textWatcher: TextWatcher? = null
-
-    private val tracksAdapter by lazy {
-        TrackAdapter(
-            trackClickListener = object : TrackViewHolder.OnTrackClickListener {
-                override fun onTrackClick(track: Track) {
-                    trackClickDebounce(track)
-                }
-
-                override fun onTrackLongClick(track: Track) = false
-            }
-        )
-    }
 
     private val trackClickDebounce =
         debounce<Track>(CLICK_TRACK_DEBOUNCE_DELAY, lifecycleScope, true) { track ->
@@ -45,129 +73,381 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             )
         }
 
-    override fun createBinding(
+    override fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentSearchBinding {
-        return FragmentSearchBinding.inflate(inflater, container, false)
-    }
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            // Автоматически управляет жизненным циклом композиции
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        initViewModel()
-
-        binding.updateTracksButton.setOnClickListener {
-            viewModel.searchDebounce(binding.searchText.text.toString())
-        }
-
-        binding.clearHistoryButton.setOnClickListener {
-            viewModel.clearHistory()
-        }
-
-        binding.recyclerView.adapter = tracksAdapter
-        prepareTextEditor()
-    }
-
-    private fun updateHistoryControlsVisibility(visible: Boolean) {
-        binding.youLookingForText.isVisible = visible
-        binding.clearHistoryButton.isVisible = visible
-    }
-
-
-    private fun initViewModel() {
-        viewModel.apply {
-            getSearchStateLiveData().observe(viewLifecycleOwner) { searchState ->
-                updateHistoryControlsVisibility(searchState is SearchState.History)
-                when (searchState) {
-                    is SearchState.Empty -> {
-                        tracksAdapter.updateItems(emptyList())
-                        binding.updateTracksButton.isVisible = false
-                        binding.placeholderGroup.isVisible = false
-                        binding.tracksSearchProgress.isVisible = false
-                    }
-
-                    is SearchState.History -> {
-                        tracksAdapter.updateItems(searchState.historyTracks)
-                        binding.updateTracksButton.isVisible = false
-                        binding.placeholderGroup.isVisible = false
-                        binding.tracksSearchProgress.isVisible = false
-                    }
-
-                    is SearchState.Error -> {
-                        tracksAdapter.updateItems(emptyList())
-                        binding.noTracksImage.setImageResource(R.drawable.img_no_internet_no_tracks)
-                        binding.noTracksTextview.setText(resources.getString(R.string.no_internet_no_tracks))
-                        binding.updateTracksButton.isVisible = true
-                        binding.placeholderGroup.isVisible = true
-                        binding.tracksSearchProgress.isVisible = false
-                    }
-
-                    is SearchState.NotFound -> {
-                        tracksAdapter.updateItems(emptyList())
-                        binding.noTracksImage.setImageResource(R.drawable.img_tracks_not_found)
-                        binding.noTracksTextview.text = resources.getString(R.string.tracks_not_found)
-                        binding.updateTracksButton.isVisible = false
-                        binding.placeholderGroup.isVisible = true
-                        binding.tracksSearchProgress.isVisible = false
-                    }
-
-                    is SearchState.InProgress -> {
-                        tracksAdapter.updateItems(emptyList())
-                        binding.updateTracksButton.isVisible = false
-                        binding.placeholderGroup.isVisible = false
-                        binding.tracksSearchProgress.isVisible = true
-                    }
-
-                    is SearchState.Found -> {
-                        tracksAdapter.updateItems(searchState.foundTracks)
-                        binding.updateTracksButton.isVisible = false
-                        binding.placeholderGroup.isVisible = false
-                        binding.tracksSearchProgress.isVisible = false
+            setContent {
+                YsTheme {
+                    Scaffold(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier
+                            .fillMaxSize().background(color = MaterialTheme.colorScheme.surface)
+                    ) { innerPadding ->
+                        SearchScreen(
+                            Modifier
+                                .padding(innerPadding), viewModel
+                        )
                     }
                 }
             }
         }
     }
 
-    private fun prepareTextEditor() {
+    @Composable
+    fun SearchScreen(modifier: Modifier, searchViewModel: SearchViewModel) {
+        val searchText by searchViewModel.searchText.collectAsState()
+        val searchState by searchViewModel.getSearchStateFlow().collectAsState()
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp)
+        ) {
+            SearchTextField(
+                searchText,
+                onTextChanged = { newText ->
+                    viewModel.searchDebounce(newText)
+                },
+                onFocus = { viewModel.editSearchRequestFocused() }
+            )
 
-        binding.clearTextIcon.apply {
-            setOnClickListener {
-                binding.searchText.text.clear()
-                hideKeyboard()
-            }
-        }.also { clearIcon ->
-            binding.searchText.addTextChangedListener { text ->
-                clearIcon.isVisible = !text.isNullOrEmpty()
-            }
-        }
+            when (searchState) {
+                SearchState.Empty -> {
+                    Log.d("SearchState.Empty", LOG_TAG)
+                }
 
-        binding.searchText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus)
-                viewModel.showHistory()
-        }
+                is SearchState.Error -> {
+                    Log.d("SearchState.Error", LOG_TAG)
+                    NoInternetState(
+                        onRetrySearch = { viewModel.searchDebounce(viewModel.searchText.value) }
+                    )
+                }
 
-        textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.searchDebounce(
-                    changedText = s?.toString() ?: ""
-                )
+                is SearchState.Found -> {
+                    val tracks = (searchState as SearchState.Found).foundTracks
+                    Log.d("SearchState.Found tracks count ${tracks.count()}", LOG_TAG)
+                    FoundTracksState(
+                        Modifier,
+                        tracks,
+                        onItemClick = { track -> trackClickDebounce(track) })
+                }
+
+                is SearchState.History -> {
+                    val tracks = (searchState as SearchState.History).historyTracks
+                    Log.d("SearchState.History tracks count ${tracks.count()}", LOG_TAG)
+                    HistoryState(
+                        Modifier,
+                        tracks,
+                        onClearHistory = { viewModel.clearHistory() },
+                        onItemClick = { track -> trackClickDebounce(track) })
+                }
+
+                SearchState.InProgress -> {
+                    Log.d("SearchState.InProgress", LOG_TAG)
+                    InProgressState()
+                }
             }
+
         }
-        textWatcher?.let { binding.searchText.addTextChangedListener(it) }
     }
 
-    private fun hideKeyboard() {
-        val inputMethodManager =
-            requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+    @Composable
+    fun NoInternetState(onRetrySearch: () -> Unit) {
+        FailState(
+            imageVector = ImageVector.vectorResource(R.drawable.img_no_internet_no_tracks),
+            text = getString(R.string.no_internet_no_tracks),
+            onRetrySearch,
+            buttonText = getString(R.string.update_tracks)
+        )
 
-        inputMethodManager?.hideSoftInputFromWindow(binding.searchText.windowToken, 0)
+    }
+
+    @Composable
+    fun NoTracksState() {
+        FailState(
+            imageVector = ImageVector.vectorResource(R.drawable.img_tracks_not_found),
+            text = getString(R.string.tracks_not_found),
+            {}, ""
+        )
+    }
+
+    @Composable
+    private fun FailState(
+        imageVector: ImageVector,
+        text: String,
+        onClick: () -> Unit,
+        buttonText: String = ""
+    ) {
+        val buttonTextState by remember { mutableStateOf(buttonText) }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.align(Alignment.Center)) {
+                Image(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    imageVector = imageVector,
+                    contentDescription = null,
+                    alignment = Alignment.Center
+                )
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 16.dp),
+                    text = text,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.displayMedium
+                )
+                if (buttonTextState.isNotBlank()) {
+                    Button(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onBackground,
+                            contentColor = MaterialTheme.colorScheme.surface,
+                        ),
+                        onClick = { onClick() }
+                    ) {
+                        Text(text = buttonText)
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun SearchTextField(
+        text: String,
+        onTextChanged: (String) -> Unit,
+        onFocus: () -> Unit,
+    ) {
+        val darkTheme = isSystemInDarkTheme()
+
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { state ->
+                    if (state.isFocused)
+                        onFocus()
+                },
+            value = text,
+            textStyle = MaterialTheme.typography.bodyMedium,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = getEditorBackgroundColor(darkTheme),
+                focusedTextColor = EditorTextColor,
+                unfocusedContainerColor = getEditorBackgroundColor(darkTheme),
+                unfocusedTextColor = EditorTextColor,
+                cursorColor = SearchCursorColor,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                errorPlaceholderColor = getInactiveColor(darkTheme)
+            ),
+            shape = RoundedCornerShape(8.dp),
+            singleLine = true,
+            onValueChange = {
+                onTextChanged(it)
+            },
+            placeholder = {
+                Text(
+                    getString(R.string.search_text),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            leadingIcon = {
+                IconButton(onClick = { onTextChanged("") }) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_search_14),
+                        tint = getEditorIconColor(darkTheme = isSystemInDarkTheme()),
+                        contentDescription = null
+                    )
+                }
+            },
+            trailingIcon = {
+                if (text.isNotEmpty()) {
+                    IconButton(onClick = { onTextChanged("") }) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_clear_search),
+                            tint = getEditorIconColor(darkTheme = isSystemInDarkTheme()),
+                            contentDescription = null
+                        )
+                    }
+                }
+            }
+        )
+    }
+
+    @Composable
+    fun InProgressState() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.primary // @color/search_cursor
+            )
+        }
+    }
+
+    @Composable
+    fun FoundTracksState(
+        modifier: Modifier,
+        tracks: List<Track>,
+        onItemClick: (Track) -> Unit,
+    ) {
+
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+        ) {
+            if (tracks.isEmpty())
+                NoTracksState()
+            else {
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(tracks) { track ->
+                        TrackItem(
+                            track.artworkUrl100,
+                            track.trackName,
+                            track.artistName,
+                            track.lengthText,
+                            modifier = Modifier.clickable {
+                                onItemClick(track)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun HistoryState(
+        modifier: Modifier,
+        tracks: List<Track>,
+        onClearHistory: () -> Unit,
+        onItemClick: (Track) -> Unit,
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+        ) {
+            if (tracks.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.you_looking_for_text),
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 48.dp),
+                )
+            }
+
+            LazyColumn(Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)) {
+                items(tracks) { track ->
+                    TrackItem(
+                        track.artworkUrl100,
+                        track.trackName,
+                        track.artistName,
+                        track.lengthText,
+                        modifier = Modifier.clickable {
+                            onItemClick(track)
+                        }
+                    )
+                }
+            }
+
+            if (tracks.isNotEmpty()) {
+                Button(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 24.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onBackground,
+                        contentColor = MaterialTheme.colorScheme.surface,
+                    ),
+                    onClick = { onClearHistory() }
+                ) {
+                    Text(text = getString(R.string.clear_history))
+                }
+            }
+        }
+    }
+
+    fun getTestTracks(): List<Track> = listOf(
+        Track(
+            trackId = 1,
+            trackName = "Name 1",
+            artistName = "Artist 1",
+            trackTimeMillis = 12345,
+            lengthText = "00:04",
+            artworkUrl100 = "",
+            coverArtwork = "",
+            collectionName = "Collection 1",
+            trackYear = "1980",
+            primaryGenreName = "Rock",
+            country = "Australia",
+            previewUrl = ""
+        ),
+        Track(
+            trackId = 2,
+            trackName = "Name 2",
+            artistName = "Artist 2",
+            trackTimeMillis = 12345,
+            lengthText = "10:04",
+            artworkUrl100 = "",
+            coverArtwork = "",
+            collectionName = "Collection 2",
+            trackYear = "1930",
+            primaryGenreName = "Rock",
+            country = "Australia",
+            previewUrl = ""
+        )
+    )
+
+    @Preview(uiMode = UI_MODE_NIGHT_NO, showBackground = true)
+    @Composable
+    fun LightModeText() {
+        YsTheme {
+            SearchTextField("none", {}, {})
+        }
+    }
+
+    @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+    @Composable
+    fun NightModeText() {
+        YsTheme {
+            SearchTextField("pink", {}, {})
+        }
+    }
+
+    @Preview(uiMode = UI_MODE_NIGHT_NO)
+    @Composable
+    fun SearchInProgress() {
+        YsTheme {
+            InProgressState()
+        }
+    }
+
+    @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+    @Composable
+    fun FoundTracksPreview() {
+        YsTheme {
+            FoundTracksState(Modifier, getTestTracks(), onItemClick = {})
+        }
     }
 
     companion object {
         private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
+        private const val LOG_TAG = "SearchFragment"
     }
 }

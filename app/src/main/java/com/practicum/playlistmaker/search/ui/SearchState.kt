@@ -5,7 +5,6 @@ import com.practicum.playlistmaker.search.domain.model.Track
 sealed interface SearchState {
     data object Empty : SearchState
     data object InProgress : SearchState
-    data object NotFound : SearchState
     data class Error(val message: String) : SearchState
     data class Found(val foundTracks: List<Track>) : SearchState
     data class History(val historyTracks: List<Track>) : SearchState

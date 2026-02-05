@@ -47,3 +47,24 @@ fun getSettingsIconColor(darkTheme: Boolean): Color {
     val onDarkColor = MaterialTheme.colorScheme.onSurface
     return if (darkTheme) onDarkColor else onLightColor
 }
+
+@Composable
+fun getInactiveColor(darkTheme: Boolean): Color {
+    val onLightColor = LightInactive
+    val onDarkColor = DarkInactive
+    return if (darkTheme) onDarkColor else onLightColor
+}
+
+@Composable
+fun getEditorBackgroundColor(darkTheme: Boolean): Color {
+    val onLightColor = LightEditorBackground
+    val onDarkColor = DarkEditorBackground
+    return if (darkTheme) onDarkColor else onLightColor
+}
+
+@Composable
+fun getEditorIconColor(darkTheme: Boolean): Color {
+    val onLightColor = LightEditorIconColor
+    val onDarkColor = DarkEditorIconColor
+    return if (darkTheme) onDarkColor else onLightColor
+}

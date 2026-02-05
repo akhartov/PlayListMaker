@@ -21,6 +21,18 @@ val AppTypography = Typography(
         lineHeight = 64.sp,
         letterSpacing = (-0.25).sp
     ),
+    displayMedium = TextStyle(
+        fontFamily = Display,
+        fontWeight = FontWeight.Normal,
+        fontSize = 19.sp,
+        lineHeight = 16.sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = Display,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp
+    ),
     bodyLarge = TextStyle(
         fontFamily = Display,
         fontWeight = FontWeight.Normal,
@@ -33,16 +45,24 @@ val AppTypography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp
     ),
-    displaySmall = TextStyle(
-        fontFamily = Display,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 16.sp
-    ),
     headlineMedium = TextStyle(
         fontFamily = Display,
         fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp,
         lineHeight = 36.sp
     ),
+)
+
+val SmallestTrackText = TextStyle(
+    fontFamily = Display,
+    fontWeight = FontWeight.Normal,
+    fontSize = 11.sp,
+    lineHeight = 14.sp
+)
+
+val NormalTrackText = TextStyle(
+    fontFamily = Display,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp,
+    lineHeight = 20.sp
 )
