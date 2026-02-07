@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.favourites.data.db
+package com.practicum.playlistmaker.library.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert

@@ -45,6 +45,12 @@ val AppTypography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp
     ),
+    bodySmall = TextStyle(
+        fontFamily = Display,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 24.sp
+    ),
     headlineMedium = TextStyle(
         fontFamily = Display,
         fontWeight = FontWeight.SemiBold,

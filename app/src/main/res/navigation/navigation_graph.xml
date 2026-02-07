@@ -10,7 +10,6 @@
         android:id="@+id/searchFragment"
         android:name="com.practicum.playlistmaker.search.ui.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search"
         >
 
         <action
@@ -25,9 +24,8 @@
 
     <fragment
         android:id="@+id/libraryFragment"
-        android:name="com.practicum.playlistmaker.mediacollection.ui.MediaCollectionFragment"
+        android:name="com.practicum.playlistmaker.library.ui.LibraryFragment"
         android:label="fragment_library"
-        tools:layout="@layout/fragment_media_collection"
         >
 
         <action
@@ -89,7 +87,6 @@
         android:id="@+id/settingsFragment"
         android:name="com.practicum.playlistmaker.settings.ui.SettingsFragment"
         android:label="fragment_library"
-        tools:layout="@layout/fragment_settings"
         />
 
     <fragment

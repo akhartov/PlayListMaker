@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -30,8 +29,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -52,6 +49,8 @@ import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.ui.compose.FailState
+import com.practicum.playlistmaker.ui.compose.TrackItem
 import com.practicum.playlistmaker.ui.debounce
 import com.practicum.playlistmaker.ui.theme.EditorTextColor
 import com.practicum.playlistmaker.ui.theme.SearchCursorColor
@@ -174,50 +173,6 @@ class SearchFragment : Fragment() {
             text = getString(R.string.tracks_not_found),
             {}, ""
         )
-    }
-
-    @Composable
-    private fun FailState(
-        imageVector: ImageVector,
-        text: String,
-        onClick: () -> Unit,
-        buttonText: String = ""
-    ) {
-        val buttonTextState by remember { mutableStateOf(buttonText) }
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.align(Alignment.Center)) {
-                Image(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    imageVector = imageVector,
-                    contentDescription = null,
-                    alignment = Alignment.Center
-                )
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 16.dp),
-                    text = text,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.displayMedium
-                )
-                if (buttonTextState.isNotBlank()) {
-                    Button(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 24.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onBackground,
-                            contentColor = MaterialTheme.colorScheme.surface,
-                        ),
-                        onClick = { onClick() }
-                    ) {
-                        Text(text = buttonText)
-                    }
-                }
-            }
-        }
     }
 
     @Composable

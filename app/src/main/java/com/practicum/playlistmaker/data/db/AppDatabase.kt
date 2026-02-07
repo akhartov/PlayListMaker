@@ -2,8 +2,8 @@ package com.practicum.playlistmaker.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.practicum.playlistmaker.favourites.data.db.FavouriteTrackEntity
-import com.practicum.playlistmaker.favourites.data.db.FavouriteTrackDao
+import com.practicum.playlistmaker.library.data.db.FavouriteTrackEntity
+import com.practicum.playlistmaker.library.data.db.FavouriteTrackDao
 import com.practicum.playlistmaker.playlist.data.db.CoverTrackDao
 import com.practicum.playlistmaker.playlist.data.db.LibraryTrackEntity
 import com.practicum.playlistmaker.playlist.data.db.CoverEntity

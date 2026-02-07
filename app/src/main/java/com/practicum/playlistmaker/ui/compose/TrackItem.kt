@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search.ui
+package com.practicum.playlistmaker.ui.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -41,6 +41,12 @@ fun TrackItem(
     trackTime: String = "00:00",
     modifier: Modifier
 ) {
+    val placeholder =
+        rememberVectorPainter(ImageVector.vectorResource(id = R.drawable.track_placeholder))
+    val forwardIcon = ImageVector.vectorResource(id = R.drawable.ic_arrow_forward)
+    val ellipseIcon = ImageVector.vectorResource(id = R.drawable.ic_track_ellipse)
+
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -49,10 +55,6 @@ fun TrackItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val placeholder = rememberVectorPainter(
-            image = ImageVector.vectorResource(id = R.drawable.track_placeholder)
-        )
-
         AsyncImage(
             model = artworkUrl,
             contentDescription = null,
@@ -92,7 +94,7 @@ fun TrackItem(
                 )
 
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_track_ellipse),
+                    imageVector = ellipseIcon,
                     contentDescription = null,
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.track_dot_border))
                 )
@@ -108,7 +110,7 @@ fun TrackItem(
         }
 
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_forward),
+            imageVector = forwardIcon,
             contentDescription = null,
             modifier = Modifier.align(Alignment.CenterVertically),
         )

@@ -13,7 +13,6 @@ import com.practicum.playlistmaker.playlist.domain.PlaylistMessagingCache
 import com.practicum.playlistmaker.playlist.domain.TracksLibraryRepository
 import com.practicum.playlistmaker.playlist.domain.impl.PlaylistMessagingCacheImpl
 import com.practicum.playlistmaker.playlist.ui.editor.PlaylistEditorViewModel
-import com.practicum.playlistmaker.playlist.ui.grid.PlaylistsViewModel
 import com.practicum.playlistmaker.playlist.ui.maker.PlaylistMakerViewModel
 import com.practicum.playlistmaker.playlist.ui.view.PlaylistViewerViewModel
 import org.koin.android.ext.koin.androidContext
@@ -23,7 +22,6 @@ import org.koin.dsl.module
 val playlistViewModelModule = module {
     viewModel { (playlistId: Int) -> PlaylistEditorViewModel(playlistId, get()) }
     viewModel { PlaylistMakerViewModel(get()) }
-    viewModel { PlaylistsViewModel(get()) }
     viewModel { (playlistId: Int) -> PlaylistViewerViewModel(playlistId, get(), get(), get()) }
 
     single { PathResolver() }
