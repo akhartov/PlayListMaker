@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
-import com.practicum.playlistmaker.ui.debounce
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class SearchViewModel(
     private val historyInteractor: TrackHistoryInteractor,
@@ -23,6 +26,13 @@ class SearchViewModel(
     val searchText: StateFlow<String> = _searchText.asStateFlow()
     private var foundTracks = emptyList<Track>()
     private var isLastSearchFailed = false
+
+    init {
+        searchText.debounce(SEARCH_DEBOUNCE_DELAY)
+            .distinctUntilChanged()
+            .onEach { text -> searchRequest(text) }
+            .launchIn(viewModelScope)
+    }
 
     fun showHistory() {
         historyInteractor.getTracks(object : TrackHistoryInteractor.Consumer {
@@ -46,16 +56,8 @@ class SearchViewModel(
         renderState(SearchState.Empty)
     }
 
-    private val tracksSearchDebounce =
-        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
-            searchRequest(changedText)
-        }
-
     fun searchDebounce(changedText: String) {
-        if (_searchText.value != changedText || isLastSearchFailed) {
-            _searchText.value = changedText
-            tracksSearchDebounce(changedText)
-        }
+        _searchText.value = changedText
     }
 
     private fun renderState(state: SearchState) {
@@ -86,8 +88,8 @@ class SearchViewModel(
     }
 
     fun editSearchRequestFocused() {
-        if(searchText.value.isEmpty())
-          showHistory()
+        if (searchText.value.isEmpty())
+            showHistory()
     }
 
     companion object {

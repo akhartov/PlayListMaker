@@ -47,7 +47,6 @@ import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.library.presentation.LibraryViewModel
 import com.practicum.playlistmaker.player.ui.PlayerFragment
-import com.practicum.playlistmaker.player.ui.PlayerFragment.Companion.CLICK_DEBOUNCE_DELAY
 import com.practicum.playlistmaker.playlist.domain.model.PlaylistCover
 import com.practicum.playlistmaker.playlist.ui.view.PlaylistViewerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
@@ -62,7 +61,7 @@ import kotlin.getValue
 
 class LibraryFragment : Fragment() {
     private val trackClickDebounce =
-        debounce<Track>(CLICK_TRACK_DEBOUNCE_DELAY, lifecycleScope, true) { track ->
+        debounce<Track>(CLICK_DEBOUNCE_DELAY, lifecycleScope, true) { track ->
             findNavController().navigate(
                 R.id.action_libraryFragment_to_playerFragment,
                 PlayerFragment.createArgs(track)
@@ -219,30 +218,19 @@ class LibraryFragment : Fragment() {
 
     @Composable
     private fun NoAlbumsState() {
-        FailState(
-            imageVector = ImageVector.vectorResource(R.drawable.img_tracks_not_found),
-            text = getString(R.string.no_playlists_text)
-        )
+        Column(modifier = Modifier.fillMaxSize()) {
+            NewPlaylistButton(Modifier.align(Alignment.CenterHorizontally))
+            FailState(
+                imageVector = ImageVector.vectorResource(R.drawable.img_tracks_not_found),
+                text = getString(R.string.no_playlists_text)
+            )
+        }
     }
 
     @Composable
     fun AlbumsGrid(albums: List<PlaylistCover>) {
-        val newPlaylistText = remember { getString(R.string.new_playlist) }
-
         Column(modifier = Modifier.fillMaxSize()) {
-            Button(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 24.dp, bottom = 16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onBackground,
-                    contentColor = MaterialTheme.colorScheme.surface,
-                ),
-                onClick = { albumClickDebounce() }
-            ) {
-                Text(text = newPlaylistText)
-            }
-
+            NewPlaylistButton(Modifier.align(Alignment.CenterHorizontally))
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.fillMaxSize(),
@@ -262,6 +250,23 @@ class LibraryFragment : Fragment() {
         }
     }
 
+    @Composable
+    fun NewPlaylistButton(modifier: Modifier) {
+        val newPlaylistText = remember { getString(R.string.new_playlist) }
+
+        Button(
+            modifier = modifier
+                .padding(top = 24.dp, bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.surface,
+            ),
+            onClick = { albumClickDebounce() }
+        ) {
+            Text(text = newPlaylistText)
+        }
+    }
+
     private fun navigateToAlbum(playlistId: Int) {
         findNavController().navigate(
             R.id.action_libraryFragment_to_playlistViewerFragment,
@@ -270,6 +275,6 @@ class LibraryFragment : Fragment() {
     }
 
     companion object {
-        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

@@ -86,7 +86,8 @@ class SearchFragment : Fragment() {
                     Scaffold(
                         containerColor = MaterialTheme.colorScheme.surface,
                         modifier = Modifier
-                            .fillMaxSize().background(color = MaterialTheme.colorScheme.surface)
+                            .fillMaxSize()
+                            .background(color = MaterialTheme.colorScheme.surface)
                     ) { innerPadding ->
                         SearchScreen(
                             Modifier
@@ -151,7 +152,6 @@ class SearchFragment : Fragment() {
                     InProgressState()
                 }
             }
-
         }
     }
 
@@ -305,9 +305,11 @@ class SearchFragment : Fragment() {
                 )
             }
 
-            LazyColumn(Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)) {
+            LazyColumn(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
                 items(tracks) { track ->
                     TrackItem(
                         track.artworkUrl100,
