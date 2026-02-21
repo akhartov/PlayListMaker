@@ -1,26 +1,38 @@
 package com.practicum.playlistmaker.search.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.model.SearchTracksUseCase
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.domain.model.TrackHistoryInteractor
-import com.practicum.playlistmaker.ui.debounce
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class SearchViewModel(
     private val historyInteractor: TrackHistoryInteractor,
     private val searchTracksUseCase: SearchTracksUseCase
 ) : ViewModel() {
-    private val searchStateLiveData = MutableLiveData(SearchState.Empty as SearchState)
-    fun getSearchStateLiveData(): LiveData<SearchState> = searchStateLiveData
+    private val searchStateLiveData = MutableStateFlow(SearchState.Empty as SearchState)
+    fun getSearchStateFlow(): StateFlow<SearchState> = searchStateLiveData.asStateFlow()
 
-    private var latestSearchText = ""
+    private var _searchText = MutableStateFlow("")
+    val searchText: StateFlow<String> = _searchText.asStateFlow()
     private var foundTracks = emptyList<Track>()
     private var isLastSearchFailed = false
+
+    init {
+        searchText.debounce(SEARCH_DEBOUNCE_DELAY)
+            .distinctUntilChanged()
+            .onEach { text -> searchRequest(text) }
+            .launchIn(viewModelScope)
+    }
 
     fun showHistory() {
         historyInteractor.getTracks(object : TrackHistoryInteractor.Consumer {
@@ -44,20 +56,12 @@ class SearchViewModel(
         renderState(SearchState.Empty)
     }
 
-    private val tracksSearchDebounce =
-        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
-            searchRequest(changedText)
-        }
-
     fun searchDebounce(changedText: String) {
-        if (latestSearchText != changedText || isLastSearchFailed) {
-            latestSearchText = changedText
-            tracksSearchDebounce(changedText)
-        }
+        _searchText.value = changedText
     }
 
     private fun renderState(state: SearchState) {
-        searchStateLiveData.postValue(state)
+        searchStateLiveData.value = state
     }
 
     private fun searchRequest(newSearchText: String) {
@@ -78,12 +82,14 @@ class SearchViewModel(
                 }
                 .collect { result ->
                     foundTracks = result.tracks
-                    if (foundTracks.isEmpty())
-                        renderState(SearchState.NotFound)
-                    else
-                        renderState(SearchState.Found(foundTracks))
+                    renderState(SearchState.Found(foundTracks))
                 }
         }
+    }
+
+    fun editSearchRequestFocused() {
+        if (searchText.value.isEmpty())
+            showHistory()
     }
 
     companion object {
